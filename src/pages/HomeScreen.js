@@ -3,7 +3,7 @@ import { styles } from '../styles/main-styles';
 
 export default function HomeScreen({navigation}) {
     return (
-        <View style={styles.container}>
+        <View style={{...styles.container, ...styles.containerColor}}>
             <Text>Welcome to the home page!</Text>
             <Button 
                 title="Leave Home Page"

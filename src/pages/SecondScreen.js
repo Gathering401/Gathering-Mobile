@@ -3,7 +3,7 @@ import { styles } from '../styles/main-styles';
 
 export default function SecondScreen({navigation}) {
     return (
-        <View style={styles.container}>
+        <View style={{...styles.container, ...styles.containerColor}}>
             <Text>This is the second page</Text>
             <Button 
                 title="Back to Home Page"
