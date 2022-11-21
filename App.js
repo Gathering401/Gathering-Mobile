@@ -1,9 +1,9 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import HomeScreen from './src/components/HomeScreen';
-import SecondScreen from './src/components/SecondScreen';
-import EventCalendar from './src/components/EventCalendar';
+import HomeScreen from './src/pages/HomeScreen';
+import SecondScreen from './src/pages/SecondScreen';
+import EventCalendar from './src/pages/EventCalendar';
 
 const Stack = createNativeStackNavigator();
 

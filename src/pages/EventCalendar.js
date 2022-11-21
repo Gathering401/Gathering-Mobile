@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Text, View, ScrollView, TouchableOpacity } from 'react-native';
+import { Text, View } from 'react-native';
 import { CalendarList } from 'react-native-calendars';
-import { Card } from '@rneui/base';
 
 import moment from 'moment';
 
-import { styles } from '../styles/main-styles';
+import HorizontalScrollWithTouch from '../components/HorizontalScrollWithTouch';
 
 import { mockEvents } from '../../mockData/mockEvents';
 import { mockEventDetails } from '../../mockData/mockEventDetails';
@@ -72,25 +71,18 @@ export default function EventCalendar({ navigation }) {
                 horizontal={true}
                 pagingEnabled={true}
             />
-            <View style={{...styles.containerColor, ...styles.horizontalScrollerWrapper}}>
-                <Text style={styles.viewTitle}>{selected}</Text>
-                <ScrollView style={styles.horizontalScroller} horizontal={true}>
-                    {selectedEvents.map(e => (
-                        <TouchableOpacity onPress={() => console.log(e.eventId)} key={e.eventId}>
-                            <Card containerStyle={styles.card}>
-                                <View style={styles.cardTitleWrapper}>
-                                    <Card.Title style={styles.cardTitle}>
-                                        {e.eventName}
-                                    </Card.Title>
-                                </View>
-                                <Text>When: {moment(e.start).format('h:mm a')}</Text>
-                                <Text>Where: {e.location}</Text>
-                                <Text>Cost: ${e.cost}</Text>
-                            </Card>
-                        </TouchableOpacity>
-                    ))}
-                </ScrollView>
-            </View>
+            <HorizontalScrollWithTouch
+                scrollTitle={selected}
+                scrollableItems={selectedEvents}
+                titleLocation="eventName"
+                mapper="eventCard"
+            />
+            <HorizontalScrollWithTouch
+                scrollTitle="Invitations"
+                scrollableItems={selectedInvitations}
+                titleLocation="eventName"
+                mapper="invitationCard"
+            />
         </View>
     )
 }
