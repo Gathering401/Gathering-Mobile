@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import { FiCheck, FiX } from 'react-icons/fi';
-import { BsQuestionLg } from 'react-icons/bs';
+import { RiQuestionMark } from 'react-icons/ri';
 
 import moment from 'moment';
 
@@ -32,9 +32,9 @@ export const mapToInvitationCard = (invitation) => {
             </Text>
             }
             <View style={{...styles.container, ...styles.horizontalFlex}}>
-                <InvitationResponse status='y' component={<FiCheck color='green'/>}/>
-                <InvitationResponse status='m' component={<BsQuestionLg color='blue'/>}/>
-                <InvitationResponse status='n' component={<FiX color='red'/>}/>
+                <InvitationResponse status={1} component={<FiCheck color='green'/>} id={invitation.eventRepeatId}/>
+                <InvitationResponse status={3} component={<RiQuestionMark color='blue'/>} id={invitation.eventRepeatId}/>
+                <InvitationResponse status={2} component={<FiX color='red'/>} id={invitation.eventRepeatId}/>
             </View>
         </>
     )
