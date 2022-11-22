@@ -8,7 +8,7 @@ import mapTo from '../models/mapper';
 
 export default function HorizontalScrollWithTouch({scrollTitle, scrollableItems, titleLocation, mapper}) {
     return (
-        <View style={{...styles.containerColor, ...styles.horizontalScrollerWrapper}}>
+        <View style={{...styles.horizontalScrollerWrapper}}>
             <Text style={styles.viewTitle}>{scrollTitle}</Text>
             <ScrollView style={styles.horizontalScroller} horizontal={true}>
                 {scrollableItems.map((obj, i) => (

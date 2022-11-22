@@ -7,12 +7,14 @@ import moment from 'moment';
 import HorizontalScrollWithTouch from '../components/HorizontalScrollWithTouch';
 
 import { mockEvents } from '../../mockData/mockEvents';
+import { mockInvitations } from '../../mockData/mockInvitations';
 import { mockEventDetails } from '../../mockData/mockEventDetails';
 
 export default function EventCalendar({ navigation }) {
     let [selected, setSelected] = useState(moment().format('MM/DD/YYYY'));
     let [events, setEvents] = useState(mockEvents);
     let [selectedEvents, setSelectedEvents] = useState([]);
+    let [selectedInvitations, setSelectedInvitations] = useState(mockInvitations);
 
     // useEffect(() => {
     //     function getAllEvents() {

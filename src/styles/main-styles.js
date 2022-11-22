@@ -8,8 +8,8 @@ export const styles = StyleSheet.create({
       justifyContent: 'center',
     },
     horizontalScroller: {
-        backgroundColor: 'rgba(219, 140, 213, .2)',
-        color: 'orange',
+        backgroundColor: '#fff',
+        fontSize: '20px',
         width: '100%'
     },
     horizontalScrollerWrapper: {
@@ -23,7 +23,8 @@ export const styles = StyleSheet.create({
         height: 150,
         marginBottom: 15,
         padding: 0,
-        textAlign: 'center'
+        textAlign: 'center',
+        boxShadow: '1 2 2 black'
     },
     cardTitleWrapper: {
         borderBottomColor: 'grey',
@@ -39,7 +40,8 @@ export const styles = StyleSheet.create({
         color: 'rgb(150, 150, 150)',
         margin: 10
     },
-    containerColor: {
-        backgroundColor: '#fff'
+    horizontalFlex: {
+        flexDirection: 'row',
+        justifyContent: 'space-around'
     }
 });
