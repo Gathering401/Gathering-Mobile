@@ -43,5 +43,42 @@ export const styles = StyleSheet.create({
     horizontalFlex: {
         flexDirection: 'row',
         justifyContent: 'space-around'
+    },
+    textInput: {
+        fontSize: 20,
+        borderWidth: 1,
+        borderColor: 'grey',
+        borderRadius: '50%',
+        margin: 5,
+        padding: 10,
+        width: 300,
+        textAlign: 'center',
+        color: 'orange'
+    },
+    modalButton: {
+        borderWidth: 1,
+        borderColor: 'grey',
+        borderRadius: '50%',
+        margin: 5,
+        padding: 10
+    },
+    modalButtonText: {
+        fontSize: 20,
+        padding: 0,
+        margin: 0,
+        textAlign: 'center',
+        color: 'rgb(190, 190, 190)'
+    },
+    submitButton: {
+        borderRadius: '50%',
+        margin: 5,
+        padding: 10,
+        width: 100
+    },
+    hidden: {
+        display: 'none'
+    },
+    emptyRequired: {
+        color: 'red'
     }
 });
