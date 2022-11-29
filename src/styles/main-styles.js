@@ -48,7 +48,7 @@ export const styles = StyleSheet.create({
         fontSize: 20,
         borderWidth: 1,
         borderColor: 'grey',
-        borderRadius: '50%',
+        borderRadius: 30,
         margin: 5,
         padding: 10,
         width: 300,
@@ -58,7 +58,7 @@ export const styles = StyleSheet.create({
     modalButton: {
         borderWidth: 1,
         borderColor: 'grey',
-        borderRadius: '50%',
+        borderRadius: 30,
         margin: 5,
         padding: 10
     },

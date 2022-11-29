@@ -1,18 +1,22 @@
 import axios from 'axios';
 
-import { useState, useEffect } from 'react';
-import * as SecureStore from 'expo-secure-store';
+import { useState, useEffect, useContext } from 'react';
+// import * as SecureStore from 'expo-secure-store';
 import { View } from 'react-native';
 import { CalendarList } from 'react-native-calendars';
+
+import { TokenContext } from '../tempContext/token-context';
 
 import moment from 'moment';
 
 import HorizontalScrollWithTouch from '../components/HorizontalScrollWithTouch';
 
 const baseUrl = 'http://localhost:5000/api';
-const token = SecureStore.getItemAsync('token');
+// const authToken = SecureStore.getItemAsync('token');
 
 export default function EventCalendar({ navigation }) {
+    const { token } = useContext(TokenContext);
+    
     let [selected, setSelected] = useState(moment().format('MM/DD/YYYY'));
     let [events, setEvents] = useState([]);
     let [selectedEvents, setSelectedEvents] = useState([]);
@@ -28,11 +32,12 @@ export default function EventCalendar({ navigation }) {
                 method: 'GET',
                 url: `${baseUrl}/Calendar`,
                 headers: {
-                    authorization: `Bearer ${token}`
+                    authorization: `Bearer ${token}`,
+                    'content-type': 'application/x-www-form-urlencoded'
                 }
-            });
+            }).catch(err => console.log(err));
 
-            if(response.data) {
+            if(response?.data) {
                 setEvents(response.data);
             }
         }
@@ -42,7 +47,7 @@ export default function EventCalendar({ navigation }) {
                 method: 'GET',
                 url: `${baseUrl}/Calendar/Invitations`,
                 headers: {
-                    authorization: `Bearer ${authToken}`
+                    authorization: `Bearer ${token}`
                 }
             });
 

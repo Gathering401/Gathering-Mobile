@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import axios from 'axios';
 
-import { TextInput, TouchableWithoutFeedback, Keyboard, ScrollView, KeyboardAvoidingView, TouchableOpacity, Text, View } from 'react-native';
+import { TextInput, TouchableWithoutFeedback, Keyboard, ScrollView, KeyboardAvoidingView, TouchableOpacity, Text, View, Platform } from 'react-native';
 import DatePicker from 'react-native-modern-datepicker';
 import { Formik } from 'formik';
 import moment from 'moment';
@@ -22,31 +22,32 @@ export default function SignUp({navigation, desiredUsername}) {
     let [hitNext, setHitNext] = useState(false);
 
     const postNewUser = async (values) => {
-        console.log('did i get here')
         try {
-        const response = await axios({
-            method: 'POST',
-            url: `${baseUrl}/User/Register`,
-            data: {
-                firstName: values.firstName,
-                lastName: values.lastName,
-                username: values.username,
-                password: values.password,
-                email: values.email,
-                phoneNumber: values.phone,
-                birthDate: moment(values.birthDate).toISOString()
-            }
-        });
-
-        console.log('cheese whiz', response);
-        if(response) {
-            navigation.navigate('Login', {
-                desiredUsername: values.username
+            const response = await axios({
+                method: 'POST',
+                url: `${baseUrl}/User/Register`,
+                data: {
+                    firstName: values.firstName,
+                    lastName: values.lastName,
+                    username: values.username,
+                    password: values.password,
+                    email: values.email,
+                    phoneNumber: values.phone,
+                    birthDate: moment(values.birthDate).toISOString()
+                },
+                headers: {
+                    'content-type': 'application/json'
+                }
             });
+
+            if(response) {
+                navigation.navigate('Login', {
+                    desiredUsername: values.username
+                });
+            }
+        } catch(err) {
+            console.log('Error', err);
         }
-    } catch(err) {
-        console.log('err', JSON.stringify(err))
-    }
     }
     
     return (
@@ -71,7 +72,7 @@ export default function SignUp({navigation, desiredUsername}) {
                             phone: '',
                             birthDate: date
                         }}
-                        onSubmit={values => console.log(values)}
+                        onSubmit={values => postNewUser(values)}
                     >
                         {({ handleChange, handleBlur, handleSubmit, values }) => (
                             start ? <View>
@@ -81,10 +82,11 @@ export default function SignUp({navigation, desiredUsername}) {
                                     onChangeText={handleChange('firstName')}
                                     placeholder="First Name"
                                     onBlur={handleBlur('firstName')}
-                                    autoCapitalize={true}
+                                    autoCapitalize="words"
                                     returnKeyType="next"
                                     onSubmitEditing={() => { lastNameRef.current.focus(); }}
                                     value={values.firstName}
+                                    spellCheck={false}
                                 />
                                 {hitNext && !values.firstName && <Text style={styles.emptyRequired}>*First name field is required</Text>}
                                 <TextInput
@@ -93,11 +95,12 @@ export default function SignUp({navigation, desiredUsername}) {
                                     onChangeText={handleChange('lastName')}
                                     placeholder="Last Name"
                                     onBlur={handleBlur('lastName')}
-                                    autoCapitalize={true}
+                                    autoCapitalize="words"
                                     returnKeyType="next"
                                     ref={lastNameRef}
                                     onSubmitEditing={() => { usernameRef.current.focus(); }}
                                     value={values.lastName}
+                                    spellCheck={false}
                                 />
                                 {hitNext && !values.lastName && <Text style={styles.emptyRequired}>*Last name field is required</Text>}
                                 <TextInput
@@ -106,11 +109,12 @@ export default function SignUp({navigation, desiredUsername}) {
                                     onChangeText={handleChange('username')}
                                     placeholder="Username"
                                     onBlur={handleBlur('username')}
-                                    autoCapitalize={false}
+                                    autoCapitalize="none"
                                     returnKeyType="next"
                                     ref={usernameRef}
                                     onSubmitEditing={() => { passwordRef.current.focus(); }}
                                     value={values.username}
+                                    spellCheck={false}
                                 />
                                 {hitNext && !values.username && <Text style={styles.emptyRequired}>*Username field is required</Text>}
                                 <TextInput
@@ -124,6 +128,7 @@ export default function SignUp({navigation, desiredUsername}) {
                                     ref={passwordRef}
                                     onSubmitEditing={() => { confirmPasswordRef.current.focus(); }}
                                     value={values.password}
+                                    spellCheck={false}
                                 />
                                 {hitNext && !values.password && <Text style={styles.emptyRequired}>*Password field is required</Text>}
                                 <TextInput
@@ -136,6 +141,7 @@ export default function SignUp({navigation, desiredUsername}) {
                                     returnKeyType="next"
                                     ref={confirmPasswordRef}
                                     value={values.confirmPassword}
+                                    spellCheck={false}
                                 />
                                 {hitNext && !values.confirmPassword && <Text style={styles.emptyRequired}>*Confirm password field is required</Text>}
                                 {hitNext && values.confirmPassword && values.password !== values.confirmPassword && <Text style={styles.emptyRequired}>*Password fields do not match</Text>}
@@ -157,9 +163,10 @@ export default function SignUp({navigation, desiredUsername}) {
                                     onChangeText={handleChange('email')}
                                     placeholder="Email"
                                     onBlur={handleBlur('email')}
-                                    autoCapitalize={false}
+                                    autoCapitalize="none"
                                     onSubmitEditing={() => { phoneRef.current.focus(); }}
                                     value={values.email}
+                                    spellCheck={false}
                                 />
                                 <TextInput
                                     required={true}
@@ -192,11 +199,7 @@ export default function SignUp({navigation, desiredUsername}) {
                                         onSelectedChange={(newDate) => setDate(moment(newDate).toISOString())}
                                     />
                                 </View>
-                                <TouchableOpacity style={styles.submitButton} onPress={() => {
-                                    handleSubmit();
-                                    postNewUser(values);
-                                }}
-                                >
+                                <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
                                     <Text style={styles.submitButtonText}>Submit</Text>
                                 </TouchableOpacity>
                             </View>
