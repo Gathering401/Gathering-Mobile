@@ -13,6 +13,7 @@ export const styles = StyleSheet.create({
         width: '100%'
     },
     horizontalScrollerWrapper: {
+        width: 250,
         borderTopColor: 'grey',
         borderTopWidth: '1px',
         borderBottomColor: 'grey',
@@ -80,5 +81,11 @@ export const styles = StyleSheet.create({
     },
     emptyRequired: {
         color: 'red'
+    },
+    title: {
+        fontSize: 30
+    },
+    button: {
+        margin: 100
     }
 });
