@@ -4,8 +4,9 @@ export const styles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: '#fff',
-      alignItems: 'center',
+      alignItems: 'space-around',
       justifyContent: 'center',
+      width: '100%'
     },
     horizontalScroller: {
         backgroundColor: '#fff',
@@ -17,7 +18,8 @@ export const styles = StyleSheet.create({
         borderTopColor: 'grey',
         borderTopWidth: '1px',
         borderBottomColor: 'grey',
-        borderBottomWidth: '1px'
+        borderBottomWidth: '1px',
+        width: '100%'
     },
     card: {
         width: 150,
@@ -87,5 +89,20 @@ export const styles = StyleSheet.create({
     },
     button: {
         margin: 100
+    },
+    navbar: {
+        fontSize: 40,
+        position: 'fixed',
+        bottom: 0,
+        width: '100%',
+        backgroundColor: 'green',
+        height: 75,
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-around'
+    },
+    alignCenterVertical: {
+        display: 'flex',
+        justifyContent: 'center'
     }
 });

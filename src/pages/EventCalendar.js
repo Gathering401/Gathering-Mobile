@@ -10,6 +10,7 @@ import { TokenContext } from '../tempContext/token-context';
 import moment from 'moment';
 
 import HorizontalScrollWithTouch from '../components/HorizontalScrollWithTouch';
+import NavBar from '../components/NavBar';
 
 const baseUrl = 'http://localhost:5000/api';
 // const authToken = SecureStore.getItemAsync('token');
@@ -103,6 +104,7 @@ export default function EventCalendar({ navigation }) {
                 titleLocation="eventName"
                 mapper="invitationCard"
             />
+            <NavBar navigation={navigation}/>
         </View>
     )
 }

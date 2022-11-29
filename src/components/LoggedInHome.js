@@ -1,10 +1,11 @@
 import axios from 'axios';
 
 import React, { useContext, useEffect, useState } from 'react';
+import { View } from 'react-native';
 
-import { View, Button } from 'react-native';
 import { TokenContext } from '../tempContext/token-context';
 
+import NavBar from './NavBar';
 import HorizontalScrollWithTouch from './HorizontalScrollWithTouch';
 
 const baseUrl = 'http://localhost:5000/api';
@@ -34,10 +35,6 @@ export default function LoggedInHome({navigation}) {
     
     return (
         <View>
-            <Button
-                title="Calendar"
-                onPress={() => navigation.navigate('Calendar')}
-            />
             <HorizontalScrollWithTouch
                 scrollTitle="Groups"
                 scrollableItems={userGroups}
@@ -45,6 +42,7 @@ export default function LoggedInHome({navigation}) {
                 mapper="groupCard"
             />
             {/* Another horizontal scroller will go here with //Upcoming events// but the endpoint needs to be made for such yet */}
+            <NavBar navigation={navigation}/>
         </View>
     )
 }

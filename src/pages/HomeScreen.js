@@ -23,7 +23,7 @@ export default function HomeScreen({navigation, token}) {
     
     return (
         <View style={{...styles.container, ...styles.containerColor}}>
-            <Text style={styles.title}>Welcome to the home page!</Text>
+            <Text style={styles.title}>Hello, world!</Text>
             {
                 loggedIn ? <LoggedInHome navigation={navigation}/> : <SignInOptions navigation={navigation}/>
             }
