@@ -1,22 +1,33 @@
+import React, { useState } from 'react';
+
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import HomeScreen from './src/components/HomeScreen';
-import SecondScreen from './src/components/SecondScreen';
-import EventCalendar from './src/components/EventCalendar';
+import { TokenContext } from './src/tempContext/token-context'; // context is only temporary for testing in web
+
+import HomeScreen from './src/pages/HomeScreen';
+import SignUp from './src/pages/SignUp';
+import Login from './src/pages/Login.js';
+import EventCalendar from './src/pages/EventCalendar';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-  return (
-    <NavigationContainer>
-        <Stack.Navigator>
-            <Stack.Screen name="Home" options={{title: "Noice"}}>
-                {(props) => <HomeScreen {...props}/>}
-            </Stack.Screen>
-            <Stack.Screen name="Other" component={SecondScreen} />
-            <Stack.Screen name="Calendar" component={EventCalendar} />
-        </Stack.Navigator>
-    </NavigationContainer>
-  );
+    let [token, setToken] = useState();
+    const value = { token, setToken };
+    
+    return (
+        <TokenContext.Provider value={value}>
+            <NavigationContainer>
+                <Stack.Navigator>
+                    <Stack.Screen name="Home" options={{title: "Home"}}>
+                        {(props) => <HomeScreen {...props} token={token}/>}
+                    </Stack.Screen>
+                    <Stack.Screen name="SignUp" component={SignUp} options={{title: "Sign Up"}} />
+                    <Stack.Screen name="Login" component={Login} options={{title: "Log In"}} />
+                    <Stack.Screen name="Calendar" component={EventCalendar} />
+                </Stack.Navigator>
+            </NavigationContainer>
+        </TokenContext.Provider>
+    );
 }
