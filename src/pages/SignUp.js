@@ -175,7 +175,7 @@ export default function SignUp({navigation, desiredUsername}) {
                                     maxLength={10}
                                     // look at disability claim forms to know how to make this a bit more fancy
                                     onChangeText={handleChange('phone')}
-                                    placeholder="555-555-5555"
+                                    placeholder="(555) 555-5555"
                                     onBlur={handleBlur('phone')}
                                     ref={phoneRef}
                                     blurOnSubmit={false}

@@ -1,7 +1,8 @@
 import React from 'react';
 
 import { View, TouchableOpacity } from 'react-native';
-import { BiHome, BiCalendar } from 'react-icons/bi';
+import { BsCalendar, BsHouse, BsPeople } from 'react-icons/bs';
+import { SlPeople } from 'react-icons/sl';
 
 import { styles } from '../styles/main-styles';
 
@@ -9,10 +10,13 @@ export default function NavBar({navigation}) {
     return (
         <View style={styles.navbar}>
             <TouchableOpacity style={styles.alignCenterVertical} onPress={() => navigation.navigate('Home')}>
-                <BiHome />
+                <BsHouse />
             </TouchableOpacity>
             <TouchableOpacity style={styles.alignCenterVertical} onPress={() => navigation.navigate('Calendar')}>
-                <BiCalendar />
+                <BsCalendar />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.alignCenterVertical} onPress={() => navigation.navigate('Groups')}>
+                <BsPeople />
             </TouchableOpacity>
         </View>
     )

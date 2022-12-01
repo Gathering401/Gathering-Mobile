@@ -104,5 +104,15 @@ export const styles = StyleSheet.create({
     alignCenterVertical: {
         display: 'flex',
         justifyContent: 'center'
+    },
+    groupTierCard: {
+        borderColor: 'grey',
+        borderWidth: 1,
+        borderRadius: 15,
+        boxShadow: '2px 2px 2px black'
+    },
+    costDisplay: {
+        color: 'black',
+        fontSize: 20
     }
 });
