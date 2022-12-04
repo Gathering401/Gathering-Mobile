@@ -11,6 +11,7 @@ import moment from 'moment';
 
 import HorizontalScrollWithTouch from '../components/HorizontalScrollWithTouch';
 import NavBar from '../components/NavBar';
+import CreateButton from '../components/CreateButton';
 
 const baseUrl = 'http://localhost:5000/api';
 // const authToken = SecureStore.getItemAsync('token');
@@ -22,6 +23,7 @@ export default function EventCalendar({ navigation }) {
     let [events, setEvents] = useState([]);
     let [selectedEvents, setSelectedEvents] = useState([]);
     let [selectedInvitations, setSelectedInvitations] = useState([]);
+    let [eventCreated, setEventCreated] = useState(false);
 
     // =======================
     // I think the best way to accomplish this in the future is to pull all events from the past 3 months, up through the next 9 months. Then as the user goes beyond those boundaries, scrolling through the months, can stretch 3 months at a time backwards, and 6 months at a time forwards. I think this would help the time management of how many events to filter through when looking at a single days' events, as well as save time in the initial call to the API.
@@ -59,7 +61,7 @@ export default function EventCalendar({ navigation }) {
 
         getAllEvents();
         getAllInvitations();
-    }, []);
+    }, [eventCreated]);
 
     const decideSelectedEvents = (day) => {
         const daysEvents = events.filter(e => day.dateString === e.start.substring(0, 10));
@@ -69,6 +71,7 @@ export default function EventCalendar({ navigation }) {
 
     return (
         <View>
+            <CreateButton type="event" setCreated={setEventCreated}/>
             <CalendarList
                 onDayPress={function (day) {
                     setSelected(moment(day.dateString).format('MM/DD/YYYY'));

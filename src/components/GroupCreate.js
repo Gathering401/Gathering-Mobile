@@ -91,6 +91,7 @@ export default function GroupCreate({ close }) {
                         autoCapitalize="words"
                         returnKeyType="submit"
                         ref={locationRef}
+                        onSubmitEditing={handleSubmit}
                         value={values.location}
                         spellCheck={false}
                     />

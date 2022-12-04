@@ -16,6 +16,11 @@ export default function CreateButton({ type, setCreated }) {
         setShowGroupCreate(groupCreate);
         setCreated(true);
     }
+
+    const closeEventCreate = (eventCreate) => {
+        setShowEventCreate(eventCreate);
+        setCreated(true);
+    }
     
     switch(type) {
         case 'group':
@@ -30,7 +35,7 @@ export default function CreateButton({ type, setCreated }) {
             }
         case 'event':
             if(showEventCreate) {
-                return <EventCreate close={setShowEventCreate}/>
+                return <EventCreate close={closeEventCreate}/>
             } else {
                 return (
                     <TouchableOpacity style={styles.createButton} onPress={() => setShowEventCreate(true)}>
