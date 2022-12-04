@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import { Formik } from 'formik';
-import { Button, View } from 'react-native';
+import { Button, View, Modal } from 'react-native';
 
 import DateInput from './inputs/DateInput';
 import PriceInput from './inputs/PriceInput';
@@ -10,6 +10,7 @@ import EmailInput from './inputs/EmailInput';
 import BasicInput from './inputs/BasicInput';
 import ParagraphInput from './inputs/ParagraphInput';
 import RadioGroup from './inputs/RadioGroup';
+import DropDown from './inputs/DropDown';
 
 import { styles } from '../styles/main-styles';
 
@@ -27,7 +28,7 @@ export default function CustomFormik({ steps, formSubmit }) {
             onSubmit={values => formSubmit(values)}
         >
             {({ handleChange, handleBlur, handleSubmit, values }) => (
-                <View>
+                <Modal>
                     {steps.map((step, index) => (
                         <View style={index === currentStep ? {} : styles.hidden} key={index}>
                         {
@@ -91,14 +92,10 @@ export default function CustomFormik({ steps, formSubmit }) {
                                         />
                                     case 'date':
                                         return <DateInput
-                                            handleChange={handleChange}
-                                            handleBlur={handleBlur}
-                                            fieldName={field.fieldName}
-                                            value={values[field.fieldName]}
                                             label={field.label}
-                                            key={`0${index2}`}
                                             date={field.date}
                                             setDate={field.setDate}
+                                            key={`0${index2}`}
                                         />
                                     case 'price':
                                         return <PriceInput
@@ -120,11 +117,19 @@ export default function CustomFormik({ steps, formSubmit }) {
                                         />
                                     case 'radio':
                                         return <RadioGroup
-                                            handleChange={handleChange}
-                                            fieldName={field.fieldName}
-                                            value={values[fieldName]}
                                             label={field.label}
                                             options={field.options}
+                                            checked={field.checked}
+                                            setChecked={field.setChecked}
+                                            key={`0${index2}`}
+                                        />
+                                    case 'dropdown':
+                                        return <DropDown
+                                            label={field.label}
+                                            options={field.options}
+                                            setOptions={field.setOptions}
+                                            selected={field.selected}
+                                            setSelected={field.setSelected}
                                             key={`0${index2}`}
                                         />
                                     default:
@@ -139,7 +144,7 @@ export default function CustomFormik({ steps, formSubmit }) {
                         }
                         </View>
                     ))}
-                </View>
+                </Modal>
             )}
         </Formik>
     )

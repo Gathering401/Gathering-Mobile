@@ -6,19 +6,18 @@ import Label from '../Label';
 
 import { styles } from '../../styles/main-styles';
 
-export default function RadioGroup({ handleChange, fieldName, value, options, label }) {
-    let [check, setCheck] = useState(value);
-
+export default function RadioGroup({ options, label, checked, setChecked }) {
     return <View style={styles.radioGroupContainer}>
+        <Label text={label} />
         {
-            options.map(o => (
-                <View style={styles.radioAndLabelContainer}>
-                    <Label text={label}/>
+            options.map((option, index) => (
+                <View style={styles.radioAndLabelContainer} key={`00${index}`}>
+                    <Label text={option}/>
                     <RadioButton
                         style={styles.radioButton}
-                        value={o.value}
-                        status={ check === o.value ? 'checked' : 'unchecked' }
-                        onPress={handleChange(fieldName)}
+                        value={option}
+                        status={ checked === option ? 'checked' : 'unchecked' }
+                        onPress={() => setChecked(option)}
                     />
                 </View>
             ))
