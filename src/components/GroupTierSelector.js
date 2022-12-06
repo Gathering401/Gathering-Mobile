@@ -10,7 +10,7 @@ export default function GroupTierSelector(props) {
         <Modal style={styles.container}>
             <GroupTierCard
                 title="Free"
-                memberSize="20"
+                memberSize="50"
                 eventSize="100"
                 price={0}
                 tier={0}

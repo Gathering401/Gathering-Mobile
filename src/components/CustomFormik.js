@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-
 import { Formik } from 'formik';
 import { Button, View, Modal } from 'react-native';
 
@@ -11,6 +10,7 @@ import BasicInput from './inputs/BasicInput';
 import ParagraphInput from './inputs/ParagraphInput';
 import RadioGroup from './inputs/RadioGroup';
 import DropDown from './inputs/DropDown';
+import CardSelector from './inputs/CardSelector';
 
 import { styles } from '../styles/main-styles';
 
@@ -33,7 +33,6 @@ export default function CustomFormik({ steps, formSubmit }) {
                         <View style={index === currentStep ? {} : styles.hidden} key={index}>
                         {
                             step.map((field, index2) => {
-                                // console.log(index === steps.length - 1, index2 === step.length - 1, field.fieldName)
                                 switch(field.type) {
                                     case 'name':
                                         return <BasicInput
@@ -131,6 +130,13 @@ export default function CustomFormik({ steps, formSubmit }) {
                                             selected={field.selected}
                                             setSelected={field.setSelected}
                                             key={`0${index2}`}
+                                        />
+                                    case 'cards':
+                                        return <CardSelector
+                                            label={field.label}
+                                            cards={field.cards}
+                                            selectedCard={field.selectedCard}
+                                            setSelectedCard={field.setSelectedCard}
                                         />
                                     default:
                                         throw('Unknown input type');

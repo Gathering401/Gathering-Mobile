@@ -1,24 +1,15 @@
 import axios from 'axios';
-
-import React, { useState, useRef, useContext } from 'react';
-import { Button, TextInput, Modal } from 'react-native';
-import { Formik } from 'formik';
-
-import { styles } from '../styles/main-styles';
-
-import GroupTierSelector from './GroupTierSelector';
+import React, { useState, useContext } from 'react';
 
 import { TokenContext } from '../tempContext/token-context';
+import CustomFormik from './CustomFormik';
 
 const baseUrl = 'http://localhost:5000/api';
 
 export default function GroupCreate({ close }) {
     const { token } = useContext(TokenContext);
     
-    let [selectedTier, setSelectedTier] = useState(null);
-
-    const descriptionRef = useRef();
-    const locationRef = useRef();
+    let [selectedCard, setSelectedCard] = useState(null);
 
     const postGroup = async (values) => {
         const response = await axios({
@@ -28,77 +19,41 @@ export default function GroupCreate({ close }) {
                 groupName: values.groupName,
                 location: values.location,
                 description: values.description,
-                groupSize: values.groupSize
+                groupSize: selectedCard.value
             },
             headers: {
                 authorization: `Bearer ${token}`,
                 'content-type': 'application/json'
             }
         })
-        console.log(response);
 
         if(response?.data) {
             close(false);
         }
     }
-    
-    if(selectedTier === null) {
-        return <GroupTierSelector setSelectedTier={setSelectedTier} />
-    } else {
-        return (
-            <Formik
-                initialValues={{
-                    groupName: '',
-                    description: '',
-                    location: '',
-                    groupSize: selectedTier
-                }}
-                onSubmit={values => postGroup(values)}
-            >
-            {({ handleChange, handleBlur, handleSubmit, values }) => (
-                <Modal>
-                    <TextInput
-                        required={true}
-                        style={styles.textInput}
-                        onChangeText={handleChange('groupName')}
-                        placeholder="Group Name"
-                        onBlur={handleBlur('groupName')}
-                        autoCapitalize="words"
-                        returnKeyType="next"
-                        onSubmitEditing={() => { descriptionRef.current.focus(); }}
-                        value={values.firstName}
-                        spellCheck={false}
-                    />
-                    <TextInput
-                        required={true}
-                        style={styles.textInput}
-                        onChangeText={handleChange('description')}
-                        placeholder="Description"
-                        onBlur={handleBlur('description')}
-                        autoCapitalize="sentences"
-                        returnKeyType="next"
-                        ref={descriptionRef}
-                        onSubmitEditing={() => { locationRef.current.focus(); }}
-                        value={values.description}
-                        spellCheck={true}
-                    />
-                    <TextInput
-                        required={true}
-                        style={styles.textInput}
-                        onChangeText={handleChange('location')}
-                        placeholder="Location"
-                        onBlur={handleBlur('location')}
-                        autoCapitalize="words"
-                        returnKeyType="submit"
-                        ref={locationRef}
-                        onSubmitEditing={handleSubmit}
-                        value={values.location}
-                        spellCheck={false}
-                    />
-                    <Button onPress={handleSubmit} title="Submit"/>
-                </Modal>
-            )}
-            </Formik>
-        )
-    }
+
+    return (
+        <CustomFormik
+            steps={[[
+                { label: 'Group Name', type: 'name', initial: '', placeholder: 'ISU Basketball Team', fieldName: 'groupName' },
+                { label: 'Description', type: 'paragraph', initial: '', placeholder: 'A place to schedule all basketball games for Iowa State University', fieldName: 'description' },
+                { label: 'Location', type: 'name', initial: '', placeholder: 'Ames, IA', fieldName: 'location' },
+                { label: 'Group Tier', type: 'cards', fieldName: 'groupSize', initial: selectedCard, selectedCard, setSelectedCard, cards: [
+                    { title: 'Free', value: 0, body: [
+                        'Max Members: 50',
+                        'Max Events per Month: 100'
+                    ], footer: '$0 w/promotions' },
+                    { title: 'Business', value: 1, body: [
+                        'Max Members: 500',
+                        'Max Events per Month: 2500'
+                    ], footer: '$50' },
+                    { title: 'Enterprise', value: 2, body: [
+                        'Unlimited Members',
+                        'Unlimited Events'
+                    ], footer: '$500' }
+                ] }
+            ]]}
+            formSubmit={postGroup}
+        />
+    )
 };
