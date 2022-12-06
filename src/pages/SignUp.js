@@ -1,25 +1,15 @@
 import React, { useState, useRef } from 'react';
 import axios from 'axios';
 
-import { TextInput, TouchableWithoutFeedback, Keyboard, ScrollView, KeyboardAvoidingView, TouchableOpacity, Text, View, Platform } from 'react-native';
-import DatePicker from 'react-native-modern-datepicker';
-import { Formik } from 'formik';
+import { TouchableWithoutFeedback, Keyboard, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import CustomFormik from '../components/CustomFormik';
 import moment from 'moment';
 import { styles } from '../styles/main-styles';
 
 const baseUrl = 'http://localhost:5000/api';
 
-export default function SignUp({navigation, desiredUsername}) {
-    const lastNameRef = useRef();
-    const usernameRef = useRef();
-    const passwordRef = useRef();
-    const confirmPasswordRef = useRef();
-    const phoneRef = useRef();
-
-    let [start, setStart] = useState(true);
-    let [open, setOpen] = useState(false);
+export default function SignUp({ navigation }) {
     let [date, setDate] = useState(new Date());
-    let [hitNext, setHitNext] = useState(false);
 
     const postNewUser = async (values) => {
         try {
@@ -33,7 +23,7 @@ export default function SignUp({navigation, desiredUsername}) {
                     password: values.password,
                     email: values.email,
                     phoneNumber: values.phone,
-                    birthDate: moment(values.birthDate).toISOString()
+                    birthDate: moment(date).toISOString()
                 },
                 headers: {
                     'content-type': 'application/json'
@@ -61,150 +51,23 @@ export default function SignUp({navigation, desiredUsername}) {
                     centerContent={true}
                     snapToInterval={true}
                 >
-                    <Formik
-                        initialValues={{
-                            firstName: '',
-                            lastName: '',
-                            username: desiredUsername || '',
-                            password: '',
-                            confirmPassword: '',
-                            email: '',
-                            phone: '',
-                            birthDate: date
-                        }}
-                        onSubmit={values => postNewUser(values)}
-                    >
-                        {({ handleChange, handleBlur, handleSubmit, values }) => (
-                            start ? <View>
-                                <TextInput
-                                    required={true}
-                                    style={styles.textInput}
-                                    onChangeText={handleChange('firstName')}
-                                    placeholder="First Name"
-                                    onBlur={handleBlur('firstName')}
-                                    autoCapitalize="words"
-                                    returnKeyType="next"
-                                    onSubmitEditing={() => { lastNameRef.current.focus(); }}
-                                    value={values.firstName}
-                                    spellCheck={false}
-                                />
-                                {hitNext && !values.firstName && <Text style={styles.emptyRequired}>*First name field is required</Text>}
-                                <TextInput
-                                    required={true}
-                                    style={styles.textInput}
-                                    onChangeText={handleChange('lastName')}
-                                    placeholder="Last Name"
-                                    onBlur={handleBlur('lastName')}
-                                    autoCapitalize="words"
-                                    returnKeyType="next"
-                                    ref={lastNameRef}
-                                    onSubmitEditing={() => { usernameRef.current.focus(); }}
-                                    value={values.lastName}
-                                    spellCheck={false}
-                                />
-                                {hitNext && !values.lastName && <Text style={styles.emptyRequired}>*Last name field is required</Text>}
-                                <TextInput
-                                    required={true}
-                                    style={styles.textInput}
-                                    onChangeText={handleChange('username')}
-                                    placeholder="Username"
-                                    onBlur={handleBlur('username')}
-                                    autoCapitalize="none"
-                                    returnKeyType="next"
-                                    ref={usernameRef}
-                                    onSubmitEditing={() => { passwordRef.current.focus(); }}
-                                    value={values.username}
-                                    spellCheck={false}
-                                />
-                                {hitNext && !values.username && <Text style={styles.emptyRequired}>*Username field is required</Text>}
-                                <TextInput
-                                    required={true}
-                                    style={styles.textInput}
-                                    onChangeText={handleChange('password')}
-                                    placeholder="Password"
-                                    onBlur={handleBlur('password')}
-                                    secureTextEntry={true}
-                                    returnKeyType="next"
-                                    ref={passwordRef}
-                                    onSubmitEditing={() => { confirmPasswordRef.current.focus(); }}
-                                    value={values.password}
-                                    spellCheck={false}
-                                />
-                                {hitNext && !values.password && <Text style={styles.emptyRequired}>*Password field is required</Text>}
-                                <TextInput
-                                    required={true}
-                                    style={styles.textInput}
-                                    onChangeText={handleChange('confirmPassword')}
-                                    placeholder="Confirm Password"
-                                    onBlur={handleBlur('confirmPassword')}
-                                    secureTextEntry={true}
-                                    returnKeyType="next"
-                                    ref={confirmPasswordRef}
-                                    value={values.confirmPassword}
-                                    spellCheck={false}
-                                />
-                                {hitNext && !values.confirmPassword && <Text style={styles.emptyRequired}>*Confirm password field is required</Text>}
-                                {hitNext && values.confirmPassword && values.password !== values.confirmPassword && <Text style={styles.emptyRequired}>*Password fields do not match</Text>}
-                                <TouchableOpacity style={styles.submitButton} onPress={() => {
-                                    setHitNext(true);
-                                    if(values.firstName && values.lastName && values.username && values.password
-                                        && values.confirmPassword && values.password === values.confirmPassword) {
-                                        setStart(false);
-                                    }
-                                }}
-                                >
-                                    <Text style={styles.submitButtonText}>Next</Text>
-                                </TouchableOpacity>
-                            </View> :
-                            <View>
-                                <TextInput
-                                    required={true}
-                                    style={styles.textInput}
-                                    onChangeText={handleChange('email')}
-                                    placeholder="Email"
-                                    onBlur={handleBlur('email')}
-                                    autoCapitalize="none"
-                                    onSubmitEditing={() => { phoneRef.current.focus(); }}
-                                    value={values.email}
-                                    spellCheck={false}
-                                />
-                                <TextInput
-                                    required={true}
-                                    style={styles.textInput}
-                                    keyboardType="phone-pad"
-                                    maxLength={10}
-                                    // look at disability claim forms to know how to make this a bit more fancy
-                                    onChangeText={handleChange('phone')}
-                                    placeholder="555-555-5555"
-                                    onBlur={handleBlur('phone')}
-                                    ref={phoneRef}
-                                    blurOnSubmit={false}
-                                />
-                                <TouchableOpacity onPress={() => setOpen(!open)} style={styles.modalButton}>
-                                    <Text style={styles.modalButtonText}>Birth Date: {moment(date).format('MM/DD/YYYY')}</Text>
-                                </TouchableOpacity>
-                                <View style={{...open ? {} : styles.hidden}}>
-                                    <DatePicker
-                                        options={{
-                                            backgroundColor: '#090C08',
-                                            textHeaderColor: '#FFA25B',
-                                            textDefaultColor: '#F6E7C1',
-                                            selectedTextColor: '#fff',
-                                            mainColor: '#F4722B',
-                                            textSecondaryColor: '#D6C7A1',
-                                            borderColor: 'rgba(122, 146, 165, 0.1)',
-                                        }}
-                                        mode='calendar'
-                                        date={date}
-                                        onSelectedChange={(newDate) => setDate(moment(newDate).toISOString())}
-                                    />
-                                </View>
-                                <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-                                    <Text style={styles.submitButtonText}>Submit</Text>
-                                </TouchableOpacity>
-                            </View>
-                        )}
-                    </Formik>
+                    <CustomFormik steps={[
+                            [
+                                { label: 'First Name', type: 'name', initial: '', placeholder: 'Jane', fieldName: 'firstName' },
+                                { label: 'Last Name', type: 'name', initial: '', placeholder: 'Doe', fieldName: 'lastName' },
+                                { label: 'Username', type: 'text', initial: '', placeholder: 'jane.doe', fieldName: 'username' },
+                                { label: 'Password', type: 'password', initial: '', placeholder: '8 chars, 1 number, 1 capital, and 1 symbol', fieldName: 'password' },
+                                { label: 'Confirm Password', type: 'password', initial: '', placeholder: 'Confirm password', fieldName: 'confirmPassword' }
+                            ],
+                            [
+                                { label: 'Email', type: 'email', initial: '', fieldName: 'email' },
+                                { label: 'Phone Number', type: 'phone', initial: '', fieldName: 'phone' },
+                                { label: 'Birth Date', type: 'date', initial: date, fieldName: 'birthDate', date, setDate }
+                            ]
+                        ]}
+                        formSubmit={postNewUser}
+                    />
+                    
                 </ScrollView>
             </KeyboardAvoidingView>
         </TouchableWithoutFeedback>

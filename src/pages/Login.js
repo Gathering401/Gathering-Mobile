@@ -6,24 +6,20 @@ import { TouchableWithoutFeedback, TextInput, KeyboardAvoidingView, Keyboard, Pl
 import { TokenContext } from '../tempContext/token-context';
 
 import { styles } from '../styles/main-styles';
+import CustomFormik from '../components/CustomFormik';
 
 const baseUrl = 'http://localhost:5000/api';
 
-export default function Login({navigation, route}) {
-    const { token, setToken } = useContext(TokenContext);
-    
-    let [username, setUsername] = useState(route.params?.desiredUsername);
-    let [password, setPassword] = useState('');
-    
-    const passwordRef = useRef();
+export default function Login({ navigation }) {
+    const { setToken } = useContext(TokenContext);
 
-    const submitLogin = async () => {
+    const submitLogin = async (values) => {
         const response = await axios({
             method: 'POST',
             url: `${baseUrl}/User/Login`,
             data: {
-                username,
-                password
+                username: values.username,
+                password: values.password
             }
         });
 
@@ -41,26 +37,13 @@ export default function Login({navigation, route}) {
                 behavior={Platform.OS === "ios" ? "padding" : "height"}
                 style={styles.container}
             >
-                <TextInput
-                    required={true}
-                    style={styles.textInput}
-                    onChangeText={text => setUsername(text)}
-                    placeholder="Username"
-                    autoCapitalize="none"
-                    returnKeyType="next"
-                    onSubmitEditing={() => { passwordRef.current.focus(); }}
-                    blurOnSubmit={false}
-                />
-                <TextInput
-                    required={true}
-                    style={styles.textInput}
-                    onChangeText={text => setPassword(text)}
-                    placeholder="Password"
-                    autoCapitalize="none"
-                    secureTextEntry={true}
-                    returnKeyType="submit"
-                    onSubmitEditing={submitLogin}
-                    blurOnSubmit={false}
+                <CustomFormik steps={[
+                    [
+                        { label: 'Username', type: 'text', initial: '', placeholder: 'jane.doe', fieldName: 'username'},
+                        { label: 'Password', type: 'password', initial: '', placeholder: 'password', fieldName: 'password'}
+                    ]
+                ]}
+                formSubmit={submitLogin}
                 />
             </KeyboardAvoidingView>
         </TouchableWithoutFeedback>

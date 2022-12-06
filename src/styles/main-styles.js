@@ -54,9 +54,8 @@ export const styles = StyleSheet.create({
         borderRadius: 30,
         margin: 5,
         padding: 10,
-        width: 300,
         textAlign: 'center',
-        color: 'orange'
+        color: 'black'
     },
     modalButton: {
         borderWidth: 1,
@@ -104,5 +103,19 @@ export const styles = StyleSheet.create({
     alignCenterVertical: {
         display: 'flex',
         justifyContent: 'center'
+    },
+    groupTierCard: {
+        borderColor: 'grey',
+        borderWidth: 1,
+        borderRadius: 15,
+        boxShadow: '2px 2px 2px black'
+    },
+    costDisplay: {
+        color: 'black',
+        fontSize: 20
+    },
+    inputLabel: {
+        color: 'grey',
+        marginLeft: 10
     }
 });
