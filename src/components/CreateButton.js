@@ -43,5 +43,8 @@ export default function CreateButton({ type, setCreated }) {
                     </TouchableOpacity>
                 )
             }
+        default:
+            console.log('Not a create button.');
+            break;
     }
 }
