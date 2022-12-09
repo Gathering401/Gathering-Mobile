@@ -1,13 +1,13 @@
 import axios from 'axios';
 import React, { useState, useContext } from 'react';
 
-import { TokenContext } from '../tempContext/token-context';
+import { UserContext } from '../tempContext/user-context';
 import CustomFormik from './CustomFormik';
 
 const baseUrl = 'http://localhost:5000/api';
 
 export default function GroupCreate({ close }) {
-    const { token } = useContext(TokenContext);
+    const { token } = useContext(UserContext);
     
     let [selectedCard, setSelectedCard] = useState(null);
 

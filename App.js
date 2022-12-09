@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import { TokenContext } from './src/tempContext/token-context'; // context is only temporary for testing in web
+import { UserContext } from './src/tempContext/user-context'; // context is only temporary for testing in web
 
 import HomeScreen from './src/pages/HomeScreen';
 import SignUp from './src/pages/SignUp';
@@ -15,10 +15,11 @@ const Stack = createNativeStackNavigator();
 
 export default function App() {
     let [token, setToken] = useState();
-    const value = { token, setToken };
+    let [preferences, setPreferences] = useState();
+    const value = { token, setToken, preferences, setPreferences };
     
     return (
-        <TokenContext.Provider value={value}>
+        <UserContext.Provider value={value}>
             <NavigationContainer>
                 <Stack.Navigator screenOptions={{headerShown: false}}>
                     <Stack.Screen name="Home" options={{title: "Home"}}>
@@ -30,6 +31,6 @@ export default function App() {
                     <Stack.Screen name="Groups" component={Groups} />
                 </Stack.Navigator>
             </NavigationContainer>
-        </TokenContext.Provider>
+        </UserContext.Provider>
     );
 }

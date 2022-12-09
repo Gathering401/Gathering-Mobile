@@ -5,7 +5,7 @@ import { View, Text, TextInput, Button, ScrollView } from 'react-native';
 import { Card } from '@rneui/base';
 import { SlMagnifier } from 'react-icons/sl';
 
-import { TokenContext } from '../tempContext/token-context';
+import { UserContext } from '../tempContext/user-context';
 
 import NavBar from '../components/NavBar';
 import CreateButton from '../components/CreateButton';
@@ -15,7 +15,7 @@ import { styles } from '../styles/main-styles';
 const baseUrl = 'http://localhost:5000/api';
 
 export default function Groups({ navigation }) {
-    const { token } = useContext(TokenContext);
+    const { token } = useContext(UserContext);
     
     let [search, setSearch] = useState('');
     let [groups, setGroups] = useState([]);

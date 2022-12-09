@@ -5,7 +5,7 @@ import { useState, useEffect, useContext } from 'react';
 import { View } from 'react-native';
 import { CalendarList } from 'react-native-calendars';
 
-import { TokenContext } from '../tempContext/token-context';
+import { UserContext } from '../tempContext/user-context';
 
 import moment from 'moment';
 
@@ -17,7 +17,7 @@ const baseUrl = 'http://localhost:5000/api';
 // const authToken = SecureStore.getItemAsync('token');
 
 export default function EventCalendar({ navigation }) {
-    const { token } = useContext(TokenContext);
+    const { token } = useContext(UserContext);
     
     let [selected, setSelected] = useState(moment().format('MM/DD/YYYY'));
     let [events, setEvents] = useState([]);

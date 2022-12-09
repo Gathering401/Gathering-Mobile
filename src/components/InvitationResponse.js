@@ -3,12 +3,12 @@ import axios from 'axios';
 import React, { useContext } from 'react';
 import { TouchableOpacity } from 'react-native';
 
-import { TokenContext } from '../tempContext/token-context';
+import { UserContext } from '../tempContext/user-context';
 
 const baseUrl = 'http://localhost:5000/api';
 
 export default function InvitationResponse({status, component, id}) {
-    const { token } = useContext(TokenContext);
+    const { token } = useContext(UserContext);
     
     const sendRSVPResponse = async () => {
         await axios({

@@ -4,12 +4,12 @@ import React, { useState, useRef, useContext } from 'react';
 
 import CustomFormik from './CustomFormik';
 
-import { TokenContext } from '../tempContext/token-context';
+import { UserContext } from '../tempContext/user-context';
 
 const baseUrl = 'http://localhost:5000/api';
 
 export default function EventCreate({ close }) {
-    const { token } = useContext(TokenContext);
+    const { token } = useContext(UserContext);
 
     let [date, setDate] = useState(new Date());
     let [checked, setChecked] = useState('No');
@@ -24,7 +24,7 @@ export default function EventCreate({ close }) {
     const postEvent = async (values) => {
         const response = await axios({
             method: 'POST',
-            url: `${baseUrl}/Event`,
+            url: `${baseUrl}/Group/${values.groupId}/Event`,
             data: {
                 eventRepeat: {
                     eRepeat: values.eRepeat

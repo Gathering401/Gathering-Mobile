@@ -3,7 +3,7 @@ import axios from 'axios';
 import React, { useContext, useEffect, useState } from 'react';
 import { View } from 'react-native';
 
-import { TokenContext } from '../tempContext/token-context';
+import { UserContext } from '../tempContext/user-context';
 
 import NavBar from './NavBar';
 import HorizontalScrollWithTouch from './HorizontalScrollWithTouch';
@@ -11,9 +11,10 @@ import HorizontalScrollWithTouch from './HorizontalScrollWithTouch';
 const baseUrl = 'http://localhost:5000/api';
 
 export default function LoggedInHome({navigation}) {
-    const { token } = useContext(TokenContext);
+    const { token, preferences } = useContext(UserContext);
     
     let [userGroups, setUserGroups] = useState([]);
+    let [upcomingEvents, setUpcomingEvents] = useState([]);
 
     useEffect(() => {
         async function getAllGroups() {
@@ -30,6 +31,20 @@ export default function LoggedInHome({navigation}) {
             }
         }
 
+        async function getAllUpcoming() {
+            const response = await axios({
+                method: 'GET',
+                url: `${baseUrl}/Upcoming/${preferences.daysOut}`,
+                headers: {
+                    authorization: `Bearer ${token}`
+                }
+            });
+
+            if(response.data) {
+                setUpcomingEvents(response.data);
+            }
+        }
+
         getAllGroups();
     }, []);
     
@@ -41,7 +56,12 @@ export default function LoggedInHome({navigation}) {
                 titleLocation="groupName"
                 mapper="groupCard"
             />
-            {/* Another horizontal scroller will go here with //Upcoming events// but the endpoint needs to be made for such yet */}
+            <HorizontalScrollWithTouch
+                scrollTitle="Upcoming Events"
+                scrollableItems={upcomingEvents}
+                titleLocation="eventName"
+                mapper="upcomingEventCard"
+            />
             <NavBar navigation={navigation}/>
         </View>
     )
