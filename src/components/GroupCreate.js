@@ -4,7 +4,7 @@ import React, { useState, useContext } from 'react';
 import { TokenContext } from '../tempContext/token-context';
 import CustomFormik from './CustomFormik';
 
-const baseUrl = 'http://localhost:5000/api';
+const baseUrl = 'http://localhost:4000/graphql';
 
 export default function GroupCreate({ close }) {
     const { token } = useContext(TokenContext);

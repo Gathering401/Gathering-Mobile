@@ -8,7 +8,7 @@ import { TokenContext } from '../tempContext/token-context';
 import NavBar from './NavBar';
 import HorizontalScrollWithTouch from './HorizontalScrollWithTouch';
 
-const baseUrl = 'http://localhost:5000/api';
+const baseUrl = 'http://localhost:4000/graphql';
 
 export default function LoggedInHome({navigation}) {
     const { token } = useContext(TokenContext);

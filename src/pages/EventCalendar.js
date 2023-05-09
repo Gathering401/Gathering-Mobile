@@ -7,21 +7,24 @@ import { CalendarList } from 'react-native-calendars';
 
 import { TokenContext } from '../tempContext/token-context';
 
-import moment from 'moment';
+import moment from 'moment-timezone';
 
+import Loader from '../components/helpers/Loader';
 import HorizontalScrollWithTouch from '../components/HorizontalScrollWithTouch';
 import NavBar from '../components/NavBar';
 import CreateButton from '../components/CreateButton';
 
-const baseUrl = 'http://localhost:5000/api';
+const baseUrl = 'http://localhost:4000/graphql';
 // const authToken = SecureStore.getItemAsync('token');
 
 export default function EventCalendar({ navigation }) {
     const { token } = useContext(TokenContext);
     
     let [selected, setSelected] = useState(moment().format('MM/DD/YYYY'));
-    let [events, setEvents] = useState([]);
+    let [events, setEvents] = useState(new Map());
     let [selectedEvents, setSelectedEvents] = useState([]);
+    let [markedDates, setMarkedDates] = useState({});
+    let [currentMonth, setCurrentMonth] = useState(moment().format('YYYY-MM'));
     let [selectedInvitations, setSelectedInvitations] = useState([]);
     let [eventCreated, setEventCreated] = useState(false);
 
@@ -31,82 +34,122 @@ export default function EventCalendar({ navigation }) {
 
     useEffect(() => {
         async function getAllEvents() {
-            const response = await axios({
-                method: 'GET',
-                url: `${baseUrl}/Calendar`,
+            const query = `query GetCalendarEvents {
+                events: getCalendarEvents {
+                    eventId
+                    groupId
+                    eventName
+                    description
+                    eventDate
+                    groupName
+                    price
+                    food
+                    invitedUsers {
+                        userId
+                        username
+                        rsvp
+                    }
+                    location {
+                        locationName
+                    }
+                }
+            }`;
+            
+            const { data: { data } } = await axios({
+                method: 'POST',
+                data: {
+                    query
+                },
+                url: baseUrl,
                 headers: {
                     authorization: `Bearer ${token}`,
-                    'content-type': 'application/x-www-form-urlencoded'
+                    'Content-Type': 'application/json'
                 }
             }).catch(err => console.log(err));
 
-            if(response?.data) {
-                setEvents(response.data);
-            }
-        }
+            console.log('did we get events', data);
 
-        async function getAllInvitations() {
-            const response = await axios({
-                method: 'GET',
-                url: `${baseUrl}/Calendar/Invitations`,
-                headers: {
-                    authorization: `Bearer ${token}`
+            const eventsMap = new Map();
+            if(data) {
+                for(const event of data.events) {
+                    const eventDate = moment(event.eventDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format('YYYY-MM');
+                    
+                    let singleDateEvents = eventsMap.get(eventDate);
+
+                    if(singleDateEvents) {
+                        singleDateEvents.push(event);
+                    } else {
+                        singleDateEvents = [event];
+                    }
+                    eventsMap.set(eventDate, singleDateEvents);
                 }
-            });
 
-            if(response.data) {
-                setSelectedInvitations(response.data)
+                setEvents(eventsMap);
+                newMarkedDates(eventsMap);
             }
         }
-
+        
         getAllEvents();
-        getAllInvitations();
-    }, [eventCreated]);
+    }, []);
 
-    const decideSelectedEvents = (day) => {
-        const daysEvents = events.filter(e => day.dateString === e.start.substring(0, 10));
+    const newMarkedDates = (allEvents) => {
+        console.log('canada', allEvents, currentMonth)
+        const newMarked = allEvents.get(currentMonth).reduce((marked, event) => {
+            const key = moment(event.eventDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format('YYYY-MM-DD');
 
-        setSelectedEvents(daysEvents);
-    }
+            if (!marked[key]) {
+                marked = {
+                    ...marked,
+                    [key]: { color: 'red', marked: true } 
+                }
+            }
+            
+            return marked;
+        }, {});
+
+        setMarkedDates(newMarked);
+    };
 
     return (
         <View>
             <CreateButton type="event" setCreated={setEventCreated}/>
-            <CalendarList
-                onDayPress={function (day) {
-                    setSelected(moment(day.dateString).format('MM/DD/YYYY'));
-                    decideSelectedEvents(day);
-                }}
-                markingType='multi-dot'
-                markedDates={events.reduce((marked, event) => {
-                    const key = event.start.substring(0, 10);
+            {events.size > 0
+                ? <>
+                    <CalendarList
+                        onDayPress={(day) => {
+                            setSelected(moment(day.dateString).format('MM/DD/YYYY'));
 
-                    if (!marked[key]) {
-                        marked = {
-                            ...marked,
-                            [key]: { dots: [{color: 'red', key: 1}] }
-                        }
-                    } else {
-                        marked[key].dots = [...marked[key].dots, {color: 'red', key: marked[key].dots.length + 1}];
-                    }
-                    return marked;
-                }, {})}
-                initialDate={selected}
-                horizontal={true}
-                pagingEnabled={true}
-            />
-            <HorizontalScrollWithTouch
-                scrollTitle={selected}
-                scrollableItems={selectedEvents}
-                titleLocation="eventName"
-                mapper="eventCard"
-            />
-            <HorizontalScrollWithTouch
+                            const monthEvents = events.get(moment(day.dateString).format('YYYY-MM'));
+                            const dayEvents = monthEvents.filter(e => moment(e.eventDate).format('YYYY-MM-DD') === moment(day.dateString).format('YYYY-MM-DD'));
+                            setSelectedEvents(dayEvents ?? []);
+                        }}
+                        markedDates={markedDates}
+                        onVisibleMonthsChange={date => {
+                            if(date.length === 1) {
+                                console.log(date);
+                                setCurrentMonth(moment(date[0].dateString, 'YYYY-MM-DD').format('YYYY-MM'));
+                                newMarkedDates(events);
+                            }
+                        }}
+                        enableSwipeMonths={true}
+                        initialDate={selected}
+                        horizontal={true}
+                        pagingEnabled={true}
+                    />
+                    <HorizontalScrollWithTouch
+                        scrollTitle={selected}
+                        scrollableItems={selectedEvents}
+                        titleLocation="eventName"
+                        mapper="eventCard"
+                    />
+                </>
+            : <Loader />}
+            {/* <HorizontalScrollWithTouch
                 scrollTitle="Invitations"
                 scrollableItems={selectedInvitations}
                 titleLocation="eventName"
                 mapper="invitationCard"
-            />
+            /> */}
             <NavBar navigation={navigation}/>
         </View>
     )
