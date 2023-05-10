@@ -64,7 +64,6 @@ export default function EventCalendar({ navigation }) {
 
     const setAllSelected = (dateString, eventsMap) => {
         const monthEvents = eventsMap.get(moment(dateString).format('YYYY-MM'));
-        console.log(dateString, eventsMap, monthEvents);
         return (monthEvents ?? []).filter(e => moment(e.eventDate).format('YYYY-MM-DD') === moment(dateString).format('YYYY-MM-DD')) ?? [];
     }
 
@@ -99,8 +98,6 @@ export default function EventCalendar({ navigation }) {
                     'Content-Type': 'application/json'
                 }
             }).catch(err => console.log(err));
-
-            console.log('did we get events', data.invitations);
 
             if(data) {
                 const eventsMap = createEventsMap(data.events);

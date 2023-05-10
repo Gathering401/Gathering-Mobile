@@ -37,8 +37,6 @@ export default function Login({ navigation }) {
             }
         });
 
-        console.log('did we get logged in?', data);
-
         if(data) {
             // await SecureStore.setItemAsync('token', response.body.token);
             setToken(data.data.login.token);

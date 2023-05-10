@@ -14,23 +14,74 @@ export default function LoggedInHome({navigation}) {
     const { token } = useContext(TokenContext);
     
     let [userGroups, setUserGroups] = useState([]);
+    let [upcomingEvents, setUpcomingEvents] = useState([]);
 
     useEffect(() => {
-        async function getAllGroups() {
-            const response = await axios({
-                method: 'GET',
-                url: `${baseUrl}/Group`,
-                headers: {
-                    authorization: `Bearer ${token}`
+        const query = `query GetGroupsAndUpcomingEvents {
+            groups: getGroups {
+                groupId
+                groupName
+                description
+                location {
+                    locationName
                 }
-            });
+                groupUsers {
+                    username
+                    firstName
+                    lastName
+                    role
+                }
+                owner {
+                    username
+                    firstName
+                    lastName
+                }
+            }
+            upcoming: getUpcomingEvents {
+                eventId
+                groupId
+                groupName
+                eventName
+                description
+                eventDate
+                price
+                food
+                location {
+                    locationName
+                    locationType
+                    latitude
+                    longitude
+                    streetAddress
+                    city
+                    state
+                    country
+                    zip
+                }
 
-            if(response.data) {
-                setUserGroups(response.data)
+            }
+        }`
+        
+        async function getAllGroupsAndUpcoming() {
+            const { data: { data } } = await axios({
+                method: 'POST',
+                url: baseUrl,
+                data: {
+                    query
+                },
+                headers: {
+                    authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            }).catch(err => console.log(err));
+
+            if(data) {
+                console.log('data', data);
+                setUserGroups(data.groups);
+                setUpcomingEvents(data.upcoming);
             }
         }
 
-        getAllGroups();
+        getAllGroupsAndUpcoming();
     }, []);
     
     return (
@@ -41,7 +92,12 @@ export default function LoggedInHome({navigation}) {
                 titleLocation="groupName"
                 mapper="groupCard"
             />
-            {/* Another horizontal scroller will go here with //Upcoming events// but the endpoint needs to be made for such yet */}
+            <HorizontalScrollWithTouch
+                scrollTitle="Upcoming Events"
+                scrollableItems={upcomingEvents}
+                titleLocation="eventName"
+                mapper="eventCard"
+            />
             <NavBar navigation={navigation}/>
         </View>
     )
