@@ -22,78 +22,30 @@ export default function EventCalendar({ navigation }) {
     
     let [selected, setSelected] = useState(moment().format('MM/DD/YYYY'));
     let [events, setEvents] = useState(new Map());
+    let [invitations, setInvitations] = useState([]);
     let [selectedEvents, setSelectedEvents] = useState([]);
     let [markedDates, setMarkedDates] = useState({});
     let [currentMonth, setCurrentMonth] = useState(moment().format('YYYY-MM'));
-    let [selectedInvitations, setSelectedInvitations] = useState([]);
     let [eventCreated, setEventCreated] = useState(false);
 
-    // =======================
-    // I think the best way to accomplish this in the future is to pull all events from the past 3 months, up through the next 9 months. Then as the user goes beyond those boundaries, scrolling through the months, can stretch 3 months at a time backwards, and 6 months at a time forwards. I think this would help the time management of how many events to filter through when looking at a single days' events, as well as save time in the initial call to the API.
-    // =======================
-
-    useEffect(() => {
-        async function getAllEvents() {
-            const query = `query GetCalendarEvents {
-                events: getCalendarEvents {
-                    eventId
-                    groupId
-                    eventName
-                    description
-                    eventDate
-                    groupName
-                    price
-                    food
-                    invitedUsers {
-                        userId
-                        username
-                        rsvp
-                    }
-                    location {
-                        locationName
-                    }
-                }
-            }`;
-            
-            const { data: { data } } = await axios({
-                method: 'POST',
-                data: {
-                    query
-                },
-                url: baseUrl,
-                headers: {
-                    authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            }).catch(err => console.log(err));
-
-            console.log('did we get events', data);
-
-            const eventsMap = new Map();
-            if(data) {
-                for(const event of data.events) {
-                    const eventDate = moment(event.eventDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format('YYYY-MM');
+    const createEventsMap = (events) => {
+        const eventsMap = new Map();
+        for(const event of events) {
+            const eventDate = moment(event.eventDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format('YYYY-MM');
                     
-                    let singleDateEvents = eventsMap.get(eventDate);
+            let singleMonthEvents = eventsMap.get(eventDate);
 
-                    if(singleDateEvents) {
-                        singleDateEvents.push(event);
-                    } else {
-                        singleDateEvents = [event];
-                    }
-                    eventsMap.set(eventDate, singleDateEvents);
-                }
-
-                setEvents(eventsMap);
-                newMarkedDates(eventsMap);
+            if(singleMonthEvents) {
+                singleMonthEvents.push(event);
+            } else {
+                singleMonthEvents = [event];
             }
+            eventsMap.set(eventDate, singleMonthEvents);
         }
-        
-        getAllEvents();
-    }, []);
+        return eventsMap;
+    }
 
     const newMarkedDates = (allEvents) => {
-        console.log('canada', allEvents, currentMonth)
         const newMarked = allEvents.get(currentMonth).reduce((marked, event) => {
             const key = moment(event.eventDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format('YYYY-MM-DD');
 
@@ -110,23 +62,73 @@ export default function EventCalendar({ navigation }) {
         setMarkedDates(newMarked);
     };
 
+    const setAllSelected = (dateString, eventsMap) => {
+        const monthEvents = eventsMap.get(moment(dateString).format('YYYY-MM'));
+        console.log(dateString, eventsMap, monthEvents);
+        return (monthEvents ?? []).filter(e => moment(e.eventDate).format('YYYY-MM-DD') === moment(dateString).format('YYYY-MM-DD')) ?? [];
+    }
+
+    useEffect(() => {
+        async function getAllEvents() {
+            const query = `query GetCalendarEvents {
+                events: getCalendarEvents {
+                    eventId
+                    eventName
+                    description
+                    eventDate
+                    price
+                    location {
+                        locationName
+                    }
+                }
+                invitations: getPendingInvitations {
+                    eventDate
+                    eventName
+                    rsvp
+                }
+            }`;
+
+            const { data: { data } } = await axios({
+                method: 'POST',
+                data: {
+                    query
+                },
+                url: baseUrl,
+                headers: {
+                    authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            }).catch(err => console.log(err));
+
+            console.log('did we get events', data.invitations);
+
+            if(data) {
+                const eventsMap = createEventsMap(data.events);
+
+                setEvents(eventsMap);
+                newMarkedDates(eventsMap);
+
+                setInvitations(data.invitations);
+            }
+        }
+        
+        getAllEvents();
+    }, []);
+
     return (
         <View>
             <CreateButton type="event" setCreated={setEventCreated}/>
             {events.size > 0
                 ? <>
                     <CalendarList
-                        onDayPress={(day) => {
-                            setSelected(moment(day.dateString).format('MM/DD/YYYY'));
+                        onDayPress={({dateString}) => {
+                            setSelected(moment(dateString).format('MM/DD/YYYY'));
 
-                            const monthEvents = events.get(moment(day.dateString).format('YYYY-MM'));
-                            const dayEvents = monthEvents.filter(e => moment(e.eventDate).format('YYYY-MM-DD') === moment(day.dateString).format('YYYY-MM-DD'));
-                            setSelectedEvents(dayEvents ?? []);
+                            setSelectedEvents(setAllSelected(dateString, events));
                         }}
                         markedDates={markedDates}
                         onVisibleMonthsChange={date => {
                             if(date.length === 1) {
-                                console.log(date);
                                 setCurrentMonth(moment(date[0].dateString, 'YYYY-MM-DD').format('YYYY-MM'));
                                 newMarkedDates(events);
                             }
@@ -142,14 +144,15 @@ export default function EventCalendar({ navigation }) {
                         titleLocation="eventName"
                         mapper="eventCard"
                     />
+                    <HorizontalScrollWithTouch
+                        scrollTitle="Invitations"
+                        scrollableItems={invitations}
+                        titleLocation="eventName"
+                        mapper="invitationCard"
+                    />
                 </>
-            : <Loader />}
-            {/* <HorizontalScrollWithTouch
-                scrollTitle="Invitations"
-                scrollableItems={selectedInvitations}
-                titleLocation="eventName"
-                mapper="invitationCard"
-            /> */}
+                : <Loader />
+            }
             <NavBar navigation={navigation}/>
         </View>
     )

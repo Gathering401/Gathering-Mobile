@@ -7,6 +7,7 @@ import { styles } from '../styles/main-styles';
 import mapTo from '../models/mapper';
 
 export default function HorizontalScrollWithTouch({scrollTitle, scrollableItems, titleLocation, mapper}) {
+    console.log(scrollTitle, scrollableItems);
     return (
         <View style={{...styles.horizontalScrollerWrapper}}>
             <Text style={styles.viewTitle}>{scrollTitle}</Text>
