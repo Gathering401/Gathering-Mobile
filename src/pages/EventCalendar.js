@@ -142,7 +142,7 @@ export default function EventCalendar({ navigation }) {
                         mapper="eventCard"
                     />
                     <HorizontalScrollWithTouch
-                        scrollTitle="Invitations"
+                        scrollTitle="Pending Invitations"
                         scrollableItems={invitations}
                         titleLocation="eventName"
                         mapper="invitationCard"
