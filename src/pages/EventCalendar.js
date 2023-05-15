@@ -76,9 +76,7 @@ export default function EventCalendar({ navigation }) {
                     description
                     eventDate
                     price
-                    location {
-                        locationName
-                    }
+                    location
                 }
                 invitations: getPendingInvitations {
                     eventDate

@@ -22,9 +22,7 @@ export default function LoggedInHome({navigation}) {
                 groupId
                 groupName
                 description
-                location {
-                    locationName
-                }
+                location
                 groupUsers {
                     username
                     firstName
@@ -46,18 +44,7 @@ export default function LoggedInHome({navigation}) {
                 eventDate
                 price
                 food
-                location {
-                    locationName
-                    locationType
-                    latitude
-                    longitude
-                    streetAddress
-                    city
-                    state
-                    country
-                    zip
-                }
-
+                location
             }
         }`
         
@@ -75,7 +62,6 @@ export default function LoggedInHome({navigation}) {
             }).catch(err => console.log(err));
 
             if(data) {
-                console.log('data', data);
                 setUserGroups(data.groups);
                 setUpcomingEvents(data.upcoming);
             }

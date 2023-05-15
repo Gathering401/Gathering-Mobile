@@ -137,6 +137,7 @@ export default function CustomFormik({ steps, formSubmit }) {
                                             cards={field.cards}
                                             selectedCard={field.selectedCard}
                                             setSelectedCard={field.setSelectedCard}
+                                            key={`0${index2}`}
                                         />
                                     default:
                                         throw('Unknown input type');
