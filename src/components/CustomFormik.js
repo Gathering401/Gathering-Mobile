@@ -14,7 +14,7 @@ import CardSelector from './inputs/CardSelector';
 
 import { styles } from '../styles/main-styles';
 
-export default function CustomFormik({ steps, formSubmit }) {
+export default function CustomFormik({ steps, moreInformation, setMoreInformation, formSubmit }) {
     let [currentStep, setCurrentStep] = useState(0);
 
     return (
@@ -22,7 +22,8 @@ export default function CustomFormik({ steps, formSubmit }) {
             initialValues={steps.reduce((a1, c1) => [...a1, ...c1], []).reduce((a2, c2) => {
                 return {
                     ...a2,
-                    [c2.fieldName]: c2.initial
+                    [c2.fieldName]: c2.initial,
+                    ...(c2.type === 'date' ? {repeat: c2.repeat} : {})
                 }
             }, {})}
             onSubmit={values => formSubmit(values)}
@@ -35,6 +36,7 @@ export default function CustomFormik({ steps, formSubmit }) {
                             step.map((field, index2) => {
                                 switch(field.type) {
                                     case 'name':
+                                    case 'location':
                                         return <BasicInput
                                             handleChange={handleChange}
                                             handleBlur={handleBlur}
@@ -94,6 +96,8 @@ export default function CustomFormik({ steps, formSubmit }) {
                                             label={field.label}
                                             date={field.date}
                                             setDate={field.setDate}
+                                            repeat={field.repeat}
+                                            setRepeat={field.setRepeat}
                                             key={`0${index2}`}
                                         />
                                     case 'price':
@@ -143,6 +147,13 @@ export default function CustomFormik({ steps, formSubmit }) {
                                         throw('Unknown input type');
                                 }
                             })
+                        }
+                        {
+                            setMoreInformation && 
+                                <Button
+                                    title={moreInformation ? "Less Information" : "More Information"}
+                                    onPress={() => setMoreInformation(!moreInformation)}
+                                />
                         }
                         {
                             index === steps.length - 1 ? 

@@ -4,7 +4,6 @@ import moment from 'moment-timezone';
 import React, { useState, useContext } from 'react';
 
 import CustomFormik from './CustomFormik';
-import LocationForm from './inputs/LocationForm';
 
 import { TokenContext } from '../tempContext/token-context';
 
@@ -14,8 +13,10 @@ export default function EventCreate({ close }) {
     const { token } = useContext(TokenContext);
 
     let [date, setDate] = useState(new Date());
+    let [repeat, setRepeat] = useState('never');
     let [checked, setChecked] = useState('No');
     let [selected, setSelected] = useState(3);
+    let [moreInformation, setMoreInformation] = useState(false);
     let [options, setOptions] = useState([
         { label: 'Weekly', value: 'weekly' },
         { label: 'Monthly', value: 'monthly' },
@@ -91,21 +92,23 @@ export default function EventCreate({ close }) {
     }
     
     return (
-        <LocationForm />
-        // <CustomFormik
-        //     steps={[
-        //         [
-        //             { label: 'Event Name', type: 'name', initial: '', placeholder: 'Event Name', fieldName: 'eventName' },
-        //             { label: 'Description', type: 'paragraph', initial: '', placeholder: 'Description of your event', fieldName: 'description' },
-        //             { label: 'Event Date', type: 'date', initial: date, fieldName: 'start', date, setDate }
-        //         ],
-        //         [
-        //             { label: 'Will it cost anything?', type: 'price', initial: 0, fieldName: 'price' },
-        //             { label: 'Will there be food?', type: 'radio', fieldName: 'food', initial: checked, options: ['Yes', 'No'], checked, setChecked },
-        //             { label: 'How often?', type: 'dropdown', initial: selected, fieldName: 'eRepeat', options, setOptions, selected, setSelected }
-        //         ]
-        //     ]}
-        //     formSubmit={postEvent}
-        // />
+        <CustomFormik
+            steps={[
+                [
+                    { label: 'Event Name', type: 'name', initial: '', placeholder: 'Event Name', fieldName: 'eventName' },
+                    { label: 'Description', type: 'paragraph', initial: '', placeholder: 'Description of your event', fieldName: 'description' },
+                    { label: 'Event Date', type: 'date', initial: date, fieldName: 'start', date, setDate, repeat, setRepeat },
+                    { label: 'Location', type: 'location', initial: '', fieldName: 'location', placeholder: 'Location' },
+
+                    ...(moreInformation ? [
+                        { label: 'Will it cost anything?', type: 'price', initial: 0, fieldName: 'price' },
+                        { label: 'Will there be food?', type: 'radio', fieldName: 'food', initial: checked, options: ['Yes', 'No'], checked, setChecked }
+                    ] : [])
+                ]
+            ]}
+            moreInformation={moreInformation}
+            setMoreInformation={setMoreInformation}
+            formSubmit={postEvent}
+        />
     )
 };

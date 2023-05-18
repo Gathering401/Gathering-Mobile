@@ -7,7 +7,7 @@ import { styles } from '../../styles/main-styles';
 
 import CustomFormik from '../CustomFormik';
 
-export default function LocationForm() {
+export default function LocationInput() {
     let [locationSearched, setLocationSearched] = useState(false);
     let [confirmAddress, setConfirmAddress] = useState('');
 
