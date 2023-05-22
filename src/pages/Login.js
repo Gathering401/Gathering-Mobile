@@ -8,24 +8,38 @@ import { TokenContext } from '../tempContext/token-context';
 import { styles } from '../styles/main-styles';
 import CustomFormik from '../components/CustomFormik';
 
-const baseUrl = 'http://localhost:5000/api';
+const baseUrl = 'http://localhost:4000/graphql';
 
 export default function Login({ navigation }) {
     const { setToken } = useContext(TokenContext);
 
     const submitLogin = async (values) => {
-        const response = await axios({
-            method: 'POST',
-            url: `${baseUrl}/User/Login`,
-            data: {
+        const query = `mutation Login($loginData: LoginDataInput!) {
+            login(loginData: $loginData) {
+                id
+                username
+                token
+            }
+        }`;
+        const variables = {
+            loginData: {
                 username: values.username,
                 password: values.password
             }
+        };
+        
+        const { data } = await axios({
+            method: 'POST',
+            url: baseUrl,
+            data: {
+                query,
+                variables
+            }
         });
 
-        if(response) {
+        if(data) {
             // await SecureStore.setItemAsync('token', response.body.token);
-            setToken(response.data.token);
+            setToken(data.data.login.token);
             
             navigation.navigate('Home');
         }

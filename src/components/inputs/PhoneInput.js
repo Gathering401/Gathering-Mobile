@@ -5,7 +5,7 @@ import Label from '../Label';
 
 import { styles } from '../../styles/main-styles';
 
-export default function PhoneInput({ handleChange, handleBlur, value, fieldName, label }) {
+export default function PhoneInput({ handleChange, handleBlur, value, fieldName, label, required }) {
     value = value ? value.replace(/\D/g, "") : value;
     
     const normalize = () => {
@@ -20,9 +20,9 @@ export default function PhoneInput({ handleChange, handleBlur, value, fieldName,
     
     return (
         <View style={styles.inputAndLabel}>
-            <Label text={label} />
+            <Label text={label} required={required}/>
             <TextInput
-                required={true}
+                required={required}
                 keyboardType="phone-pad"
                 maxLength={14}
                 style={styles.textInput}

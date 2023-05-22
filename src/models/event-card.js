@@ -1,14 +1,15 @@
 import React from 'react';
 import { Text } from 'react-native';
 
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 export const mapToEventCard = (event) => {
     return (
         <>
-            <Text>When: {moment(event.start).format('h:mm a')}</Text>
-            <Text>Where: {event.location}</Text>
-            <Text>Cost: ${event.cost}</Text>
+            <Text>When: {moment(event.eventDate).format('h:mm a')}</Text>
+            <Text>What: {event.description}</Text>
+            <Text>Where: {event.location.locationName}</Text>
+            <Text>Price: ${event.price}</Text>
         </>
     )
 }

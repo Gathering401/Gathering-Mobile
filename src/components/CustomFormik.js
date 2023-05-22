@@ -14,7 +14,7 @@ import CardSelector from './inputs/CardSelector';
 
 import { styles } from '../styles/main-styles';
 
-export default function CustomFormik({ steps, formSubmit }) {
+export default function CustomFormik({ steps, moreInformation, setMoreInformation, formSubmit }) {
     let [currentStep, setCurrentStep] = useState(0);
 
     return (
@@ -22,7 +22,8 @@ export default function CustomFormik({ steps, formSubmit }) {
             initialValues={steps.reduce((a1, c1) => [...a1, ...c1], []).reduce((a2, c2) => {
                 return {
                     ...a2,
-                    [c2.fieldName]: c2.initial
+                    [c2.fieldName]: c2.initial,
+                    ...(c2.type === 'date' ? {repeat: c2.repeat} : {})
                 }
             }, {})}
             onSubmit={values => formSubmit(values)}
@@ -35,6 +36,7 @@ export default function CustomFormik({ steps, formSubmit }) {
                             step.map((field, index2) => {
                                 switch(field.type) {
                                     case 'name':
+                                    case 'location':
                                         return <BasicInput
                                             handleChange={handleChange}
                                             handleBlur={handleBlur}
@@ -44,6 +46,7 @@ export default function CustomFormik({ steps, formSubmit }) {
                                             autoCapitalize="words"
                                             secureTextEntry={false}
                                             label={field.label}
+                                            required={field.required}
                                             key={`0${index2}`}
                                         />
                                     case 'text':
@@ -56,6 +59,7 @@ export default function CustomFormik({ steps, formSubmit }) {
                                             autoCapitalize="none"
                                             secureTextEntry={false}
                                             label={field.label}
+                                            required={field.required}
                                             key={`0${index2}`}
                                         />
                                     case 'password':
@@ -68,6 +72,7 @@ export default function CustomFormik({ steps, formSubmit }) {
                                             autoCapitalize="none"
                                             secureTextEntry={true}
                                             label={field.label}
+                                            required={field.required}
                                             key={`0${index2}`}
                                         />
                                     case 'paragraph':
@@ -78,6 +83,7 @@ export default function CustomFormik({ steps, formSubmit }) {
                                             fieldName={field.fieldName}
                                             value={values[field.fieldName]}
                                             label={field.label}
+                                            required={field.required}
                                             key={`0${index2}`}
                                         />
                                     case 'phone':
@@ -87,6 +93,7 @@ export default function CustomFormik({ steps, formSubmit }) {
                                             fieldName={field.fieldName}
                                             value={values[field.fieldName]}
                                             label={field.label}
+                                            required={field.required}
                                             key={`0${index2}`}
                                         />
                                     case 'date':
@@ -94,6 +101,9 @@ export default function CustomFormik({ steps, formSubmit }) {
                                             label={field.label}
                                             date={field.date}
                                             setDate={field.setDate}
+                                            repeat={field.repeat}
+                                            setRepeat={field.setRepeat}
+                                            required={field.required}
                                             key={`0${index2}`}
                                         />
                                     case 'price':
@@ -103,6 +113,7 @@ export default function CustomFormik({ steps, formSubmit }) {
                                             fieldName={field.fieldName}
                                             value={values[field.fieldName]}
                                             label={field.label}
+                                            required={field.required}
                                             key={`0${index2}`}
                                         />
                                     case 'email':
@@ -112,6 +123,7 @@ export default function CustomFormik({ steps, formSubmit }) {
                                             fieldName={field.fieldName}
                                             value={values[field.fieldName]}
                                             label={field.label}
+                                            required={field.required}
                                             key={`0${index2}`}
                                         />
                                     case 'radio':
@@ -120,6 +132,7 @@ export default function CustomFormik({ steps, formSubmit }) {
                                             options={field.options}
                                             checked={field.checked}
                                             setChecked={field.setChecked}
+                                            required={field.required}
                                             key={`0${index2}`}
                                         />
                                     case 'dropdown':
@@ -129,6 +142,7 @@ export default function CustomFormik({ steps, formSubmit }) {
                                             setOptions={field.setOptions}
                                             selected={field.selected}
                                             setSelected={field.setSelected}
+                                            required={field.required}
                                             key={`0${index2}`}
                                         />
                                     case 'cards':
@@ -137,11 +151,19 @@ export default function CustomFormik({ steps, formSubmit }) {
                                             cards={field.cards}
                                             selectedCard={field.selectedCard}
                                             setSelectedCard={field.setSelectedCard}
+                                            key={`0${index2}`}
                                         />
                                     default:
                                         throw('Unknown input type');
                                 }
                             })
+                        }
+                        {
+                            setMoreInformation && 
+                                <Button
+                                    title={moreInformation ? "Less Information" : "More Information"}
+                                    onPress={() => setMoreInformation(!moreInformation)}
+                                />
                         }
                         {
                             index === steps.length - 1 ? 

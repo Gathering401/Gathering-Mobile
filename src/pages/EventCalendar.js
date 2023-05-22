@@ -7,106 +7,147 @@ import { CalendarList } from 'react-native-calendars';
 
 import { TokenContext } from '../tempContext/token-context';
 
-import moment from 'moment';
+import moment from 'moment-timezone';
 
+import Loader from '../components/helpers/Loader';
 import HorizontalScrollWithTouch from '../components/HorizontalScrollWithTouch';
 import NavBar from '../components/NavBar';
 import CreateButton from '../components/CreateButton';
 
-const baseUrl = 'http://localhost:5000/api';
+const baseUrl = 'http://localhost:4000/graphql';
 // const authToken = SecureStore.getItemAsync('token');
 
 export default function EventCalendar({ navigation }) {
     const { token } = useContext(TokenContext);
     
     let [selected, setSelected] = useState(moment().format('MM/DD/YYYY'));
-    let [events, setEvents] = useState([]);
+    let [events, setEvents] = useState(new Map());
+    let [invitations, setInvitations] = useState([]);
     let [selectedEvents, setSelectedEvents] = useState([]);
-    let [selectedInvitations, setSelectedInvitations] = useState([]);
+    let [markedDates, setMarkedDates] = useState({});
+    let [currentMonth, setCurrentMonth] = useState(moment().format('YYYY-MM'));
     let [eventCreated, setEventCreated] = useState(false);
 
-    // =======================
-    // I think the best way to accomplish this in the future is to pull all events from the past 3 months, up through the next 9 months. Then as the user goes beyond those boundaries, scrolling through the months, can stretch 3 months at a time backwards, and 6 months at a time forwards. I think this would help the time management of how many events to filter through when looking at a single days' events, as well as save time in the initial call to the API.
-    // =======================
+    const createEventsMap = (events) => {
+        const eventsMap = new Map();
+        for(const event of events) {
+            const eventDate = moment(event.eventDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format('YYYY-MM');
+                    
+            let singleMonthEvents = eventsMap.get(eventDate);
+
+            if(singleMonthEvents) {
+                singleMonthEvents.push(event);
+            } else {
+                singleMonthEvents = [event];
+            }
+            eventsMap.set(eventDate, singleMonthEvents);
+        }
+        return eventsMap;
+    }
+
+    const newMarkedDates = (allEvents) => {
+        const newMarked = allEvents.get(currentMonth).reduce((marked, event) => {
+            const key = moment(event.eventDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ').format('YYYY-MM-DD');
+
+            if (!marked[key]) {
+                marked = {
+                    ...marked,
+                    [key]: { color: 'red', marked: true } 
+                }
+            }
+            
+            return marked;
+        }, {});
+
+        setMarkedDates(newMarked);
+    };
+
+    const setAllSelected = (dateString, eventsMap) => {
+        const monthEvents = eventsMap.get(moment(dateString).format('YYYY-MM'));
+        return (monthEvents ?? []).filter(e => moment(e.eventDate).format('YYYY-MM-DD') === moment(dateString).format('YYYY-MM-DD')) ?? [];
+    }
 
     useEffect(() => {
         async function getAllEvents() {
-            const response = await axios({
-                method: 'GET',
-                url: `${baseUrl}/Calendar`,
+            const query = `query GetCalendarEvents {
+                events: getCalendarEvents {
+                    eventId
+                    eventName
+                    description
+                    eventDate
+                    price
+                    location
+                }
+                invitations: getPendingInvitations {
+                    eventDate
+                    eventName
+                    rsvp
+                }
+            }`;
+
+            const { data: { data } } = await axios({
+                method: 'POST',
+                data: {
+                    query
+                },
+                url: baseUrl,
                 headers: {
                     authorization: `Bearer ${token}`,
-                    'content-type': 'application/x-www-form-urlencoded'
+                    'Content-Type': 'application/json'
                 }
             }).catch(err => console.log(err));
 
-            if(response?.data) {
-                setEvents(response.data);
+            if(data) {
+                const eventsMap = createEventsMap(data.events);
+
+                setEvents(eventsMap);
+                newMarkedDates(eventsMap);
+
+                setInvitations(data.invitations);
             }
         }
-
-        async function getAllInvitations() {
-            const response = await axios({
-                method: 'GET',
-                url: `${baseUrl}/Calendar/Invitations`,
-                headers: {
-                    authorization: `Bearer ${token}`
-                }
-            });
-
-            if(response.data) {
-                setSelectedInvitations(response.data)
-            }
-        }
-
+        
         getAllEvents();
-        getAllInvitations();
-    }, [eventCreated]);
-
-    const decideSelectedEvents = (day) => {
-        const daysEvents = events.filter(e => day.dateString === e.start.substring(0, 10));
-
-        setSelectedEvents(daysEvents);
-    }
+    }, []);
 
     return (
         <View>
             <CreateButton type="event" setCreated={setEventCreated}/>
-            <CalendarList
-                onDayPress={function (day) {
-                    setSelected(moment(day.dateString).format('MM/DD/YYYY'));
-                    decideSelectedEvents(day);
-                }}
-                markingType='multi-dot'
-                markedDates={events.reduce((marked, event) => {
-                    const key = event.start.substring(0, 10);
+            {events.size > 0
+                ? <>
+                    <CalendarList
+                        onDayPress={({dateString}) => {
+                            setSelected(moment(dateString).format('MM/DD/YYYY'));
 
-                    if (!marked[key]) {
-                        marked = {
-                            ...marked,
-                            [key]: { dots: [{color: 'red', key: 1}] }
-                        }
-                    } else {
-                        marked[key].dots = [...marked[key].dots, {color: 'red', key: marked[key].dots.length + 1}];
-                    }
-                    return marked;
-                }, {})}
-                initialDate={selected}
-                horizontal={true}
-                pagingEnabled={true}
-            />
-            <HorizontalScrollWithTouch
-                scrollTitle={selected}
-                scrollableItems={selectedEvents}
-                titleLocation="eventName"
-                mapper="eventCard"
-            />
-            <HorizontalScrollWithTouch
-                scrollTitle="Invitations"
-                scrollableItems={selectedInvitations}
-                titleLocation="eventName"
-                mapper="invitationCard"
-            />
+                            setSelectedEvents(setAllSelected(dateString, events));
+                        }}
+                        markedDates={markedDates}
+                        onVisibleMonthsChange={date => {
+                            if(date.length === 1) {
+                                setCurrentMonth(moment(date[0].dateString, 'YYYY-MM-DD').format('YYYY-MM'));
+                                newMarkedDates(events);
+                            }
+                        }}
+                        enableSwipeMonths={true}
+                        initialDate={selected}
+                        horizontal={true}
+                        pagingEnabled={true}
+                    />
+                    <HorizontalScrollWithTouch
+                        scrollTitle={selected}
+                        scrollableItems={selectedEvents}
+                        titleLocation="eventName"
+                        mapper="eventCard"
+                    />
+                    <HorizontalScrollWithTouch
+                        scrollTitle="Pending Invitations"
+                        scrollableItems={invitations}
+                        titleLocation="eventName"
+                        mapper="invitationCard"
+                    />
+                </>
+                : <Loader />
+            }
             <NavBar navigation={navigation}/>
         </View>
     )

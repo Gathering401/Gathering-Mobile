@@ -5,7 +5,7 @@ import { TouchableOpacity } from 'react-native';
 
 import { TokenContext } from '../tempContext/token-context';
 
-const baseUrl = 'http://localhost:5000/api';
+const baseUrl = 'http://localhost:4000/graphql';
 
 export default function InvitationResponse({status, component, id}) {
     const { token } = useContext(TokenContext);

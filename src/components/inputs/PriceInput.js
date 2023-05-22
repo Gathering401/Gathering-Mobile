@@ -5,12 +5,12 @@ import Label from '../Label';
 
 import { styles } from '../../styles/main-styles';
 
-export default function PriceInput({ handleChange, handleBlur, value, fieldName, label }) {
+export default function PriceInput({ handleChange, handleBlur, value, fieldName, label, required }) {
     return (
         <View style={styles.inputAndLabel}>
-            <Label text={label} />
+            <Label text={label} required={required}/>
             <TextInput
-                required={true}
+                required={required}
                 keyboardType="number-pad"
                 spellCheck={false}
                 style={styles.textInput}

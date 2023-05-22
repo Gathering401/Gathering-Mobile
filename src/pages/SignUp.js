@@ -6,7 +6,7 @@ import CustomFormik from '../components/CustomFormik';
 import moment from 'moment';
 import { styles } from '../styles/main-styles';
 
-const baseUrl = 'http://localhost:5000/api';
+const baseUrl = 'http://localhost:4000/graphql';
 
 export default function SignUp({ navigation }) {
     let [date, setDate] = useState(new Date());
