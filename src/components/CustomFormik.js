@@ -46,6 +46,7 @@ export default function CustomFormik({ steps, moreInformation, setMoreInformatio
                                             autoCapitalize="words"
                                             secureTextEntry={false}
                                             label={field.label}
+                                            required={field.required}
                                             key={`0${index2}`}
                                         />
                                     case 'text':
@@ -58,6 +59,7 @@ export default function CustomFormik({ steps, moreInformation, setMoreInformatio
                                             autoCapitalize="none"
                                             secureTextEntry={false}
                                             label={field.label}
+                                            required={field.required}
                                             key={`0${index2}`}
                                         />
                                     case 'password':
@@ -70,6 +72,7 @@ export default function CustomFormik({ steps, moreInformation, setMoreInformatio
                                             autoCapitalize="none"
                                             secureTextEntry={true}
                                             label={field.label}
+                                            required={field.required}
                                             key={`0${index2}`}
                                         />
                                     case 'paragraph':
@@ -80,6 +83,7 @@ export default function CustomFormik({ steps, moreInformation, setMoreInformatio
                                             fieldName={field.fieldName}
                                             value={values[field.fieldName]}
                                             label={field.label}
+                                            required={field.required}
                                             key={`0${index2}`}
                                         />
                                     case 'phone':
@@ -89,6 +93,7 @@ export default function CustomFormik({ steps, moreInformation, setMoreInformatio
                                             fieldName={field.fieldName}
                                             value={values[field.fieldName]}
                                             label={field.label}
+                                            required={field.required}
                                             key={`0${index2}`}
                                         />
                                     case 'date':
@@ -98,6 +103,7 @@ export default function CustomFormik({ steps, moreInformation, setMoreInformatio
                                             setDate={field.setDate}
                                             repeat={field.repeat}
                                             setRepeat={field.setRepeat}
+                                            required={field.required}
                                             key={`0${index2}`}
                                         />
                                     case 'price':
@@ -107,6 +113,7 @@ export default function CustomFormik({ steps, moreInformation, setMoreInformatio
                                             fieldName={field.fieldName}
                                             value={values[field.fieldName]}
                                             label={field.label}
+                                            required={field.required}
                                             key={`0${index2}`}
                                         />
                                     case 'email':
@@ -116,6 +123,7 @@ export default function CustomFormik({ steps, moreInformation, setMoreInformatio
                                             fieldName={field.fieldName}
                                             value={values[field.fieldName]}
                                             label={field.label}
+                                            required={field.required}
                                             key={`0${index2}`}
                                         />
                                     case 'radio':
@@ -124,6 +132,7 @@ export default function CustomFormik({ steps, moreInformation, setMoreInformatio
                                             options={field.options}
                                             checked={field.checked}
                                             setChecked={field.setChecked}
+                                            required={field.required}
                                             key={`0${index2}`}
                                         />
                                     case 'dropdown':
@@ -133,6 +142,7 @@ export default function CustomFormik({ steps, moreInformation, setMoreInformatio
                                             setOptions={field.setOptions}
                                             selected={field.selected}
                                             setSelected={field.setSelected}
+                                            required={field.required}
                                             key={`0${index2}`}
                                         />
                                     case 'cards':

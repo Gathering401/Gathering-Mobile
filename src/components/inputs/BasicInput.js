@@ -5,13 +5,13 @@ import Label from '../Label';
 
 import { styles } from '../../styles/main-styles';
 
-export default function BasicInput({ handleChange, handleBlur, placeholder, value, fieldName, autoCapitalize, secureTextEntry, label }) {
+export default function BasicInput({ handleChange, handleBlur, placeholder, value, fieldName, autoCapitalize, secureTextEntry, label, required }) {
     return (
         <View style={styles.inputAndLabel}>
-            <Label text={label} />
+            <Label text={label} required={required}/>
             <TextInput
                 style={{...styles.textInput}}
-                required={true}
+                required={required}
                 spellCheck={false}
                 autoCapitalize={autoCapitalize}
                 secureTextEntry={secureTextEntry}

@@ -9,7 +9,7 @@ import EventRepeatSelection from './EventRepeatSelection';
 
 import { styles } from '../../styles/main-styles';
 
-export default function DateInput({ label, date, setDate, repeat, setRepeat }) {
+export default function DateInput({ label, date, setDate, repeat, setRepeat, required }) {
     let [open, setOpen] = useState(false);
     let [showRepeat, setShowRepeat] = useState(false);
     let [displayDate, setDisplayDate] = useState(moment().format('MMMM Do, YYYY'));
@@ -36,7 +36,7 @@ export default function DateInput({ label, date, setDate, repeat, setRepeat }) {
     
     return (
         <View style={styles.inputAndLabel}>
-            <Label text={label} />
+            <Label text={label} required={required}/>
             <TouchableOpacity onPress={() => setOpen(!open)} style={styles.modalButton}>
                 <Text style={styles.modalButtonText}>{displayDate}</Text>
             </TouchableOpacity>
@@ -56,9 +56,10 @@ export default function DateInput({ label, date, setDate, repeat, setRepeat }) {
                     onSelectedChange={newDate => determineSetDate(newDate)}
                 />
             </View>
+            <Label text="Is it recurring?" />
             <CheckBox
                 value={showRepeat}
-                onValueChange={() => setShowRepeat(!showRepeat)}
+                onValueChange={() => setShowRepeat(!showRepeat) }
             />
             {showRepeat &&
                 <View>

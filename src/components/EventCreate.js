@@ -95,10 +95,10 @@ export default function EventCreate({ close }) {
         <CustomFormik
             steps={[
                 [
-                    { label: 'Event Name', type: 'name', initial: '', placeholder: 'Event Name', fieldName: 'eventName' },
+                    { label: 'Event Name', type: 'name', initial: '', placeholder: 'Event Name', fieldName: 'eventName', required: true },
                     { label: 'Description', type: 'paragraph', initial: '', placeholder: 'Description of your event', fieldName: 'description' },
-                    { label: 'Event Date', type: 'date', initial: date, fieldName: 'start', date, setDate, repeat, setRepeat },
-                    { label: 'Location', type: 'location', initial: '', fieldName: 'location', placeholder: 'Location' },
+                    { label: 'Event Date', type: 'date', initial: date, fieldName: 'start', date, setDate, repeat, setRepeat, required: true },
+                    { label: 'Location', type: 'location', initial: '', fieldName: 'location', placeholder: 'Location', required: true },
 
                     ...(moreInformation ? [
                         { label: 'Will it cost anything?', type: 'price', initial: 0, fieldName: 'price' },
