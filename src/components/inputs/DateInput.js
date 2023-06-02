@@ -11,7 +11,6 @@ import { styles } from '../../styles/main-styles';
 
 export default function DateInput({ label, fieldName, setFieldValue, required }) {
     let [open, setOpen] = useState(false);
-    let [localRepeat, setLocalRepeat] = useState('never');
     let [showRepeat, setShowRepeat] = useState(false);
     let [displayDate, setDisplayDate] = useState(moment().format('MMMM Do, YYYY'));
     let [dateFromDate, setDateFromDate] = useState(new Date());
@@ -24,9 +23,9 @@ export default function DateInput({ label, fieldName, setFieldValue, required })
         determineDisplayDate(value);
     }, [setFieldValue]);
 
-    const determineDisplayDate = (_date) => {
+    const determineDisplayDate = (_date, repeat) => {
         const momentDate = moment(_date);
-        switch(localRepeat) {
+        switch(repeat) {
             case 'weekly':
                 setDisplayDate(`Every ${momentDate.format('dddd')}, starting ${momentDate.format('MM/DD/YYYY')}`);
                 break;
@@ -74,7 +73,6 @@ export default function DateInput({ label, fieldName, setFieldValue, required })
                     <EventRepeatSelection
                         setShowRepeat={setShowRepeat}
                         setFieldValue={setFieldValue}
-                        setRepeat={setLocalRepeat}
                         setDisplay={determineDisplayDate}
                         selectedDate={dateFromDate}
                         value='Weekly'
@@ -82,7 +80,6 @@ export default function DateInput({ label, fieldName, setFieldValue, required })
                     <EventRepeatSelection
                         setShowRepeat={setShowRepeat}
                         setFieldValue={setFieldValue}
-                        setRepeat={setLocalRepeat}
                         setDisplay={determineDisplayDate}
                         selectedDate={dateFromDate}
                         value='Monthly'
@@ -90,7 +87,6 @@ export default function DateInput({ label, fieldName, setFieldValue, required })
                     <EventRepeatSelection
                         setShowRepeat={setShowRepeat}
                         setFieldValue={setFieldValue}
-                        setRepeat={setLocalRepeat}
                         setDisplay={determineDisplayDate}
                         selectedDate={dateFromDate}
                         value='Annually'
@@ -98,7 +94,6 @@ export default function DateInput({ label, fieldName, setFieldValue, required })
                     <EventRepeatSelection
                         setShowRepeat={setShowRepeat}
                         setFieldValue={setFieldValue}
-                        setRepeat={setLocalRepeat}
                         setDisplay={determineDisplayDate}
                         selectedDate={dateFromDate}
                         value='Never'
