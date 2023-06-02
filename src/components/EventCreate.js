@@ -12,32 +12,17 @@ const baseUrl = 'http://localhost:5000/api';
 export default function EventCreate({ close }) {
     const { token } = useContext(TokenContext);
 
-    let [date, setDate] = useState(new Date());
-    let [repeat, setRepeat] = useState('never');
     let [checked, setChecked] = useState('No');
-    let [selected, setSelected] = useState(3);
     let [moreInformation, setMoreInformation] = useState(false);
-    let [options, setOptions] = useState([
-        { label: 'Weekly', value: 'weekly' },
-        { label: 'Monthly', value: 'monthly' },
-        { label: 'Annual', value: 'annually' },
-        { label: 'Only Once', value: 'never' }
-    ]);
 
     const postEvent = async (values) => {
-        const query = `mutation CreateEvent($groupId: Int!, $eventData: EventDataInput!, $locationData: LocationDataInput!) {
-            createEvent(groupId: $groupId, eventData: $eventData, locationData: $locationData) {
+        console.log('help me', values);
+        const query = `mutation CreateEvent($groupId: Int!, $eventData: EventDataInput!) {
+            createEvent(groupId: $groupId, eventData: $eventData) {
                 eventName
                 eventDate
                 description
-                location {
-                    streetAddress
-                    city
-                    state
-                    zip
-                    country
-                    locationName
-                }
+                location
             }
         }`;
         const variables = {
@@ -48,47 +33,37 @@ export default function EventCreate({ close }) {
                 price: values.price,
                 description: values.description,
                 eventRepeat: values.eRepeat,
-                eventDate: moment(values.eventDate).format('MM/DD/YYYY H:mma')
-            },
-            locationData: {
-                streetAddress: values.streetAddress,
-                city: values.city,
-                state: values.state,
-                zip: values.zip,
-                country: values.country,
-                locationName: values.locationName,
-                latitude: 42,
-                longitude: -91.569090,
-                locationType: "business"
+                eventDate: moment(values.eventDate).format('MM/DD/YYYY H:mma'),
+                location: values.location
             }
         };
         
-        const response = await axios({
-            method: 'POST',
-            url: baseUrl,
-            data: {
-                query,
-                variables,
-                eventRepeat: {
-                    eRepeat: values.eRepeat
-                },
-                event: {
-                    eventName: values.eventName,
-                    description: values.description,
-                    location: values.location,
-                    start: values.start,
-                    food: values.food
-                }
-            },
-            headers: {
-                authorization: `Bearer ${token}`,
-                'content-type': 'application/json'
-            }
-        })
+        // const response = await axios({
+        //     method: 'POST',
+        //     url: baseUrl,
+        //     data: {
+        //         query,
+        //         variables,
+        //         eventRepeat: {
+        //             eRepeat: values.eRepeat
+        //         },
+        //         event: {
+        //             eventName: values.eventName,
+        //             description: values.description,
+        //             location: values.location,
+        //             start: values.start,
+        //             food: values.food
+        //         }
+        //     },
+        //     headers: {
+        //         authorization: `Bearer ${token}`,
+        //         'content-type': 'application/json'
+        //     }
+        // })
 
-        if(response?.data) {
-            close(false);
-        }
+        // if(response?.data) {
+        //     close(false);
+        // }
     }
     
     return (
@@ -97,7 +72,7 @@ export default function EventCreate({ close }) {
                 [
                     { label: 'Event Name', type: 'name', initial: '', placeholder: 'Event Name', fieldName: 'eventName', required: true },
                     { label: 'Description', type: 'paragraph', initial: '', placeholder: 'Description of your event', fieldName: 'description' },
-                    { label: 'Event Date', type: 'date', initial: date, fieldName: 'start', date, setDate, repeat, setRepeat, required: true },
+                    { label: 'Event Date', type: 'date', initial: new Date(), fieldName: 'eventDate', required: true },
                     { label: 'Location', type: 'location', initial: '', fieldName: 'location', placeholder: 'Location', required: true },
 
                     ...(moreInformation ? [

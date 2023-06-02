@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, TouchableOpacity, Text, CheckBox } from 'react-native';
 
 import DatePicker from 'react-native-modern-datepicker';
@@ -9,16 +9,24 @@ import EventRepeatSelection from './EventRepeatSelection';
 
 import { styles } from '../../styles/main-styles';
 
-export default function DateInput({ label, date, setDate, repeat, setRepeat, required }) {
+export default function DateInput({ label, fieldName, setFieldValue, required }) {
     let [open, setOpen] = useState(false);
+    let [localRepeat, setLocalRepeat] = useState('never');
     let [showRepeat, setShowRepeat] = useState(false);
     let [displayDate, setDisplayDate] = useState(moment().format('MMMM Do, YYYY'));
+    let [dateFromDate, setDateFromDate] = useState(new Date());
 
-    const determineSetDate = (date) => {
-        const momentDate = moment(date);
+    const handleFieldChange = useCallback((value) => {
+        const momentDate = moment(value);
         
-        setDate(momentDate.toISOString());
-        switch(repeat) {
+        setDateFromDate(value);
+        setFieldValue(fieldName, momentDate.toISOString());
+        determineDisplayDate(value);
+    }, [setFieldValue]);
+
+    const determineDisplayDate = (_date) => {
+        const momentDate = moment(_date);
+        switch(localRepeat) {
             case 'weekly':
                 setDisplayDate(`Every ${momentDate.format('dddd')}, starting ${momentDate.format('MM/DD/YYYY')}`);
                 break;
@@ -29,7 +37,7 @@ export default function DateInput({ label, date, setDate, repeat, setRepeat, req
                 setDisplayDate(`Every year on ${momentDate.format('MMMM Do')}, starting ${momentDate.format('MM/DD/YYYY')}`);
                 break;
             default:
-                setDisplayDate(moment(date).format('MMMM Do, YYYY'))
+                setDisplayDate(momentDate.format('MMMM Do, YYYY'));
                 break;
         }
     }
@@ -40,7 +48,7 @@ export default function DateInput({ label, date, setDate, repeat, setRepeat, req
             <TouchableOpacity onPress={() => setOpen(!open)} style={styles.modalButton}>
                 <Text style={styles.modalButtonText}>{displayDate}</Text>
             </TouchableOpacity>
-            <View style={{...open ? {} : styles.hidden}}>
+            <View style={{...(open ? {} : styles.hidden)}}>
                 <DatePicker
                     options={{
                         backgroundColor: '#090C08',
@@ -52,21 +60,49 @@ export default function DateInput({ label, date, setDate, repeat, setRepeat, req
                         borderColor: 'rgba(122, 146, 165, 0.1)',
                     }}
                     mode='calendar'
-                    date={date}
-                    onSelectedChange={newDate => determineSetDate(newDate)}
+                    date={dateFromDate}
+                    onSelectedChange={handleFieldChange}
                 />
             </View>
             <Label text="Is it recurring?" />
             <CheckBox
                 value={showRepeat}
-                onValueChange={() => setShowRepeat(!showRepeat) }
+                onValueChange={() => setShowRepeat(!showRepeat)}
             />
             {showRepeat &&
                 <View>
-                    <EventRepeatSelection setShowRepeat={setShowRepeat} setRepeat={setRepeat} value='Weekly'/>
-                    <EventRepeatSelection setShowRepeat={setShowRepeat} setRepeat={setRepeat} value='Monthly'/>
-                    <EventRepeatSelection setShowRepeat={setShowRepeat} setRepeat={setRepeat} value='Annually'/>
-                    <EventRepeatSelection setShowRepeat={setShowRepeat} setRepeat={setRepeat} value='Never'/>
+                    <EventRepeatSelection
+                        setShowRepeat={setShowRepeat}
+                        setFieldValue={setFieldValue}
+                        setRepeat={setLocalRepeat}
+                        setDisplay={determineDisplayDate}
+                        selectedDate={dateFromDate}
+                        value='Weekly'
+                    />
+                    <EventRepeatSelection
+                        setShowRepeat={setShowRepeat}
+                        setFieldValue={setFieldValue}
+                        setRepeat={setLocalRepeat}
+                        setDisplay={determineDisplayDate}
+                        selectedDate={dateFromDate}
+                        value='Monthly'
+                    />
+                    <EventRepeatSelection
+                        setShowRepeat={setShowRepeat}
+                        setFieldValue={setFieldValue}
+                        setRepeat={setLocalRepeat}
+                        setDisplay={determineDisplayDate}
+                        selectedDate={dateFromDate}
+                        value='Annually'
+                    />
+                    <EventRepeatSelection
+                        setShowRepeat={setShowRepeat}
+                        setFieldValue={setFieldValue}
+                        setRepeat={setLocalRepeat}
+                        setDisplay={determineDisplayDate}
+                        selectedDate={dateFromDate}
+                        value='Never'
+                    />
                 </View>
             }
         </View>

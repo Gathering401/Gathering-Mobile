@@ -117,5 +117,16 @@ export const styles = StyleSheet.create({
     inputLabel: {
         color: 'grey',
         marginLeft: 10
+    },
+    errorMessage: {
+        color: 'red',
+        textAlign: 'center',
+        fontSize: 12
+    },
+    eventRepeatSelection: {
+        fontSize: 30,
+        border: '1px solid rgb(140, 140, 140)',
+        borderRadius: 15,
+        padding: 15
     }
 });
