@@ -15,7 +15,6 @@ export default function EventCreate({ close }) {
     let [moreInformation, setMoreInformation] = useState(false);
 
     const postEvent = async (values) => {
-        console.log('help me', values);
         const query = `mutation CreateEvent($groupId: Int!, $eventData: EventDataInput!) {
             createEvent(groupId: $groupId, eventData: $eventData) {
                 eventName

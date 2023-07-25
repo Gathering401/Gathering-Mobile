@@ -2,11 +2,16 @@ import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'space-around',
-      justifyContent: 'center',
-      width: '100%'
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%'
+    },
+    scrollWithNav: {
+        flex: 1,
+        width: '100%',
+        justifyContent: 'center'
     },
     horizontalScroller: {
         backgroundColor: '#fff',
@@ -90,9 +95,6 @@ export const styles = StyleSheet.create({
         margin: 100
     },
     navbar: {
-        fontSize: 40,
-        position: 'fixed',
-        bottom: 0,
         width: '100%',
         backgroundColor: 'green',
         height: 75,

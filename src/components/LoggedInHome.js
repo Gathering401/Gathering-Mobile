@@ -1,14 +1,16 @@
 import axios from 'axios';
 
 import { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { View, ScrollView, Text } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
 import NavBar from './NavBar';
 import HorizontalScrollWithTouch from './HorizontalScrollWithTouch';
 import Loader from './helpers/Loader';
 
-const baseUrl = 'https://a99b-2604-2d80-d288-4100-1c44-c92b-5b26-5132.ngrok-free.app/graphql';
+import { styles } from '../styles/main-styles';
+
+const baseUrl = 'https://1df0-2604-2d80-d288-4100-1c44-c92b-5b26-5132.ngrok-free.app/graphql';
 
 export default function LoggedInHome({navigation}) {
     let [userGroups, setUserGroups] = useState([]);
@@ -75,18 +77,21 @@ export default function LoggedInHome({navigation}) {
     return waitingForApi
         ? <Loader />
         : (
-        <View>
-            <HorizontalScrollWithTouch
-                scrollTitle="Groups"
-                scrollableItems={userGroups}
-                titleLocation="groupName"
-                mapper="groupCard"
-            /><HorizontalScrollWithTouch
-                scrollTitle="Upcoming Events"
-                scrollableItems={upcomingEvents}
-                titleLocation="eventName"
-                mapper="eventCard"
-            />            
+        <View style={styles.container}>
+            <ScrollView contentContainerStyle={styles.scrollWithNav}>
+                <Text style={styles.title}>Hello, world!</Text>
+                <HorizontalScrollWithTouch
+                    scrollTitle="Groups"
+                    scrollableItems={userGroups}
+                    titleLocation="groupName"
+                    mapper="groupCard"
+                /><HorizontalScrollWithTouch
+                    scrollTitle="Upcoming Events"
+                    scrollableItems={upcomingEvents}
+                    titleLocation="eventName"
+                    mapper="eventCard"
+                />
+            </ScrollView>
             <NavBar navigation={navigation}/>
         </View>
     )

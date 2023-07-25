@@ -8,7 +8,6 @@ import SignInOptions from '../components/SignInOptions';
 import { styles } from '../styles/main-styles';
 
 export default function HomeScreen({navigation}) {
-    console.log('navigation', navigation);
     let [token, setToken] = useState(null);
     let [submitted, setSubmitted] = useState(false);
     
@@ -21,12 +20,9 @@ export default function HomeScreen({navigation}) {
 
         getToken();
     }, [submitted]);
-
-    console.log('cheeze1')
     
     return (
         <View style={{...styles.container, ...styles.containerColor}}>
-            <Text style={styles.title}>Hello, world!</Text>
             {
                 token ? <LoggedInHome navigation={navigation}/> : <SignInOptions navigation={navigation} setSubmitted={setSubmitted}/>
             }

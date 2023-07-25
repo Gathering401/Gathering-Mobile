@@ -1,20 +1,19 @@
 import { View, TouchableOpacity } from 'react-native';
-import Icon from 'react-native-vector-icons/dist/FontAwesome';
+import Icon from 'react-native-vector-icons/Entypo';
 
 import { styles } from '../styles/main-styles';
 
 export default function NavBar({navigation}) {
-    console.log('cheeeeeeese', navigation);
     return (
         <View style={styles.navbar}>
             <TouchableOpacity style={styles.alignCenterVertical} onPress={() => navigation.navigate('Home')}>
-                <Icon name="home" />
+                <Icon name="home" size={40} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.alignCenterVertical} onPress={() => navigation.navigate('Calendar')}>
-                <Icon name="home" />
+                <Icon name="calendar" size={40} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.alignCenterVertical} onPress={() => navigation.navigate('Groups')}>
-                <Icon name="home" />
+                <Icon name="users" size={40} />
             </TouchableOpacity>
         </View>
     )
