@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import { useState } from 'react';
+import { Text, TouchableOpacity, View, Modal } from 'react-native';
 import { Card } from 'react-native-paper';
-import { Modal } from 'react-native-web';
 
 import Label from '../Label';
 

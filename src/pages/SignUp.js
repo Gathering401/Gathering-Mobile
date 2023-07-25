@@ -1,9 +1,9 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import axios from 'axios';
 
 import { TouchableWithoutFeedback, Keyboard, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import CustomFormik from '../components/CustomFormik';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { styles } from '../styles/main-styles';
 
 const baseUrl = 'http://localhost:4000/graphql';

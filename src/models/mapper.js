@@ -1,18 +1,16 @@
-import React from 'react';
+import { MapToEventCard } from './EventCard';
+import { MapToInvitationCard } from './InvitationCard';
+import { MapToGroupCard } from './GroupCard';
 
-import { mapToEventCard } from './event-card';
-import { mapToInvitationCard } from './invitation-card';
-import { mapToGroupCard } from './group-card';
-
-export default function mapTo(mapper, obj) {
+export function MapTo({mapper, obj}) {
     switch(mapper) {
         case 'eventCard':
-            return mapToEventCard(obj);
+            return <MapToEventCard event={obj} />;
         case 'invitationCard':
-            return mapToInvitationCard(obj);
+            return <MapToInvitationCard invitation={obj} />;
         case 'groupCard':
-            return mapToGroupCard(obj);
+            return <MapToGroupCard group={obj} />;
         default:
-            return <></>
+            return null;
     }
 }

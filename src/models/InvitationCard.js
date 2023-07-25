@@ -1,16 +1,15 @@
-import React from 'react';
 import { Text, View } from 'react-native';
-import { FiCheck, FiX } from 'react-icons/fi';
-import { RiQuestionMark } from 'react-icons/ri';
+// import { FiCheck, FiX } from 'react-icons/fi';
+// import { RiQuestionMark } from 'react-icons/ri';
 
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 import { styles } from '../styles/main-styles';
 import InvitationResponse from '../components/InvitationResponse';
 
 import { DaysOfWeek, DaysOfMonth, MonthsOfYear } from '../enums/enums';
 
-export const mapToInvitationCard = (invitation) => {
+export const MapToInvitationCard = ({invitation}) => {
     const happensEvery = () => {
         switch(`${invitation.eRepeat}`) {
             case '0':
@@ -32,9 +31,9 @@ export const mapToInvitationCard = (invitation) => {
             </Text>
             }
             <View style={{...styles.container, ...styles.horizontalFlex}}>
-                <InvitationResponse status={1} component={<FiCheck color='green'/>} id={invitation.eventRepeatId}/>
+                {/* <InvitationResponse status={1} component={<FiCheck color='green'/>} id={invitation.eventRepeatId}/>
                 <InvitationResponse status={3} component={<RiQuestionMark color='blue'/>} id={invitation.eventRepeatId}/>
-                <InvitationResponse status={2} component={<FiX color='red'/>} id={invitation.eventRepeatId}/>
+                <InvitationResponse status={2} component={<FiX color='red'/>} id={invitation.eventRepeatId}/> */}
             </View>
         </>
     )

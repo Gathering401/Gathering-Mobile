@@ -1,18 +1,13 @@
-import React, { useState, useRef, useContext } from 'react';
 import axios from 'axios';
-// import * as SecureStore from 'expo-secure-store';
-import { TouchableWithoutFeedback, TextInput, KeyboardAvoidingView, Keyboard, Platform } from 'react-native';
-
-import { TokenContext } from '../tempContext/token-context';
+import * as SecureStore from 'expo-secure-store';
+import { TouchableWithoutFeedback, KeyboardAvoidingView, Keyboard, Platform } from 'react-native';
 
 import { styles } from '../styles/main-styles';
 import CustomFormik from '../components/CustomFormik';
 
 const baseUrl = 'http://localhost:4000/graphql';
 
-export default function Login({ navigation }) {
-    const { setToken } = useContext(TokenContext);
-
+export default function Login({ navigation, setSubmitted }) {
     const submitLogin = async (values) => {
         const query = `mutation Login($loginData: LoginDataInput!) {
             login(loginData: $loginData) {
@@ -38,8 +33,8 @@ export default function Login({ navigation }) {
         });
 
         if(data) {
-            // await SecureStore.setItemAsync('token', response.body.token);
-            setToken(data.data.login.token);
+            setSubmitted(true);
+            await SecureStore.setItemAsync('token', data.data.login.token);
             
             navigation.navigate('Home');
         }

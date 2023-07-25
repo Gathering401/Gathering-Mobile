@@ -1,20 +1,19 @@
 import axios from 'axios';
 
-import React, { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View } from 'react-native';
-
-import { TokenContext } from '../tempContext/token-context';
+import * as SecureStore from 'expo-secure-store';
 
 import NavBar from './NavBar';
 import HorizontalScrollWithTouch from './HorizontalScrollWithTouch';
+import Loader from './helpers/Loader';
 
-const baseUrl = 'http://localhost:4000/graphql';
+const baseUrl = 'https://a99b-2604-2d80-d288-4100-1c44-c92b-5b26-5132.ngrok-free.app/graphql';
 
 export default function LoggedInHome({navigation}) {
-    const { token } = useContext(TokenContext);
-    
     let [userGroups, setUserGroups] = useState([]);
     let [upcomingEvents, setUpcomingEvents] = useState([]);
+    let [waitingForApi, setWaitingForApi] = useState(true);
 
     useEffect(() => {
         const query = `query GetGroupsAndUpcomingEvents {
@@ -49,7 +48,8 @@ export default function LoggedInHome({navigation}) {
         }`
         
         async function getAllGroupsAndUpcoming() {
-            const { data: { data } } = await axios({
+            const token = await SecureStore.getItemAsync('token');
+            const { data } = await axios({
                 method: 'POST',
                 url: baseUrl,
                 data: {
@@ -62,28 +62,31 @@ export default function LoggedInHome({navigation}) {
             }).catch(err => console.log(err));
 
             if(data) {
-                setUserGroups(data.groups);
-                setUpcomingEvents(data.upcoming);
+                setUserGroups(data.data.groups);
+                setUpcomingEvents(data.data.upcoming);
             }
+
+            setWaitingForApi(false);
         }
 
         getAllGroupsAndUpcoming();
     }, []);
     
-    return (
+    return waitingForApi
+        ? <Loader />
+        : (
         <View>
             <HorizontalScrollWithTouch
                 scrollTitle="Groups"
                 scrollableItems={userGroups}
                 titleLocation="groupName"
                 mapper="groupCard"
-            />
-            <HorizontalScrollWithTouch
+            /><HorizontalScrollWithTouch
                 scrollTitle="Upcoming Events"
                 scrollableItems={upcomingEvents}
                 titleLocation="eventName"
                 mapper="eventCard"
-            />
+            />            
             <NavBar navigation={navigation}/>
         </View>
     )

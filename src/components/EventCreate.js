@@ -1,7 +1,8 @@
 import axios from 'axios';
-import moment from 'moment-timezone';
 
-import React, { useState, useContext } from 'react';
+import moment from 'moment-timezone';
+import { useState } from 'react';
+import * as SecureStore from 'expo-secure-store';
 
 import CustomFormik from './CustomFormik';
 
@@ -10,8 +11,6 @@ import { TokenContext } from '../tempContext/token-context';
 const baseUrl = 'http://localhost:5000/api';
 
 export default function EventCreate({ close }) {
-    const { token } = useContext(TokenContext);
-
     let [checked, setChecked] = useState('No');
     let [moreInformation, setMoreInformation] = useState(false);
 
@@ -38,6 +37,7 @@ export default function EventCreate({ close }) {
             }
         };
         
+        const token = await SecureStore.getItemAsync('token');
         // const response = await axios({
         //     method: 'POST',
         //     url: baseUrl,

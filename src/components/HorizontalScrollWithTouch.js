@@ -1,10 +1,9 @@
-import React from 'react';
 import { View, ScrollView, TouchableOpacity, Text } from 'react-native';
 import { Card } from '@rneui/base';
 
 import { styles } from '../styles/main-styles';
 
-import mapTo from '../models/mapper';
+import { MapTo } from '../models/Mapper';
 
 export default function HorizontalScrollWithTouch({scrollTitle, scrollableItems, titleLocation, mapper}) {
     return (
@@ -19,7 +18,7 @@ export default function HorizontalScrollWithTouch({scrollTitle, scrollableItems,
                                     {obj[titleLocation]}
                                 </Card.Title>
                             </View>
-                            {mapTo(mapper, obj)}
+                            <MapTo mapper={mapper} obj={obj} />
                         </Card>
                     </TouchableOpacity>
                 ))}

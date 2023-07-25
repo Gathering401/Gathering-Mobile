@@ -1,7 +1,7 @@
 import axios from 'axios';
-import React, { useState } from 'react';
-import { View, Text, Modal, TextInput, TouchableOpacity, Button } from 'react-native';
-import { FiCheck, FiX } from 'react-icons/fi';
+import { useState } from 'react';
+import { View, Text, Modal, TextInput, TouchableOpacity } from 'react-native';
+// import { FiCheck, FiX } from 'react-icons/fi';
 
 import { REACT_APP_GEO_CODE } from '@env';
 
@@ -56,8 +56,8 @@ export default function LocationInput({ label, placeholder, fieldName, setFieldV
             <Modal>
                 <Text>Is this correct?</Text>
                 <Text>{confirmAddress}</Text>
-                <TouchableOpacity onPress={resetLocationField}><FiX color='red'/></TouchableOpacity>
-                <TouchableOpacity onPress={submitLocation}><FiCheck color='green'/></TouchableOpacity>
+                {/* <TouchableOpacity onPress={resetLocationField}><FiX color='red'/></TouchableOpacity>
+                <TouchableOpacity onPress={submitLocation}><FiCheck color='green'/></TouchableOpacity> */}
             </Modal>
             : <View style={styles.inputAndLabel}>
                 <Label text={label} required={required}/>

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { TouchableOpacity } from 'react-native';
-import { BsCalendarPlus, BsPlus, BsPeople } from 'react-icons/bs';
+// import { BsCalendarPlus, BsPlus, BsPeople } from 'react-icons/bs';
 
 import GroupCreate from './GroupCreate';
 import EventCreate from './EventCreate';
@@ -29,7 +29,7 @@ export default function CreateButton({ type, setCreated }) {
             } else {
                 return (
                     <TouchableOpacity style={styles.createButton} onPress={() => setShowGroupCreate(true)}>
-                        <BsPeople /><BsPlus />
+                        {/* <BsPeople /><BsPlus /> */}
                     </TouchableOpacity>
                 )
             }
@@ -39,7 +39,7 @@ export default function CreateButton({ type, setCreated }) {
             } else {
                 return (
                     <TouchableOpacity style={styles.createButton} onPress={() => setShowEventCreate(true)}>
-                        <BsCalendarPlus />
+                        {/* <BsCalendarPlus /> */}
                     </TouchableOpacity>
                 )
             }

@@ -1,9 +1,9 @@
 import { View, Text } from 'react-native';
 
-export default function Loader() {
+export const MapToGroupCard = ({group}) => {
     return (
         <View>
-            <Text>Loading...</Text>
+            <Text>{group.description}</Text>
         </View>
     )
 }

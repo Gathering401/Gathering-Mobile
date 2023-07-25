@@ -1,17 +1,16 @@
 import axios from 'axios';
-import React, { useState, useContext } from 'react';
+import { useState } from 'react';
+import * as SecureStore from 'expo-secure-store';
 
-import { TokenContext } from '../tempContext/token-context';
 import CustomFormik from './CustomFormik';
 
 const baseUrl = 'http://localhost:4000/graphql';
 
-export default function GroupCreate({ close }) {
-    const { token } = useContext(TokenContext);
-    
+export default function GroupCreate({ close }) {    
     let [selectedCard, setSelectedCard] = useState(null);
 
     const postGroup = async (values) => {
+        const token = await SecureStore.getItemAsync('token');
         const response = await axios({
             method: 'POST',
             url: `${baseUrl}/Group`,

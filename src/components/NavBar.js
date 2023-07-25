@@ -1,21 +1,20 @@
-import React from 'react';
-
 import { View, TouchableOpacity } from 'react-native';
-import { BsCalendar, BsHouse, BsPeople } from 'react-icons/bs';
+import Icon from 'react-native-vector-icons/dist/FontAwesome';
 
 import { styles } from '../styles/main-styles';
 
 export default function NavBar({navigation}) {
+    console.log('cheeeeeeese', navigation);
     return (
         <View style={styles.navbar}>
             <TouchableOpacity style={styles.alignCenterVertical} onPress={() => navigation.navigate('Home')}>
-                <BsHouse />
+                <Icon name="home" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.alignCenterVertical} onPress={() => navigation.navigate('Calendar')}>
-                <BsCalendar />
+                <Icon name="home" />
             </TouchableOpacity>
             <TouchableOpacity style={styles.alignCenterVertical} onPress={() => navigation.navigate('Groups')}>
-                <BsPeople />
+                <Icon name="home" />
             </TouchableOpacity>
         </View>
     )
