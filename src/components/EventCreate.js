@@ -6,9 +6,7 @@ import * as SecureStore from 'expo-secure-store';
 
 import CustomFormik from './CustomFormik';
 
-import { TokenContext } from '../tempContext/token-context';
-
-const baseUrl = 'http://localhost:5000/api';
+const baseUrl = 'https://1df0-2604-2d80-d288-4100-1c44-c92b-5b26-5132.ngrok-free.app/graphql';
 
 export default function EventCreate({ close }) {
     let [checked, setChecked] = useState('No');

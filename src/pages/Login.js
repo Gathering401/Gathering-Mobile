@@ -5,7 +5,7 @@ import { TouchableWithoutFeedback, KeyboardAvoidingView, Keyboard, Platform } fr
 import { styles } from '../styles/main-styles';
 import CustomFormik from '../components/CustomFormik';
 
-const baseUrl = 'http://localhost:4000/graphql';
+const baseUrl = 'https://1df0-2604-2d80-d288-4100-1c44-c92b-5b26-5132.ngrok-free.app/graphql';
 
 export default function Login({ navigation, setSubmitted }) {
     const submitLogin = async (values) => {

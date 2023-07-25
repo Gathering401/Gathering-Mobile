@@ -12,11 +12,12 @@ import HorizontalScrollWithTouch from '../components/HorizontalScrollWithTouch';
 import NavBar from '../components/NavBar';
 import CreateButton from '../components/CreateButton';
 
-const baseUrl = 'http://localhost:4000/graphql';
-// const authToken = SecureStore.getItemAsync('token');
+import { styles } from '../styles/main-styles';
+
+const baseUrl = 'https://1df0-2604-2d80-d288-4100-1c44-c92b-5b26-5132.ngrok-free.app/graphql';
 
 export default function EventCalendar({ navigation }) {    
-    let [selected, setSelected] = useState(moment().format('MM/DD/YYYY'));
+    let [selected, setSelected] = useState(moment().format('YYYY-MM-DD'));
     let [events, setEvents] = useState(new Map());
     let [invitations, setInvitations] = useState([]);
     let [selectedEvents, setSelectedEvents] = useState([]);
@@ -108,43 +109,45 @@ export default function EventCalendar({ navigation }) {
     }, []);
 
     return (
-        <View>
-            <CreateButton type="event" setCreated={setEventCreated}/>
-            {events.size > 0
-                ? <>
-                    <CalendarList
-                        onDayPress={({dateString}) => {
-                            setSelected(moment(dateString).format('MM/DD/YYYY'));
+        <View style={{...styles.container, marginTop: '10%'}}>
+            <View style={styles.verticalSpread}>
+                <CreateButton type="event" setCreated={setEventCreated}/>
+                {events.size > 0
+                    ? <>
+                        <CalendarList
+                            onDayPress={({dateString}) => {
+                                setSelected(moment(dateString).format('YYYY-MM-DD'));
 
-                            setSelectedEvents(setAllSelected(dateString, events));
-                        }}
-                        markedDates={markedDates}
-                        onVisibleMonthsChange={date => {
-                            if(date.length === 1) {
-                                setCurrentMonth(moment(date[0].dateString, 'YYYY-MM-DD').format('YYYY-MM'));
-                                newMarkedDates(events);
-                            }
-                        }}
-                        enableSwipeMonths={true}
-                        initialDate={selected}
-                        horizontal={true}
-                        pagingEnabled={true}
-                    />
-                    <HorizontalScrollWithTouch
-                        scrollTitle={selected}
-                        scrollableItems={selectedEvents}
-                        titleLocation="eventName"
-                        mapper="eventCard"
-                    />
-                    <HorizontalScrollWithTouch
-                        scrollTitle="Pending Invitations"
-                        scrollableItems={invitations}
-                        titleLocation="eventName"
-                        mapper="invitationCard"
-                    />
-                </>
-                : <Loader />
-            }
+                                setSelectedEvents(setAllSelected(dateString, events));
+                            }}
+                            markedDates={markedDates}
+                            onVisibleMonthsChange={date => {
+                                if(date.length === 1) {
+                                    setCurrentMonth(moment(date[0].dateString, 'YYYY-MM-DD').format('YYYY-MM'));
+                                    newMarkedDates(events);
+                                }
+                            }}
+                            enableSwipeMonths={true}
+                            initialDate={selected}
+                            horizontal={true}
+                            pagingEnabled={true}
+                        />
+                        <HorizontalScrollWithTouch
+                            scrollTitle={selected}
+                            scrollableItems={selectedEvents}
+                            titleLocation="eventName"
+                            mapper="eventCard"
+                        />
+                        <HorizontalScrollWithTouch
+                            scrollTitle="Pending Invitations"
+                            scrollableItems={invitations}
+                            titleLocation="eventName"
+                            mapper="invitationCard"
+                        />
+                    </>
+                    : <Loader />
+                }
+            </View>
             <NavBar navigation={navigation}/>
         </View>
     )

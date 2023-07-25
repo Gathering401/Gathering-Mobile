@@ -4,7 +4,7 @@ import * as SecureStore from 'expo-secure-store';
 
 import CustomFormik from './CustomFormik';
 
-const baseUrl = 'http://localhost:4000/graphql';
+const baseUrl = 'https://1df0-2604-2d80-d288-4100-1c44-c92b-5b26-5132.ngrok-free.app/graphql';
 
 export default function GroupCreate({ close }) {    
     let [selectedCard, setSelectedCard] = useState(null);

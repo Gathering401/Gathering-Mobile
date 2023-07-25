@@ -8,6 +8,11 @@ export const styles = StyleSheet.create({
         justifyContent: 'center',
         width: '100%'
     },
+    verticalSpread: {
+        flex: 1,
+        width: '100%',
+        justifyContent: 'flex-start'
+    },
     scrollWithNav: {
         flex: 1,
         width: '100%',
