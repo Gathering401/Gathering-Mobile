@@ -14,7 +14,7 @@ import CreateButton from '../components/CreateButton';
 
 import { styles } from '../styles/main-styles';
 
-const baseUrl = 'https://1df0-2604-2d80-d288-4100-1c44-c92b-5b26-5132.ngrok-free.app/graphql';
+import { REACT_APP_API_URL } from '@env';
 
 export default function EventCalendar({ navigation }) {    
     let [selected, setSelected] = useState(moment().format('YYYY-MM-DD'));
@@ -88,7 +88,7 @@ export default function EventCalendar({ navigation }) {
                 data: {
                     query
                 },
-                url: baseUrl,
+                url: `${REACT_APP_API_URL}/graphql`,
                 headers: {
                     authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -127,7 +127,7 @@ export default function EventCalendar({ navigation }) {
                                     newMarkedDates(events);
                                 }
                             }}
-                            enableSwipeMonths={true}
+                            enableSwipeMonths={false}
                             initialDate={selected}
                             horizontal={true}
                             pagingEnabled={true}

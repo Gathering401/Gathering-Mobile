@@ -6,7 +6,7 @@ import CustomFormik from '../components/CustomFormik';
 import moment from 'moment-timezone';
 import { styles } from '../styles/main-styles';
 
-const baseUrl = 'https://1df0-2604-2d80-d288-4100-1c44-c92b-5b26-5132.ngrok-free.app/graphql';
+import { REACT_APP_API_URL } from '@env';
 
 export default function SignUp({ navigation }) {
     let [date, setDate] = useState(new Date());
@@ -15,7 +15,7 @@ export default function SignUp({ navigation }) {
         try {
             const response = await axios({
                 method: 'POST',
-                url: `${baseUrl}/User/Register`,
+                url: `${REACT_APP_API_URL}/graphql`,
                 data: {
                     firstName: values.firstName,
                     lastName: values.lastName,

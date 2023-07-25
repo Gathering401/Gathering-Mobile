@@ -5,7 +5,7 @@ import { TouchableWithoutFeedback, KeyboardAvoidingView, Keyboard, Platform } fr
 import { styles } from '../styles/main-styles';
 import CustomFormik from '../components/CustomFormik';
 
-const baseUrl = 'https://1df0-2604-2d80-d288-4100-1c44-c92b-5b26-5132.ngrok-free.app/graphql';
+import { REACT_APP_API_URL } from '@env';
 
 export default function Login({ navigation, setSubmitted }) {
     const submitLogin = async (values) => {
@@ -25,7 +25,7 @@ export default function Login({ navigation, setSubmitted }) {
         
         const { data } = await axios({
             method: 'POST',
-            url: baseUrl,
+            url: `${REACT_APP_API_URL}/graphql`,
             data: {
                 query,
                 variables

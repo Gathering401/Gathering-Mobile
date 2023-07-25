@@ -11,7 +11,7 @@ import CreateButton from '../components/CreateButton';
 
 import { styles } from '../styles/main-styles';
 
-const baseUrl = 'https://1df0-2604-2d80-d288-4100-1c44-c92b-5b26-5132.ngrok-free.app/graphql';
+import { REACT_APP_API_URL } from '@env';
 
 export default function Groups({ navigation }) {    
     let [search, setSearch] = useState('');
@@ -22,8 +22,8 @@ export default function Groups({ navigation }) {
     const getGroups = async () => {
         const token = await SecureStore.getItemAsync('token');
         const response = await axios({
-            method: 'GET',
-            url: `${baseUrl}/Group`,
+            method: 'POST',
+            url: `${REACT_APP_API_URL}/graphql`,
             headers: {
                 authorization: `Bearer ${token}`
             }
@@ -49,8 +49,8 @@ export default function Groups({ navigation }) {
     const getNewSearchGroups = async () => {
         if(search) {
             const response = await axios({
-                method: 'GET',
-                url: `${baseUrl}/Group/Search/${search}`,
+                method: 'POST',
+                url: `${REACT_APP_API_URL}/graphql`,
                 headers: {
                     authorization: `Bearer ${token}`
                 }

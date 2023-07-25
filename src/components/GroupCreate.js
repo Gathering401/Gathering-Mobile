@@ -4,7 +4,7 @@ import * as SecureStore from 'expo-secure-store';
 
 import CustomFormik from './CustomFormik';
 
-const baseUrl = 'https://1df0-2604-2d80-d288-4100-1c44-c92b-5b26-5132.ngrok-free.app/graphql';
+import { REACT_APP_API_URL } from '@env';
 
 export default function GroupCreate({ close }) {    
     let [selectedCard, setSelectedCard] = useState(null);
@@ -13,7 +13,7 @@ export default function GroupCreate({ close }) {
         const token = await SecureStore.getItemAsync('token');
         const response = await axios({
             method: 'POST',
-            url: `${baseUrl}/Group`,
+            url: `${REACT_APP_API_URL}/graphql`,
             data: {
                 groupName: values.groupName,
                 location: values.location,

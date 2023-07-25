@@ -10,7 +10,7 @@ import Loader from './helpers/Loader';
 
 import { styles } from '../styles/main-styles';
 
-const baseUrl = 'https://1df0-2604-2d80-d288-4100-1c44-c92b-5b26-5132.ngrok-free.app/graphql';
+import { REACT_APP_API_URL } from '@env';
 
 export default function LoggedInHome({navigation}) {
     let [userGroups, setUserGroups] = useState([]);
@@ -53,7 +53,7 @@ export default function LoggedInHome({navigation}) {
             const token = await SecureStore.getItemAsync('token');
             const { data } = await axios({
                 method: 'POST',
-                url: baseUrl,
+                url: `${REACT_APP_API_URL}/graphql`,
                 data: {
                     query
                 },
