@@ -71,6 +71,8 @@ export default function LoggedInHome({navigation}) {
             setWaitingForApi(false);
         }
 
+        
+        // literally having this comment here makes the code work. It not being here makes it not work. WHAT
         getAllGroupsAndUpcoming();
     }, []);
     
@@ -84,12 +86,14 @@ export default function LoggedInHome({navigation}) {
                     scrollTitle="Groups"
                     scrollableItems={userGroups}
                     titleLocation="groupName"
-                    mapper="groupCard"
+                    mapper="group"
+                    navigation={navigation}
                 /><HorizontalScrollWithTouch
                     scrollTitle="Upcoming Events"
                     scrollableItems={upcomingEvents}
                     titleLocation="eventName"
-                    mapper="eventCard"
+                    mapper="event"
+                    navigation={navigation}
                 />
             </ScrollView>
             <NavBar navigation={navigation}/>

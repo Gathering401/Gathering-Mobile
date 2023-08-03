@@ -6,6 +6,7 @@ import SignUp from './src/pages/SignUp';
 import Login from './src/pages/Login.js';
 import EventCalendar from './src/pages/EventCalendar';
 import Groups from './src/pages/Groups';
+import Group from './src/pages/Group';
 
 const Stack = createNativeStackNavigator();
 
@@ -18,6 +19,7 @@ export default function App() {
                 <Stack.Screen name="Login" component={Login} options={{title: "Log In"}} />
                 <Stack.Screen name="Calendar" component={EventCalendar} />
                 <Stack.Screen name="Groups" component={Groups} />
+                <Stack.Screen name="Group" component={Group} />
             </Stack.Navigator>
         </NavigationContainer>
     );

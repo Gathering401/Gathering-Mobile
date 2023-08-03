@@ -4,11 +4,11 @@ import { MapToGroupCard } from './GroupCard';
 
 export function MapTo({mapper, obj}) {
     switch(mapper) {
-        case 'eventCard':
+        case 'event':
             return <MapToEventCard event={obj} />;
-        case 'invitationCard':
+        case 'invitation':
             return <MapToInvitationCard invitation={obj} />;
-        case 'groupCard':
+        case 'group':
             return <MapToGroupCard group={obj} />;
         default:
             return null;
