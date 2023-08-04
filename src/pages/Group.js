@@ -10,9 +10,10 @@ import { REACT_APP_API_URL } from '@env';
 
 export default function Group({ route: { params: { id } }, navigation }) {
     let [group, setGroup] = useState({});
+    let [location, setLocation] = useState(null);
 
     useEffect(() => {
-        const query = `query GetGroup($groupId: Int!) {
+        const query = `query getGroup($groupId: Int!) {
             group: getGroup(groupId: $groupId) {
                 groupName
                 description
@@ -41,10 +42,11 @@ export default function Group({ route: { params: { id } }, navigation }) {
             groupId: id
         }
 
-        async function getGroup() {
-            // you not bein serious
+        async function getGroupAndLocation() {
+            // you cannot be serious. this legitimately makes the code work
+            console.log('token and stuff', token, query, variables);
             const token = await SecureStore.getItemAsync('token');
-            const { data } = await axios({
+            const { data: { data } } = await axios({
                 method: 'POST',
                 data: {
                     query,
@@ -57,17 +59,30 @@ export default function Group({ route: { params: { id } }, navigation }) {
                 }
             }).catch(err => console.log(err));
 
+            console.log('are you sure about that', data);
             if(data) {
-                console.log('group', data);
+                console.log('what are you', data);
+                setGroup(data.group);
+
+                const { data: { data } } = await axios({
+                    method: 'GET',
+                    url: `https://maps.googleapis.com/maps/api/geocode/json?place_id=${group.location}&key=${REACT_APP_GEO_CODE}`,
+                    headers: {
+                        authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }).catch(err => console.log(err));
             }
         }
 
-        getGroup();
+        getGroupAndLocation();
     });
 
     return (
-        <View>
-            <Text>In progress</Text>
+        <View style={styles.container}>
+            <Text>{group.groupName}</Text>
+            <Text>{group.description}</Text>
+            <Text>{location}</Text>
         </View>
     )
 }
