@@ -1,17 +1,11 @@
-import axios from 'axios';
-
-import { useEffect, useState } from 'react';
 import { gql, useQuery } from '@apollo/client';
 import { View, ScrollView, Text } from 'react-native';
-import * as SecureStore from 'expo-secure-store';
 
 import NavBar from './NavBar';
 import HorizontalScrollWithTouch from './HorizontalScrollWithTouch';
 import Loader from './helpers/Loader';
 
 import { styles } from '../styles/main-styles';
-
-import { REACT_APP_API_URL } from '@env';
 
 export default function LoggedInHome({navigation}) {
     const { data, errors, loading } = useQuery(gql`query GetGroupsAndUpcomingEvents {
@@ -47,6 +41,11 @@ export default function LoggedInHome({navigation}) {
 
     if(loading) {
         return <Loader />;
+    }
+
+    if(errors) {
+        console.log('Error', errors);
+        return null;
     }
 
     const { upcoming, groups } = data;
