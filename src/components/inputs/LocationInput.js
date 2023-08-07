@@ -1,37 +1,78 @@
 import axios from 'axios';
-import React, { useState } from 'react';
-import { View, Text } from 'react-native';
+import { useState } from 'react';
+import { View, Text, Modal, TextInput, TouchableOpacity } from 'react-native';
+// import { FiCheck, FiX } from 'react-icons/fi';
+
 import { REACT_APP_GEO_CODE } from '@env';
+
+import Label from '../Label';
+import ErrorMessage from '../helpers/ErrorMessage';
 
 import { styles } from '../../styles/main-styles';
 
-import CustomFormik from '../CustomFormik';
+const tryAgainText = 'Make sure you didn\'t make any typos. If it looks correct, try being more precise with City, State, or Zip Code.';
 
-export default function LocationInput() {
-    let [locationSearched, setLocationSearched] = useState(false);
+export default function LocationInput({ label, placeholder, fieldName, setFieldValue, required }) {
+    let [locationToSearch, setLocationToSearch] = useState('');
     let [confirmAddress, setConfirmAddress] = useState('');
-
-    const searchForLocation = async (values) => {
-        const { data: { results: [ { formatted_address: addressSearched } ] } } = await axios({
-            method: 'GET',
-            url: `https://maps.googleapis.com/maps/api/geocode/json?address=${values.locationSearch}&key=${REACT_APP_GEO_CODE}`
-        });
-        
-        console.log('address', addressSearched);
-        if(addressSearched) {
-            setConfirmAddress(addressSearched);
+    let [locationSearched, setLocationSearched] = useState(false);
+    let [locationSubmitted, setLocationSubmitted] = useState(false);
+    let [displayError, setDisplayError] = useState({display: false, text: ''});
+    let [placeId, setPlaceId] = useState('');
+    
+    const searchForLocation = async () => {
+        try {
+            const { data: { results: [ { formatted_address: addressSearched, place_id } ] } } = await axios({
+                method: 'GET',
+                url: `https://maps.googleapis.com/maps/api/geocode/json?address=${locationToSearch}&key=${REACT_APP_GEO_CODE}`
+            });
+            
+            
+            if(addressSearched) {
+                setConfirmAddress(addressSearched);
+                setPlaceId(place_id);
+                setLocationSearched(true);
+            }
+        } catch(err) {
+            setLocationSearched(false);
+            setDisplayError({display: true, text: `Invalid location. ${tryAgainText}`});
         }
     }
+
+    const resetLocationField = () => {
+        setLocationSearched(false);
+        setDisplayError({display: true, text: tryAgainText});
+    }
+
+    const submitLocation = () => {
+        setFieldValue(fieldName, placeId);
+        setLocationSearched(false);
+        setLocationSubmitted(true);
+    }
     
-    return locationSearched ?
-        <View>
-            <Text>...insert form here</Text>
-        </View>
-        :
-        <CustomFormik
-            steps={[[
-                { label: 'Search for location...', type: 'text', initial: '', placeholder: '1234 Main St', fieldName: 'locationSearch'}
-            ]]}
-            formSubmit={searchForLocation}
-        />
+    return <>
+        {displayError.display && <ErrorMessage text={displayError.text} />}
+        {locationSearched ?
+            <Modal>
+                <Text>Is this correct?</Text>
+                <Text>{confirmAddress}</Text>
+                {/* <TouchableOpacity onPress={resetLocationField}><FiX color='red'/></TouchableOpacity>
+                <TouchableOpacity onPress={submitLocation}><FiCheck color='green'/></TouchableOpacity> */}
+            </Modal>
+            : <View style={styles.inputAndLabel}>
+                <Label text={label} required={required}/>
+                <TextInput
+                    style={styles.textInput}
+                    required={required}
+                    spellCheck={false}
+                    autoCapitalize='words'
+                    onChangeText={(value) => setLocationToSearch(value)}
+                    onSubmitEditing={searchForLocation}
+                    placeholder={placeholder}
+                    placeholderTextColor="rgb(190, 190, 190)"
+                    value={locationSubmitted ? confirmAddress : locationToSearch}
+                />
+            </View>
+        }
+    </>
 }

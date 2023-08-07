@@ -1,48 +1,29 @@
-import React, { useState, useRef, useContext } from 'react';
-import axios from 'axios';
-// import * as SecureStore from 'expo-secure-store';
-import { TouchableWithoutFeedback, TextInput, KeyboardAvoidingView, Keyboard, Platform } from 'react-native';
+import { gql, useMutation } from '@apollo/client';
+import { TouchableWithoutFeedback, KeyboardAvoidingView, Keyboard, Platform } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
 
-import { TokenContext } from '../tempContext/token-context';
+import Loader from '../components/helpers/Loader';
 
-import { styles } from '../styles/main-styles';
 import CustomFormik from '../components/CustomFormik';
 
-const baseUrl = 'http://localhost:4000/graphql';
+import { styles } from '../styles/main-styles';
 
 export default function Login({ navigation }) {
-    const { setToken } = useContext(TokenContext);
-
-    const submitLogin = async (values) => {
-        const query = `mutation Login($loginData: LoginDataInput!) {
-            login(loginData: $loginData) {
-                id
-                username
-                token
-            }
-        }`;
-        const variables = {
-            loginData: {
-                username: values.username,
-                password: values.password
-            }
-        };
-        
-        const { data } = await axios({
-            method: 'POST',
-            url: baseUrl,
-            data: {
-                query,
-                variables
-            }
-        });
-
-        if(data) {
-            // await SecureStore.setItemAsync('token', response.body.token);
-            setToken(data.data.login.token);
-            
-            navigation.navigate('Home');
+    const LOGIN_MUTATION = gql`mutation LogIn($username: String!, $password: String!) {
+        login(username: $username, password: $password) {
+            token
         }
+    }`;
+
+    const [submitLogin, { errors, loading } ] = useMutation(LOGIN_MUTATION);
+    
+    if(errors) {
+        console.log('Error', errors);
+        return null;
+    }
+    
+    if(loading) {
+        return <Loader />
     }
     
     return (
@@ -57,7 +38,17 @@ export default function Login({ navigation }) {
                         { label: 'Password', type: 'password', initial: '', placeholder: 'password', fieldName: 'password'}
                     ]
                 ]}
-                formSubmit={submitLogin}
+                formSubmit={(values) => {
+                    submitLogin({
+                        variables: values,
+                        onCompleted: async ({ login }) => {
+                            await SecureStore.setItemAsync('token', login.token);
+                            navigation.navigate('Home');
+                        },
+                        onError: (error) => {
+                            console.log('Error', error);
+                        }});
+                }}
                 />
             </KeyboardAvoidingView>
         </TouchableWithoutFeedback>

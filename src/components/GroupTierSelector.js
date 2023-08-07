@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { Modal } from 'react-native';
 import { styles } from '../styles/main-styles';
 

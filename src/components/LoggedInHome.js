@@ -1,89 +1,73 @@
-import axios from 'axios';
-
-import React, { useContext, useEffect, useState } from 'react';
-import { View } from 'react-native';
-
-import { TokenContext } from '../tempContext/token-context';
+import { gql, useQuery } from '@apollo/client';
+import { View, ScrollView, Text } from 'react-native';
 
 import NavBar from './NavBar';
 import HorizontalScrollWithTouch from './HorizontalScrollWithTouch';
+import Loader from './helpers/Loader';
 
-const baseUrl = 'http://localhost:4000/graphql';
+import { styles } from '../styles/main-styles';
 
 export default function LoggedInHome({navigation}) {
-    const { token } = useContext(TokenContext);
-    
-    let [userGroups, setUserGroups] = useState([]);
-    let [upcomingEvents, setUpcomingEvents] = useState([]);
-
-    useEffect(() => {
-        const query = `query GetGroupsAndUpcomingEvents {
-            groups: getGroups {
-                groupId
-                groupName
-                description
-                location
-                groupUsers {
-                    username
-                    firstName
-                    lastName
-                    role
-                }
-                owner {
-                    username
-                    firstName
-                    lastName
-                }
+    const { data, errors, loading } = useQuery(gql`query GetGroupsAndUpcomingEvents {
+        groups: getGroups {
+            groupId
+            groupName
+            description
+            location
+            groupUsers {
+                username
+                firstName
+                lastName
+                role
             }
-            upcoming: getUpcomingEvents {
-                eventId
-                groupId
-                groupName
-                eventName
-                description
-                eventDate
-                price
-                food
-                location
-            }
-        }`
-        
-        async function getAllGroupsAndUpcoming() {
-            const { data: { data } } = await axios({
-                method: 'POST',
-                url: baseUrl,
-                data: {
-                    query
-                },
-                headers: {
-                    authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            }).catch(err => console.log(err));
-
-            if(data) {
-                setUserGroups(data.groups);
-                setUpcomingEvents(data.upcoming);
+            owner {
+                username
+                firstName
+                lastName
             }
         }
+        upcoming: getUpcomingEvents {
+            eventId
+            groupId
+            groupName
+            eventName
+            description
+            eventDate
+            price
+            food
+            location
+        }
+    }`);
 
-        getAllGroupsAndUpcoming();
-    }, []);
+    if(loading) {
+        return <Loader />;
+    }
+
+    if(errors) {
+        console.log('Error', errors);
+        return null;
+    }
+
+    const { upcoming, groups } = data;
     
     return (
-        <View>
-            <HorizontalScrollWithTouch
-                scrollTitle="Groups"
-                scrollableItems={userGroups}
-                titleLocation="groupName"
-                mapper="groupCard"
-            />
-            <HorizontalScrollWithTouch
-                scrollTitle="Upcoming Events"
-                scrollableItems={upcomingEvents}
-                titleLocation="eventName"
-                mapper="eventCard"
-            />
+        <View style={styles.container}>
+            <ScrollView contentContainerStyle={styles.scrollWithNav}>
+                <Text style={styles.title}>Hello, world!</Text>
+                <HorizontalScrollWithTouch
+                    scrollTitle="Groups"
+                    scrollableItems={groups}
+                    titleLocation="groupName"
+                    mapper="group"
+                    navigation={navigation}
+                /><HorizontalScrollWithTouch
+                    scrollTitle="Upcoming Events"
+                    scrollableItems={upcoming}
+                    titleLocation="eventName"
+                    mapper="event"
+                    navigation={navigation}
+                />
+            </ScrollView>
             <NavBar navigation={navigation}/>
         </View>
     )

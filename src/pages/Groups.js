@@ -1,31 +1,29 @@
 import axios from 'axios';
 
-import React, { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, ScrollView } from 'react-native';
 import { Card } from '@rneui/base';
-import { SlMagnifier } from 'react-icons/sl';
-
-import { TokenContext } from '../tempContext/token-context';
+// import { SlMagnifier } from 'react-icons/sl';
+import * as SecureStore from 'expo-secure-store';
 
 import NavBar from '../components/NavBar';
 import CreateButton from '../components/CreateButton';
 
 import { styles } from '../styles/main-styles';
 
-const baseUrl = 'http://localhost:4000/graphql';
+import { REACT_APP_API_URL } from '@env';
 
-export default function Groups({ navigation }) {
-    const { token } = useContext(TokenContext);
-    
+export default function Groups({ navigation }) {    
     let [search, setSearch] = useState('');
     let [groups, setGroups] = useState([]);
     let [searchForNew, setSearchForNew] = useState(false);
     let [groupCreated, setGroupCreated] = useState(false);
 
     const getGroups = async () => {
+        const token = await SecureStore.getItemAsync('token');
         const response = await axios({
-            method: 'GET',
-            url: `${baseUrl}/Group`,
+            method: 'POST',
+            url: `${REACT_APP_API_URL}/graphql`,
             headers: {
                 authorization: `Bearer ${token}`
             }
@@ -51,8 +49,8 @@ export default function Groups({ navigation }) {
     const getNewSearchGroups = async () => {
         if(search) {
             const response = await axios({
-                method: 'GET',
-                url: `${baseUrl}/Group/Search/${search}`,
+                method: 'POST',
+                url: `${REACT_APP_API_URL}/graphql`,
                 headers: {
                     authorization: `Bearer ${token}`
                 }
@@ -69,7 +67,7 @@ export default function Groups({ navigation }) {
     return (
         <View style={styles.container}>
             <CreateButton type="group" setCreated={setGroupCreated}/>
-            <SlMagnifier />
+            {/* <SlMagnifier /> */}
             <TextInput
                 style={styles.textInput}
                 autoComplete={false}

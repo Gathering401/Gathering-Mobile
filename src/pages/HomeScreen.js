@@ -1,31 +1,31 @@
-import React, { useState, useEffect, useContext } from 'react';
-
-import { Text, View, Button } from 'react-native';
-// import * as SecureStore from 'expo-secure-store';
+import { useState, useEffect } from 'react';
+import { Text, View } from 'react-native';
+import * as SecureStore from 'expo-secure-store';
+import { useIsFocused } from '@react-navigation/native';
 
 import LoggedInHome from '../components/LoggedInHome';
 import SignInOptions from '../components/SignInOptions';
 
 import { styles } from '../styles/main-styles';
 
-export default function HomeScreen({navigation, token}) {
-    let [loggedIn, setLoggedIn] = useState(null);
-
+export default function HomeScreen({navigation}) {
+    let [token, setToken] = useState(null);
+    const isFocused = useIsFocused();
+    
     useEffect(() => {
-        const getToken = async () => {
-            // const token = await SecureStore.getItemAsync('token');
+        async function getToken() {
+            const authToken = await SecureStore.getItemAsync('token');
 
-            setLoggedIn(token);
+            setToken(authToken);
         }
-        
+
         getToken();
-    }, [token]);
+    }, [isFocused]);
     
     return (
         <View style={{...styles.container, ...styles.containerColor}}>
-            <Text style={styles.title}>Hello, world!</Text>
             {
-                loggedIn ? <LoggedInHome navigation={navigation}/> : <SignInOptions navigation={navigation}/>
+                token ? <LoggedInHome navigation={navigation}/> : <SignInOptions navigation={navigation}/>
             }
         </View>
     )

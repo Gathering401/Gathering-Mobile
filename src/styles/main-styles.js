@@ -2,11 +2,21 @@ import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
     container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      alignItems: 'space-around',
-      justifyContent: 'center',
-      width: '100%'
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '100%'
+    },
+    verticalSpread: {
+        flex: 1,
+        width: '100%',
+        justifyContent: 'flex-start'
+    },
+    scrollWithNav: {
+        flex: 1,
+        width: '100%',
+        justifyContent: 'center'
     },
     horizontalScroller: {
         backgroundColor: '#fff',
@@ -90,9 +100,6 @@ export const styles = StyleSheet.create({
         margin: 100
     },
     navbar: {
-        fontSize: 40,
-        position: 'fixed',
-        bottom: 0,
         width: '100%',
         backgroundColor: 'green',
         height: 75,
@@ -117,5 +124,16 @@ export const styles = StyleSheet.create({
     inputLabel: {
         color: 'grey',
         marginLeft: 10
+    },
+    errorMessage: {
+        color: 'red',
+        textAlign: 'center',
+        fontSize: 12
+    },
+    eventRepeatSelection: {
+        fontSize: 30,
+        border: '1px solid rgb(140, 140, 140)',
+        borderRadius: 15,
+        padding: 15
     }
 });

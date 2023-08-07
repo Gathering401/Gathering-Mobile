@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { View, TouchableOpacity, Text, CheckBox } from 'react-native';
+import { useState, useCallback } from 'react';
+import { View, Button, TouchableOpacity, Text, CheckBox, SafeAreaView } from 'react-native';
 
-import DatePicker from 'react-native-modern-datepicker';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import moment from 'moment-timezone';
 
 import Label from '../Label';
@@ -9,66 +9,84 @@ import EventRepeatSelection from './EventRepeatSelection';
 
 import { styles } from '../../styles/main-styles';
 
-export default function DateInput({ label, date, setDate, repeat, setRepeat, required }) {
-    let [open, setOpen] = useState(false);
-    let [showRepeat, setShowRepeat] = useState(false);
-    let [displayDate, setDisplayDate] = useState(moment().format('MMMM Do, YYYY'));
+export default function DateInput({ label, fieldName, setFieldValue, required }) {
+    const [date, setDate] = useState(new Date());
+    const [mode, setMode] = useState('date');
+    const [show, setShow] = useState(false);
+  
+    const onChange = (_, selectedDate) => {
+      const currentDate = selectedDate;
+      setShow(false);
+      setDate(currentDate);
+      setFieldValue(fieldName, currentDate);
+    };
+  
+    const showMode = (currentMode) => {
+      setShow(true);
+      setMode(currentMode);
+    };
+  
+    const showDatepicker = () => {
+      showMode('date');
+    };
+  
+    const showTimepicker = () => {
+      showMode('time');
+    };
 
-    const determineSetDate = (date) => {
-        const momentDate = moment(date);
-        
-        setDate(momentDate.toISOString());
-        switch(repeat) {
-            case 'weekly':
-                setDisplayDate(`Every ${momentDate.format('dddd')}, starting ${momentDate.format('MM/DD/YYYY')}`);
-                break;
-            case 'monthly':
-                setDisplayDate(`${momentDate.format('Do')} every month, starting ${momentDate.format('MM/DD/YYYY')}`);
-                break;
-            case 'annually':
-                setDisplayDate(`Every year on ${momentDate.format('MMMM Do')}, starting ${momentDate.format('MM/DD/YYYY')}`);
-                break;
-            default:
-                setDisplayDate(moment(date).format('MMMM Do, YYYY'))
-                break;
-        }
-    }
-    
     return (
         <View style={styles.inputAndLabel}>
             <Label text={label} required={required}/>
-            <TouchableOpacity onPress={() => setOpen(!open)} style={styles.modalButton}>
-                <Text style={styles.modalButtonText}>{displayDate}</Text>
-            </TouchableOpacity>
-            <View style={{...open ? {} : styles.hidden}}>
-                <DatePicker
-                    options={{
-                        backgroundColor: '#090C08',
-                        textHeaderColor: '#FFA25B',
-                        textDefaultColor: '#F6E7C1',
-                        selectedTextColor: '#fff',
-                        mainColor: '#F4722B',
-                        textSecondaryColor: '#D6C7A1',
-                        borderColor: 'rgba(122, 146, 165, 0.1)',
-                    }}
-                    mode='calendar'
-                    date={date}
-                    onSelectedChange={newDate => determineSetDate(newDate)}
-                />
-            </View>
-            <Label text="Is it recurring?" />
+            <SafeAreaView>
+                <Button onPress={showDatepicker} title={moment(date).format('MM/DD/YYYY')} />
+                <Button onPress={showTimepicker} title={moment(date).format('HH:mm')} />
+                {show && (
+                    <DateTimePicker
+                        testID="dateTimePicker"
+                        value={date}
+                        mode={mode}
+                        is24Hour={true}
+                        onChange={onChange}
+                    />
+                )}
+            </SafeAreaView>
+            {/* <Label text="Is it recurring?" />
             <CheckBox
                 value={showRepeat}
-                onValueChange={() => setShowRepeat(!showRepeat) }
+                onValueChange={() => setShowRepeat(!showRepeat)}
             />
             {showRepeat &&
                 <View>
-                    <EventRepeatSelection setShowRepeat={setShowRepeat} setRepeat={setRepeat} value='Weekly'/>
-                    <EventRepeatSelection setShowRepeat={setShowRepeat} setRepeat={setRepeat} value='Monthly'/>
-                    <EventRepeatSelection setShowRepeat={setShowRepeat} setRepeat={setRepeat} value='Annually'/>
-                    <EventRepeatSelection setShowRepeat={setShowRepeat} setRepeat={setRepeat} value='Never'/>
+                    <EventRepeatSelection
+                        setShowRepeat={setShowRepeat}
+                        setFieldValue={setFieldValue}
+                        setDisplay={determineDisplayDate}
+                        selectedDate={dateFromDate}
+                        value='Weekly'
+                    />
+                    <EventRepeatSelection
+                        setShowRepeat={setShowRepeat}
+                        setFieldValue={setFieldValue}
+                        setDisplay={determineDisplayDate}
+                        selectedDate={dateFromDate}
+                        value='Monthly'
+                    />
+                    <EventRepeatSelection
+                        setShowRepeat={setShowRepeat}
+                        setFieldValue={setFieldValue}
+                        setDisplay={determineDisplayDate}
+                        selectedDate={dateFromDate}
+                        value='Annually'
+                    />
+                    <EventRepeatSelection
+                        setShowRepeat={setShowRepeat}
+                        setFieldValue={setFieldValue}
+                        setDisplay={determineDisplayDate}
+                        selectedDate={dateFromDate}
+                        value='Never'
+                    />
                 </View>
-            }
+            }*/}
         </View>
     )
 }

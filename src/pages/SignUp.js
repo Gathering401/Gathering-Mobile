@@ -1,12 +1,12 @@
-import React, { useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import axios from 'axios';
 
 import { TouchableWithoutFeedback, Keyboard, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import CustomFormik from '../components/CustomFormik';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { styles } from '../styles/main-styles';
 
-const baseUrl = 'http://localhost:4000/graphql';
+import { REACT_APP_API_URL } from '@env';
 
 export default function SignUp({ navigation }) {
     let [date, setDate] = useState(new Date());
@@ -15,7 +15,7 @@ export default function SignUp({ navigation }) {
         try {
             const response = await axios({
                 method: 'POST',
-                url: `${baseUrl}/User/Register`,
+                url: `${REACT_APP_API_URL}/graphql`,
                 data: {
                     firstName: values.firstName,
                     lastName: values.lastName,

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Formik } from 'formik';
 import { Button, View, Modal } from 'react-native';
 
@@ -11,6 +11,7 @@ import ParagraphInput from './inputs/ParagraphInput';
 import RadioGroup from './inputs/RadioGroup';
 import DropDown from './inputs/DropDown';
 import CardSelector from './inputs/CardSelector';
+import LocationInput from './inputs/LocationInput';
 
 import { styles } from '../styles/main-styles';
 
@@ -28,7 +29,7 @@ export default function CustomFormik({ steps, moreInformation, setMoreInformatio
             }, {})}
             onSubmit={values => formSubmit(values)}
         >
-            {({ handleChange, handleBlur, handleSubmit, values }) => (
+            {({ handleChange, handleBlur, handleSubmit, values, setFieldValue }) => (
                 <Modal>
                     {steps.map((step, index) => (
                         <View style={index === currentStep ? {} : styles.hidden} key={index}>
@@ -36,7 +37,6 @@ export default function CustomFormik({ steps, moreInformation, setMoreInformatio
                             step.map((field, index2) => {
                                 switch(field.type) {
                                     case 'name':
-                                    case 'location':
                                         return <BasicInput
                                             handleChange={handleChange}
                                             handleBlur={handleBlur}
@@ -99,10 +99,8 @@ export default function CustomFormik({ steps, moreInformation, setMoreInformatio
                                     case 'date':
                                         return <DateInput
                                             label={field.label}
-                                            date={field.date}
-                                            setDate={field.setDate}
-                                            repeat={field.repeat}
-                                            setRepeat={field.setRepeat}
+                                            fieldName={field.fieldName}
+                                            setFieldValue={setFieldValue}
                                             required={field.required}
                                             key={`0${index2}`}
                                         />
@@ -151,6 +149,15 @@ export default function CustomFormik({ steps, moreInformation, setMoreInformatio
                                             cards={field.cards}
                                             selectedCard={field.selectedCard}
                                             setSelectedCard={field.setSelectedCard}
+                                            key={`0${index2}`}
+                                        />
+                                    case 'location':
+                                        return <LocationInput
+                                            label={field.label}
+                                            placeholder={field.placeholder}
+                                            fieldName={field.fieldName}
+                                            setFieldValue={setFieldValue}
+                                            required={field.required}
                                             key={`0${index2}`}
                                         />
                                     default:

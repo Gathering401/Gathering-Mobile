@@ -1,11 +1,9 @@
 import axios from 'axios';
 
-import { useState, useEffect, useContext } from 'react';
-// import * as SecureStore from 'expo-secure-store';
+import { useState, useEffect } from 'react';
+import * as SecureStore from 'expo-secure-store';
 import { View } from 'react-native';
 import { CalendarList } from 'react-native-calendars';
-
-import { TokenContext } from '../tempContext/token-context';
 
 import moment from 'moment-timezone';
 
@@ -14,13 +12,12 @@ import HorizontalScrollWithTouch from '../components/HorizontalScrollWithTouch';
 import NavBar from '../components/NavBar';
 import CreateButton from '../components/CreateButton';
 
-const baseUrl = 'http://localhost:4000/graphql';
-// const authToken = SecureStore.getItemAsync('token');
+import { styles } from '../styles/main-styles';
 
-export default function EventCalendar({ navigation }) {
-    const { token } = useContext(TokenContext);
-    
-    let [selected, setSelected] = useState(moment().format('MM/DD/YYYY'));
+import { REACT_APP_API_URL } from '@env';
+
+export default function EventCalendar({ navigation }) {    
+    let [selected, setSelected] = useState(moment().format('YYYY-MM-DD'));
     let [events, setEvents] = useState(new Map());
     let [invitations, setInvitations] = useState([]);
     let [selectedEvents, setSelectedEvents] = useState([]);
@@ -85,12 +82,13 @@ export default function EventCalendar({ navigation }) {
                 }
             }`;
 
+            const token = await SecureStore.getItemAsync('token');
             const { data: { data } } = await axios({
                 method: 'POST',
                 data: {
                     query
                 },
-                url: baseUrl,
+                url: `${REACT_APP_API_URL}/graphql`,
                 headers: {
                     authorization: `Bearer ${token}`,
                     'Content-Type': 'application/json'
@@ -111,43 +109,47 @@ export default function EventCalendar({ navigation }) {
     }, []);
 
     return (
-        <View>
-            <CreateButton type="event" setCreated={setEventCreated}/>
-            {events.size > 0
-                ? <>
-                    <CalendarList
-                        onDayPress={({dateString}) => {
-                            setSelected(moment(dateString).format('MM/DD/YYYY'));
+        <View style={{...styles.container, marginTop: '10%'}}>
+            <View style={styles.verticalSpread}>
+                <CreateButton type="event" setCreated={setEventCreated}/>
+                {events.size > 0
+                    ? <>
+                        <CalendarList
+                            onDayPress={({dateString}) => {
+                                setSelected(moment(dateString).format('YYYY-MM-DD'));
 
-                            setSelectedEvents(setAllSelected(dateString, events));
-                        }}
-                        markedDates={markedDates}
-                        onVisibleMonthsChange={date => {
-                            if(date.length === 1) {
-                                setCurrentMonth(moment(date[0].dateString, 'YYYY-MM-DD').format('YYYY-MM'));
-                                newMarkedDates(events);
-                            }
-                        }}
-                        enableSwipeMonths={true}
-                        initialDate={selected}
-                        horizontal={true}
-                        pagingEnabled={true}
-                    />
-                    <HorizontalScrollWithTouch
-                        scrollTitle={selected}
-                        scrollableItems={selectedEvents}
-                        titleLocation="eventName"
-                        mapper="eventCard"
-                    />
-                    <HorizontalScrollWithTouch
-                        scrollTitle="Pending Invitations"
-                        scrollableItems={invitations}
-                        titleLocation="eventName"
-                        mapper="invitationCard"
-                    />
-                </>
-                : <Loader />
-            }
+                                setSelectedEvents(setAllSelected(dateString, events));
+                            }}
+                            markedDates={markedDates}
+                            onVisibleMonthsChange={date => {
+                                if(date.length === 1) {
+                                    setCurrentMonth(moment(date[0].dateString, 'YYYY-MM-DD').format('YYYY-MM'));
+                                    newMarkedDates(events);
+                                }
+                            }}
+                            enableSwipeMonths={false}
+                            initialDate={selected}
+                            horizontal={true}
+                            pagingEnabled={true}
+                        />
+                        <HorizontalScrollWithTouch
+                            scrollTitle={selected}
+                            scrollableItems={selectedEvents}
+                            titleLocation="eventName"
+                            mapper="event"
+                            navigation={navigation}
+                        />
+                        <HorizontalScrollWithTouch
+                            scrollTitle="Pending Invitations"
+                            scrollableItems={invitations}
+                            titleLocation="eventName"
+                            mapper="invitation"
+                            navigation={navigation}
+                        />
+                    </>
+                    : <Loader />
+                }
+            </View>
             <NavBar navigation={navigation}/>
         </View>
     )
