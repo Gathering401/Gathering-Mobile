@@ -2,14 +2,14 @@ import axios from 'axios';
 
 import { useQuery, gql } from '@apollo/client';
 import { View, Text } from 'react-native';
-import * as SecureStore from 'expo-secure-store';
+import { useState } from 'react';
 
 import Loader from '../components/helpers/Loader';
+import { compAddress } from '../service/compAddress';
 
 import { REACT_APP_GEO_CODE } from '@env';
 
 import { styles } from '../styles/main-styles';
-import { useEffect, useState } from 'react';
 
 export default function Group({ route: { params: { id } }, navigation }) {
     let [location, setLocation] = useState(null);
@@ -49,13 +49,10 @@ export default function Group({ route: { params: { id } }, navigation }) {
                 }
             }).catch(err => console.log(err));
 
-            const locationData = JSON.parse(JSON.stringify(locationResponse)).data.results;
+            const locationData = JSON.parse(JSON.stringify(locationResponse)).data?.results;
             if(locationData) {
-                const addressComp = locationData[0].address_components;
-                const city = addressComp.find(ac => ac.types[0] === 'locality').long_name;
-                const state = addressComp.find(ac => ac.types[0] === 'administrative_area_level_1').short_name;
-                // going to need a helper for this ^^ to make it more advanced and extend to worldwide, giving more accurate and helpful location information. This works for now though.
-                setLocation(`${city}, ${state}`);
+                const compartmenalizedAddress = compAddress(locationData[0].address_components);
+                setLocation(`${compartmenalizedAddress.city}, ${compartmenalizedAddress.state}`);
             }
         }
     });
@@ -75,7 +72,7 @@ export default function Group({ route: { params: { id } }, navigation }) {
         <View style={styles.container}>
             <Text>{group.groupName}</Text>
             <Text>{group.description}</Text>
-            <Text>{location}</Text>
+            {location && <Text>{location}</Text>}
         </View>
     )
 }

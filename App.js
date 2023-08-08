@@ -9,7 +9,7 @@ import Groups from './src/pages/Groups';
 import Group from './src/pages/Group';
 import { ApolloProvider } from '@apollo/client';
 
-import { buildClient } from './src/components/helpers/clientBuilder';
+import { buildClient } from './src/service/clientBuilder';
 
 const Stack = createNativeStackNavigator();
 
