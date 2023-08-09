@@ -7,6 +7,8 @@ import Login from './src/pages/Login.js';
 import EventCalendar from './src/pages/EventCalendar';
 import Groups from './src/pages/Groups';
 import Group from './src/pages/Group';
+import Event from './src/pages/Event';
+
 import { ApolloProvider } from '@apollo/client';
 
 import { buildClient } from './src/service/clientBuilder';
@@ -26,6 +28,7 @@ export default function App() {
                     <Stack.Screen name="Calendar" component={EventCalendar} />
                     <Stack.Screen name="Groups" component={Groups} />
                     <Stack.Screen name="Group" component={Group} />
+                    <Stack.Screen name="Event" component={Event} />
                 </Stack.Navigator>
             </ApolloProvider>
         </NavigationContainer>
