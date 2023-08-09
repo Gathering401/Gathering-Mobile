@@ -5,6 +5,7 @@ import { View, Text } from 'react-native';
 import { useState } from 'react';
 
 import Loader from '../components/helpers/Loader';
+import LocationText from '../components/LocationText';
 import { compAddress } from '../service/compAddress';
 
 import { REACT_APP_GEO_CODE } from '@env';
@@ -52,7 +53,7 @@ export default function Group({ route: { params: { id } }, navigation }) {
             const locationData = JSON.parse(JSON.stringify(locationResponse)).data?.results;
             if(locationData) {
                 const compartmenalizedAddress = compAddress(locationData[0].address_components);
-                setLocation(`${compartmenalizedAddress.city}, ${compartmenalizedAddress.state}`);
+                setLocation(compartmenalizedAddress);
             }
         }
     });
@@ -72,7 +73,7 @@ export default function Group({ route: { params: { id } }, navigation }) {
         <View style={styles.container}>
             <Text>{group.groupName}</Text>
             <Text>{group.description}</Text>
-            {location && <Text>{location}</Text>}
+            {location && <LocationText location={location}/>}
         </View>
     )
 }
