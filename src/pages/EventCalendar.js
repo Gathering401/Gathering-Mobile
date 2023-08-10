@@ -15,6 +15,7 @@ import CreateButton from '../components/CreateButton';
 import { styles } from '../styles/main-styles';
 
 import { REACT_APP_API_URL } from '@env';
+import { gql, useQuery } from '@apollo/client';
 
 export default function EventCalendar({ navigation }) {    
     let [selected, setSelected] = useState(moment().format('YYYY-MM-DD'));
@@ -61,52 +62,45 @@ export default function EventCalendar({ navigation }) {
 
     const setAllSelected = (dateString, eventsMap) => {
         const monthEvents = eventsMap.get(moment(dateString).format('YYYY-MM'));
-        return (monthEvents ?? []).filter(e => moment(e.eventDate).format('YYYY-MM-DD') === moment(dateString).format('YYYY-MM-DD')) ?? [];
+        console.log('what are those', monthEvents);
+        if(monthEvents) {
+            return monthEvents.filter(e => moment(e.eventDate).format('YYYY-MM-DD') === moment(dateString).format('YYYY-MM-DD'));
+        }
+        return [];
     }
 
-    useEffect(() => {
-        async function getAllEvents() {
-            const query = `query GetCalendarEvents {
-                events: getCalendarEvents {
-                    eventId
-                    eventName
-                    description
-                    eventDate
-                    price
-                    location
-                }
-                invitations: getPendingInvitations {
-                    eventDate
-                    eventName
-                    rsvp
-                }
-            }`;
-
-            const token = await SecureStore.getItemAsync('token');
-            const { data: { data } } = await axios({
-                method: 'POST',
-                data: {
-                    query
-                },
-                url: `${REACT_APP_API_URL}/graphql`,
-                headers: {
-                    authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            }).catch(err => console.log(err));
-
-            if(data) {
-                const eventsMap = createEventsMap(data.events);
-
-                setEvents(eventsMap);
-                newMarkedDates(eventsMap);
-
-                setInvitations(data.invitations);
-            }
+    const { loading } = useQuery(gql`query GetCalendarEvents {
+        events: getCalendarEvents {
+            eventId
+            eventName
+            description
+            eventDate
+            price
+            location
         }
-        
-        getAllEvents();
-    }, []);
+        invitations: getPendingInvitations {
+            eventDate
+            eventName
+            rsvp
+        }
+    }`,
+    {
+        onCompleted: (data) => {
+            const eventsMap = createEventsMap(data.events);
+
+            setEvents(eventsMap);
+            newMarkedDates(eventsMap);
+
+            setInvitations(data.invitations);
+        },
+        onError: (error) => {
+            console.log('Error: ', error);
+        }
+    });
+
+    if(loading) {
+        return <Loader />
+    }
 
     return (
         <View style={{...styles.container, marginTop: '10%'}}>
@@ -121,16 +115,14 @@ export default function EventCalendar({ navigation }) {
                                 setSelectedEvents(setAllSelected(dateString, events));
                             }}
                             markedDates={markedDates}
-                            onVisibleMonthsChange={date => {
-                                if(date.length === 1) {
-                                    setCurrentMonth(moment(date[0].dateString, 'YYYY-MM-DD').format('YYYY-MM'));
-                                    newMarkedDates(events);
-                                }
+                            onMonthChange={date => {
+                                console.log(date);
+                                setCurrentMonth(moment(date.dateString, 'YYYY-MM-DD').format('YYYY-MM'));
+                                newMarkedDates(events);
                             }}
-                            enableSwipeMonths={false}
-                            initialDate={selected}
                             horizontal={true}
                             pagingEnabled={true}
+                            initialDate={selected}
                         />
                         <HorizontalScrollWithTouch
                             scrollTitle={selected}
