@@ -14,6 +14,7 @@ import { styles } from '../styles/main-styles';
 
 export default function Group({ route: { params: { id } }, navigation }) {
     let [location, setLocation] = useState(null);
+    let [group, setGroup] = useState({});
     
     const { data, errors, loading } = useQuery(gql`query getGroup($groupId: Int!) {
         group: getGroup(groupId: $groupId) {
@@ -42,6 +43,7 @@ export default function Group({ route: { params: { id } }, navigation }) {
     {
         variables: { groupId: id },
         onCompleted: async (response) => {
+            setGroup(response.group);
             const locationResponse = await axios({
                 method: 'GET',
                 url: `https://maps.googleapis.com/maps/api/geocode/json?place_id=${response.group.location}&key=${REACT_APP_GEO_CODE}`,
@@ -63,11 +65,9 @@ export default function Group({ route: { params: { id } }, navigation }) {
         return null;
     }
 
-    if(loading) {
+    if(loading || !group.groupName) {
         return <Loader />
     }
-
-    const group = data.group;
     
     return (
         <View style={styles.container}>

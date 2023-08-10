@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useQuery, gql } from '@apollo/client';
 import { View, Text } from 'react-native';
 import { useState } from 'react';
+import moment from 'moment-timezone';
 
 import Loader from '../components/helpers/Loader';
 import LocationText from '../components/LocationText';
@@ -12,27 +13,33 @@ import { REACT_APP_GEO_CODE } from '@env';
 
 import { styles } from '../styles/main-styles';
 
-export default function Event({ route: { params: { id, groupId } }, navigation }) {
+export default function Event({ route: { params: { eventId: id, groupId } }, navigation }) {
     let [location, setLocation] = useState(null);
+    let [event, setEvent] = useState({});
     
-    const { data, errors, loading } = useQuery(gql`query getRepeatedEvent($id: Int!, $groupId: Int!) {
-        event: getRepeatedEvent(id: $id, groupId: $groupId) {
-            id
+    const { loading } = useQuery(gql`query getRepeatedEvent($id: Int!, $groupId: Int!) {
+        event: getIndividualEvent(id: $id, groupId: $groupId) {
+            eventId
             groupId
             eventName
-            eventType
             description
-            eventDates
+            eventDate
+            location
+            price
+            food
             invitedUsers {
                 userId
                 username
                 rsvp
             }
+            groupName
         }
     }`,
     {
         variables: { id, groupId },
         onCompleted: async (response) => {
+            setEvent(response.event);
+
             const locationResponse = await axios({
                 method: 'GET',
                 url: `https://maps.googleapis.com/maps/api/geocode/json?place_id=${response.event.location}&key=${REACT_APP_GEO_CODE}`,
@@ -44,26 +51,27 @@ export default function Event({ route: { params: { id, groupId } }, navigation }
             const locationData = JSON.parse(JSON.stringify(locationResponse)).data?.results;
             if(locationData) {
                 const compartmenalizedAddress = compAddress(locationData[0].address_components);
+
+                compartmenalizedAddress.lat = locationData[0].geometry.location.lat;
+                compartmenalizedAddress.lng = locationData[0].geometry.location.lng;
+                
                 setLocation(compartmenalizedAddress);
             }
-        }
+        },
+        onError: ((error) => {
+            console.log('Error: ', error);
+        })
     });
 
-    if(errors) {
-        console.log('Error: ', errors);
-        return null;
-    }
-
-    if(loading) {
+    if(loading || !event.eventName) {
         return <Loader />
     }
-
-    const event = data.event;
     
     return (
         <View style={styles.container}>
             <Text>{event.eventName}</Text>
-            <Text>{event.eventType}</Text>
+            <Text>{event.description}</Text>
+            <Text>{moment(event.eventDate, 'MM/DD/YYYY h:mma Z').format('h:mma M/DD/YY')}</Text>
             {location && <LocationText location={location} clickable={true}/>}
         </View>
     )
