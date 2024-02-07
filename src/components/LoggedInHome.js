@@ -54,19 +54,21 @@ export default function LoggedInHome({navigation}) {
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollWithNav}>
                 <Text style={styles.title}>Hello, world!</Text>
-                <HorizontalScrollWithTouch
+                {groups?.length ? <HorizontalScrollWithTouch
                     scrollTitle="Groups"
                     scrollableItems={groups}
                     titleLocation="groupName"
                     mapper="group"
                     navigation={navigation}
-                /><HorizontalScrollWithTouch
+                /> : <></>}
+                {upcoming?.length ? <HorizontalScrollWithTouch
                     scrollTitle="Upcoming Events"
                     scrollableItems={upcoming}
                     titleLocation="eventName"
                     mapper="event"
                     navigation={navigation}
-                />
+                /> : <></>}
+                {!groups?.length ? <Text style={styles.subtitle}>Not part of any groups. Join a group to see events here!</Text> : <></>}
             </ScrollView>
             <NavBar navigation={navigation}/>
         </View>
