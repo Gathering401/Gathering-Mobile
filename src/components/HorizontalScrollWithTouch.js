@@ -3,7 +3,8 @@ import { Card } from '@rneui/base';
 
 import { styles } from '../styles/main-styles';
 
-import { MapTo } from '../models/Mapper';
+import { MapTo } from '../models/mapper';
+
 
 export default function HorizontalScrollWithTouch({ scrollTitle, scrollableItems, titleLocation, mapper, navigation }) {
     const navigate = (obj) => {

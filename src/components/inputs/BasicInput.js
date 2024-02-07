@@ -1,23 +1,22 @@
-import { TextInput, View } from 'react-native';
-
-import Label from '../Label';
+import { View } from 'react-native';
+import { TextInput } from 'react-native-paper';
 
 import { styles } from '../../styles/main-styles';
 
 export default function BasicInput({ handleChange, handleBlur, placeholder, value, fieldName, autoCapitalize, secureTextEntry, label, required }) {
     return (
-        <View style={styles.inputAndLabel}>
-            <Label text={label} required={required}/>
+        <View style={styles.textInput}>
             <TextInput
-                style={{...styles.textInput}}
-                required={required}
-                spellCheck={false}
-                autoCapitalize={autoCapitalize}
-                secureTextEntry={secureTextEntry}
-                onChangeText={handleChange(fieldName)}
-                onBlur={handleBlur(fieldName)}
+                mode="outlined"
+                label={label}
                 placeholder={placeholder}
                 placeholderTextColor="rgb(190, 190, 190)"
+                required={required}
+                secureTextEntry={secureTextEntry}
+                autoCapitalize={autoCapitalize}
+                spellCheck={false}
+                onChangeText={handleChange(fieldName)}
+                onBlur={handleBlur(fieldName)}
                 value={value}
             />
         </View>

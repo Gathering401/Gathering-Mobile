@@ -1,54 +1,37 @@
 import { useState, useCallback } from 'react';
-import { View, Button, TouchableOpacity, Text, CheckBox, SafeAreaView } from 'react-native';
+import { View, SafeAreaView } from 'react-native';
+import { Button } from 'react-native-paper';
 
-import DateTimePicker from '@react-native-community/datetimepicker';
-import moment from 'moment-timezone';
+import { DateTime } from 'luxon';
 
-import Label from '../Label';
-import EventRepeatSelection from './EventRepeatSelection';
+import { DatePickerModal } from 'react-native-paper-dates';
 
-import { styles } from '../../styles/main-styles';
+export default function DateInput({ label, fieldName, setFieldValue }) {
+    let [date, setDate] = useState(new Date());
+    let [show, setShow] = useState(false);
 
-export default function DateInput({ label, fieldName, setFieldValue, required }) {
-    const [date, setDate] = useState(new Date());
-    const [mode, setMode] = useState('date');
-    const [show, setShow] = useState(false);
-  
-    const onChange = (_, selectedDate) => {
-      const currentDate = selectedDate;
-      setShow(false);
-      setDate(currentDate);
-      setFieldValue(fieldName, currentDate);
-    };
-  
-    const showMode = (currentMode) => {
-      setShow(true);
-      setMode(currentMode);
-    };
-  
-    const showDatepicker = () => {
-      showMode('date');
-    };
-  
-    const showTimepicker = () => {
-      showMode('time');
-    };
+    const onConfirm = (date) => {
+        setShow(false);
+        setDate(date);
+        setFieldValue(fieldName, DateTime.fromJSDate(date).startOf('day'));
+    }
+
+    const onDismiss = () => {
+        setShow(false);
+    }
 
     return (
-        <View style={styles.inputAndLabel}>
-            <Label text={label} required={required}/>
+        <View>
             <SafeAreaView>
-                <Button onPress={showDatepicker} title={moment(date).format('MM/DD/YYYY')} />
-                <Button onPress={showTimepicker} title={moment(date).format('HH:mm')} />
-                {show && (
-                    <DateTimePicker
-                        testID="dateTimePicker"
-                        value={date}
-                        mode={mode}
-                        is24Hour={true}
-                        onChange={onChange}
-                    />
-                )}
+                <Button onPress={() => setShow(true)} uppercase={false}>{label}: {DateTime.fromJSDate(date).toFormat('DDD')}</Button>
+                <DatePickerModal
+                    locale="en"
+                    mode="single"
+                    visible={show}
+                    onDismiss={onDismiss}
+                    date={date}
+                    onConfirm={({date}) => onConfirm(date)}
+                />
             </SafeAreaView>
             {/* <Label text="Is it recurring?" />
             <CheckBox

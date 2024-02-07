@@ -59,12 +59,9 @@ export const styles = StyleSheet.create({
     },
     textInput: {
         fontSize: 20,
-        borderWidth: 1,
-        borderColor: 'grey',
-        borderRadius: 30,
+        width: '80%',
         margin: 5,
-        padding: 10,
-        textAlign: 'center',
+        alignSelf: 'center',
         color: 'black'
     },
     modalButton: {
@@ -135,5 +132,9 @@ export const styles = StyleSheet.create({
         border: '1px solid rgb(140, 140, 140)',
         borderRadius: 15,
         padding: 15
+    },
+    formikStep: {
+        height: '100%',
+        justifyContent: 'center'
     }
 });

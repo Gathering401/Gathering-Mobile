@@ -13,6 +13,10 @@ import { ApolloProvider } from '@apollo/client';
 
 import { buildClient } from './src/service/clientBuilder';
 
+import { en, registerTranslation } from 'react-native-paper-dates';
+
+registerTranslation('en', en);
+
 const Stack = createNativeStackNavigator();
 
 export default function App() {
