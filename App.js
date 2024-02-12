@@ -79,13 +79,15 @@ export default function App() {
 
                             return <Icon source={iconName} size={size} color={color} />;
                         },
-                        tabBarActiveTintColor: 'tomato',
-                        tabBarInactiveTintColor: 'gray',
+                        tabBarActiveTintColor: '#D84727',
+                        tabBarInactiveTintColor: '#042A2B',
+                        tabBarStyle: {backgroundColor: '#5EB1BF'}
                         })}
                     >
                         <Tab.Screen name="HomeTab" component={HomeStackScreen} options={{ title: "Home" }}/>
                         <Tab.Screen name="CalendarTab" component={CalendarStackScreen} options={{ title: "Calendar" }}/>
                         <Tab.Screen name="GroupsTab" component={GroupStackScreen} options={{ title: "Groups" }}/>
+                        {/*THIS GOES ON NAVIGATION TABS FOR NOTIFICATIONS ==== tabBarBadge: 3*/}
                     </Tab.Navigator>
                 </SafeAreaProvider>
             </ApolloProvider>
