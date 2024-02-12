@@ -1,12 +1,12 @@
 import { useState } from 'react';
 
 import { TouchableOpacity } from 'react-native';
-// import { BsCalendarPlus, BsPlus, BsPeople } from 'react-icons/bs';
 
 import GroupCreate from './GroupCreate';
 import EventCreate from './EventCreate';
 
 import { styles } from '../styles/main-styles';
+import { Button } from 'react-native-paper';
 
 export default function CreateButton({ type, setCreated }) {
     let [showGroupCreate, setShowGroupCreate] = useState(false);
@@ -28,9 +28,7 @@ export default function CreateButton({ type, setCreated }) {
                 return <GroupCreate close={closeGroupCreate}/>
             } else {
                 return (
-                    <TouchableOpacity style={styles.createButton} onPress={() => setShowGroupCreate(true)}>
-                        {/* <BsPeople /><BsPlus /> */}
-                    </TouchableOpacity>
+                    <Button icon="plus" onPress={() => setShowGroupCreate(true)}>New</Button>
                 )
             }
         case 'event':

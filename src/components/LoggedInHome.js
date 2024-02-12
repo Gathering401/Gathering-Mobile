@@ -1,7 +1,6 @@
 import { gql, useQuery } from '@apollo/client';
 import { View, ScrollView, Text } from 'react-native';
 
-import NavBar from './NavBar';
 import HorizontalScrollWithTouch from './HorizontalScrollWithTouch';
 import Loader from './helpers/Loader';
 
@@ -13,18 +12,6 @@ export default function LoggedInHome({navigation}) {
             groupId
             groupName
             description
-            location
-            groupUsers {
-                username
-                firstName
-                lastName
-                role
-            }
-            owner {
-                username
-                firstName
-                lastName
-            }
         }
         upcoming: getUpcomingEvents {
             eventId
@@ -34,8 +21,6 @@ export default function LoggedInHome({navigation}) {
             description
             eventDate
             price
-            food
-            location
         }
     }`);
 
@@ -70,7 +55,6 @@ export default function LoggedInHome({navigation}) {
                 /> : <></>}
                 {!groups?.length ? <Text style={styles.subtitle}>Not part of any groups. Join a group to see events here!</Text> : <></>}
             </ScrollView>
-            <NavBar navigation={navigation}/>
         </View>
     )
 }

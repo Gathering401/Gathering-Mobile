@@ -8,7 +8,6 @@ import moment from 'moment-timezone';
 
 import Loader from '../components/helpers/Loader';
 import HorizontalScrollWithTouch from '../components/HorizontalScrollWithTouch';
-import NavBar from '../components/NavBar';
 import CreateButton from '../components/CreateButton';
 
 import { styles } from '../styles/main-styles';
@@ -141,7 +140,6 @@ export default function EventCalendar({ navigation }) {
                     : <Loader />
                 }
             </View>
-            <NavBar navigation={navigation}/>
         </View>
     )
 }

@@ -1,105 +1,75 @@
-import axios from 'axios';
+import { gql, useQuery } from '@apollo/client';
 
-import { useEffect, useState } from 'react';
-import { View, Text, TextInput, Button, ScrollView } from 'react-native';
-import { Card } from '@rneui/base';
-// import { SlMagnifier } from 'react-icons/sl';
-import * as SecureStore from 'expo-secure-store';
+import { useState } from 'react';
+import { ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Text, Button, Card } from 'react-native-paper';
 
-import NavBar from '../components/NavBar';
 import CreateButton from '../components/CreateButton';
 
 import { styles } from '../styles/main-styles';
 
-import { REACT_APP_API_URL } from '@env';
+import Loader from '../components/helpers/Loader';
 
-export default function Groups({ navigation }) {    
-    let [search, setSearch] = useState('');
-    let [groups, setGroups] = useState([]);
+export default function Groups({ navigation }) {
     let [searchForNew, setSearchForNew] = useState(false);
-    let [groupCreated, setGroupCreated] = useState(false);
 
-    const getGroups = async () => {
-        const token = await SecureStore.getItemAsync('token');
-        const response = await axios({
-            method: 'POST',
-            url: `${REACT_APP_API_URL}/graphql`,
-            headers: {
-                authorization: `Bearer ${token}`
+    const { data, errors, loading } = useQuery(gql`query GetGroups {
+        groups: getGroups(includeDetails: true) {
+            groupId
+            groupName
+            description
+            location
+            groupUsers {
+                username
+                firstName
+                lastName
+                role
             }
-        });
-
-        if(response?.data) {
-            setGroups(response.data);
+            owner {
+                username
+                firstName
+                lastName
+            }
         }
+    }`);
+
+    if(loading) {
+        return <Loader />
     }
 
-    useEffect(() => {
-        const filterGroups = async () => {
-            if(search) {
-                setGroups([...groups.filter(g => g.groupName.toLowerCase().startsWith(search.toLowerCase()))]);
-            } else {
-                getGroups();
-            }
-        }
-        
-        filterGroups();
-    }, [search, groupCreated]);
-
-    const getNewSearchGroups = async () => {
-        if(search) {
-            const response = await axios({
-                method: 'POST',
-                url: `${REACT_APP_API_URL}/graphql`,
-                headers: {
-                    authorization: `Bearer ${token}`
-                }
-            });
-
-            if(response?.data) {
-                setGroups(response.data);
-            }
-        } else {
-            getGroups();
-        }
+    if(errors) {
+        console.log('Error', errors);
+        return null;
     }
     
     return (
-        <View style={styles.container}>
-            <CreateButton type="group" setCreated={setGroupCreated}/>
-            {/* <SlMagnifier /> */}
-            <TextInput
-                style={styles.textInput}
-                autoComplete={false}
-                autoCorrect={false}
-                placeholder="Search"
-                onChangeText={text => setSearch(text)}
-            />
-            <ScrollView>
+        <SafeAreaView style={styles.container}>
+            {/* <CreateButton type="group" /> */}
+            <ScrollView style={{width: '100%'}}>
                 {
-                    groups.length ?
-                    groups.map(group => (
-                        <Card containerStyle={styles.bigCard} key={group.groupId}>
-                            <View style={styles.cardTitleWrapper}>
-                                <Card.Title style={styles.cardTitle}>{group.groupName}</Card.Title>
-                            </View>
-                            <Text>{group.description}</Text>
-                            {searchForNew &&
-                                <View>
-                                    <Text>{group.location}</Text>
-                                    {/* <Text>{group.owner.firstName} {group.owner.lastName}</Text> ====need to update endpoint to give an owner==== */}
-                                </View>
-                            }
+                    data?.groups?.length ?
+                    data.groups.map((group) => (
+                        <Card style={styles.bigCard} key={group.groupId}>
+                            <Card.Title style={styles.cardTitle} title={group.groupName}/>
+                            <Card.Content>
+                                <Text variant='bodyMedium'>{group.description}</Text>
+                            </Card.Content>
                         </Card>
                     )) :
                     <Text style={styles.cardTitle}>No groups to show</Text>
                 }
-                <Button onPress={() => {
-                    setSearchForNew(true);
-                    getNewSearchGroups();
-                }} title="Find New" />
+                <Button
+                    onPress={() => {
+                        setSearchForNew(true);
+                        getNewSearchGroups();
+                    }}
+                    mode="outlined"
+                    style={styles.button}
+                >
+                    Find New
+                </Button>
             </ScrollView>
-            <NavBar navigation={navigation} />
-        </View>
+        </SafeAreaView>
     )
 }

@@ -168,7 +168,7 @@ export default function CustomFormik({ steps, moreInformation, setMoreInformatio
                         }
                         {
                             setMoreInformation && 
-                                <Button onPress={() => setMoreInformation(!moreInformation)}>
+                                <Button onPress={() => setMoreInformation(!moreInformation)} mode="outlined">
                                     {moreInformation ? "Less Information" : "More Information"}
                                 </Button>
                         }

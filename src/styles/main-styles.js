@@ -39,6 +39,13 @@ export const styles = StyleSheet.create({
         textAlign: 'center',
         boxShadow: '1 2 2 black'
     },
+    bigCard: {
+        width: '90%',
+        alignSelf: 'center',
+        height: 150,
+        marginBottom: 15,
+        padding: 0
+    },
     cardTitleWrapper: {
         borderBottomColor: 'grey',
         borderBottomWidth: '1px',
@@ -94,7 +101,8 @@ export const styles = StyleSheet.create({
         fontSize: 30
     },
     button: {
-        margin: 100
+        width: '50%',
+        alignSelf: 'center'
     },
     navbar: {
         width: '100%',
@@ -102,7 +110,9 @@ export const styles = StyleSheet.create({
         height: 75,
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'space-around'
+        justifyContent: 'space-around',
+        alignSelf: 'flex-end',
+        justifySelf: 'flex-end'
     },
     alignCenterVertical: {
         display: 'flex',
