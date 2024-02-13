@@ -10,10 +10,18 @@ export default function HorizontalScrollWithTouch({ scrollTitle, scrollableItems
     const navigate = (obj) => {
         switch(mapper) {
             case 'event':
-                navigation.navigate('Event', { eventId: obj.eventId, groupId: obj.groupId });
+                navigation.navigate('EventsTab', {
+                    screen: 'Event',
+                    initial: false,
+                    params: { eventId: obj.eventId, groupId: obj.groupId }
+                });
                 break;
             case 'group':
-                navigation.navigate('Group', { id: obj.groupId });
+                navigation.navigate('GroupsTab', {
+                    screen: 'Group',
+                    initial: false,
+                    params: { id: obj.groupId }
+                });
                 break;
             default:
                 break;

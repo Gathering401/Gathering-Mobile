@@ -28,7 +28,7 @@ export default function LoggedInHome({navigation}) {
         return <Loader />;
     }
 
-    if(errors) {
+    if(errors || !data) {
         console.log('Error', errors);
         return null;
     }
@@ -36,25 +36,23 @@ export default function LoggedInHome({navigation}) {
     const { upcoming, groups } = data;
     
     return (
-        <View style={styles.container}>
-            <ScrollView contentContainerStyle={styles.scrollWithNav}>
-                <Text style={styles.title}>Hello, world!</Text>
-                {groups?.length ? <HorizontalScrollWithTouch
-                    scrollTitle="Groups"
-                    scrollableItems={groups}
-                    titleLocation="groupName"
-                    mapper="group"
-                    navigation={navigation}
-                /> : <></>}
-                {upcoming?.length ? <HorizontalScrollWithTouch
-                    scrollTitle="Upcoming Events"
-                    scrollableItems={upcoming}
-                    titleLocation="eventName"
-                    mapper="event"
-                    navigation={navigation}
-                /> : <></>}
-                {!groups?.length ? <Text style={styles.subtitle}>Not part of any groups. Join a group to see events here!</Text> : <></>}
-            </ScrollView>
-        </View>
+        <ScrollView contentContainerStyle={styles.scrollWithNav}>
+            <Text style={styles.title}>Hello, world!</Text>
+            {groups?.length ? <HorizontalScrollWithTouch
+                scrollTitle="Groups"
+                scrollableItems={groups}
+                titleLocation="groupName"
+                mapper="group"
+                navigation={navigation}
+            /> : <></>}
+            {upcoming?.length ? <HorizontalScrollWithTouch
+                scrollTitle="Upcoming Events"
+                scrollableItems={upcoming}
+                titleLocation="eventName"
+                mapper="event"
+                navigation={navigation}
+            /> : <></>}
+            {!groups?.length ? <Text style={styles.subtitle}>Not part of any groups. Join a group to see events here!</Text> : <></>}
+        </ScrollView>
     )
 }
