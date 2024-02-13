@@ -23,7 +23,7 @@ export default function HomeScreen({navigation}) {
     }, [isFocused]);
     
     return (
-        <View style={{...styles.container, ...styles.containerColor}}>
+        <View style={styles.container}>
             {
                 token ? <LoggedInHome navigation={navigation}/> : <SignInOptions navigation={navigation}/>
             }

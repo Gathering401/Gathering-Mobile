@@ -1,25 +1,35 @@
-import axios from 'axios';
-
 import { TouchableOpacity } from 'react-native';
-import * as SecureStore from 'expo-secure-store';
+import { gql, useMutation } from '@apollo/client';
 
-import { REACT_APP_API_URL } from '@env';
+export default function InvitationResponse({status, component, id}) {
+    const INVITATION_RESPONSE_QUERY = gql`mutation RespondToInvitation($groupId: Int!, $eventId: Int!, $rsvp: RSVP!) {
+        respondToInvitation(groupId: $groupId, eventId: $eventId, rsvp: $rsvp)
+    }`;
+    
+    const [respondToInvitation, { errors, loading }] = useMutation(INVITATION_RESPONSE_QUERY);
 
-export default function InvitationResponse({status, component, id}) {    
-    const sendRSVPResponse = async () => {
-        const token = await SecureStore.getItemAsync('token');
-        await axios({
-            method: 'PUT',
-            url: `${REACT_APP_API_URL}/graphql`,
-            headers: {
-                authorization: `Bearer ${token}`
-            }
-        });
+    if(errors) {
+        console.log('Error: ', errors);
+        return null;
+    }
+
+    if(loading) {
+        return <Loader />
     }
     
     return (
         <TouchableOpacity
-            onPress={sendRSVPResponse}>
+            onPress={() => respondToInvitation({
+                variables: {
+                    groupId,
+                    eventId,
+                    status
+                }, onCompleted: async () => {
+                    navigation.navigate('HomeTab');
+                }, onError: (error) => {
+                    console.log('Error: ', error);
+                }
+            })}>
             {component}
         </TouchableOpacity>
     )

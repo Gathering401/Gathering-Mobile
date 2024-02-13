@@ -1,5 +1,4 @@
-import axios from 'axios';
-
+import { gql, useQuery } from '@apollo/client';
 import { useState, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import { View } from 'react-native';
@@ -9,7 +8,6 @@ import moment from 'moment-timezone';
 
 import Loader from '../components/helpers/Loader';
 import HorizontalScrollWithTouch from '../components/HorizontalScrollWithTouch';
-import NavBar from '../components/NavBar';
 import CreateButton from '../components/CreateButton';
 
 import { styles } from '../styles/main-styles';
@@ -64,54 +62,46 @@ export default function EventCalendar({ navigation }) {
         return (monthEvents ?? []).filter(e => moment(e.eventDate).format('YYYY-MM-DD') === moment(dateString).format('YYYY-MM-DD')) ?? [];
     }
 
-    useEffect(() => {
-        async function getAllEvents() {
-            const query = `query GetCalendarEvents {
-                events: getCalendarEvents {
-                    eventId
-                    eventName
-                    description
-                    eventDate
-                    price
-                    location
-                }
-                invitations: getPendingInvitations {
-                    eventDate
-                    eventName
-                    rsvp
-                }
-            }`;
-
-            const token = await SecureStore.getItemAsync('token');
-            const { data: { data } } = await axios({
-                method: 'POST',
-                data: {
-                    query
-                },
-                url: `${REACT_APP_API_URL}/graphql`,
-                headers: {
-                    authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                }
-            }).catch(err => console.log(err));
-
-            if(data) {
-                const eventsMap = createEventsMap(data.events);
-
-                setEvents(eventsMap);
-                newMarkedDates(eventsMap);
-
-                setInvitations(data.invitations);
-            }
+    const EVENT_QUERY = gql`query GetCalendarEvents {
+        events: getCalendarEvents {
+            eventId
+            eventName
+            description
+            eventDate
+            price
+            location
         }
-        
-        getAllEvents();
-    }, []);
+        invitations: getPendingInvitations {
+            eventDate
+            eventName
+            rsvp
+        }
+    }`;
+
+    const { data, errors, loading } = useQuery(EVENT_QUERY);
+
+    if(data) {
+        const eventsMap = createEventsMap(data.events);
+
+        setEvents(eventsMap);
+        newMarkedDates(eventsMap);
+
+        setInvitations(data.invitations);
+    }
+    
+    if(errors) {
+        console.log('Error', errors);
+        return null;
+    }
+    
+    if(loading) {
+        return <Loader />
+    }
 
     return (
         <View style={{...styles.container, marginTop: '10%'}}>
             <View style={styles.verticalSpread}>
-                <CreateButton type="event" setCreated={setEventCreated}/>
+                <CreateButton type="event" setCreated={setEventCreated} navigation={navigation}/>
                 {events.size > 0
                     ? <>
                         <CalendarList
@@ -150,7 +140,6 @@ export default function EventCalendar({ navigation }) {
                     : <Loader />
                 }
             </View>
-            <NavBar navigation={navigation}/>
         </View>
     )
 }

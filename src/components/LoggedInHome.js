@@ -1,30 +1,17 @@
 import { gql, useQuery } from '@apollo/client';
 import { View, ScrollView, Text } from 'react-native';
 
-import NavBar from './NavBar';
 import HorizontalScrollWithTouch from './HorizontalScrollWithTouch';
 import Loader from './helpers/Loader';
 
 import { styles } from '../styles/main-styles';
 
-export default function LoggedInHome({navigation}) {
+export default function LoggedInHome({ navigation }) {
     const { data, errors, loading } = useQuery(gql`query GetGroupsAndUpcomingEvents {
         groups: getGroups {
             groupId
             groupName
             description
-            location
-            groupUsers {
-                username
-                firstName
-                lastName
-                role
-            }
-            owner {
-                username
-                firstName
-                lastName
-            }
         }
         upcoming: getUpcomingEvents {
             eventId
@@ -34,8 +21,6 @@ export default function LoggedInHome({navigation}) {
             description
             eventDate
             price
-            food
-            location
         }
     }`);
 
@@ -43,32 +28,29 @@ export default function LoggedInHome({navigation}) {
         return <Loader />;
     }
 
-    if(errors) {
-        console.log('Error', errors);
+    if(errors || !data) {
+        console.log('Error: ', errors);
         return null;
     }
 
     const { upcoming, groups } = data;
     
     return (
-        <View style={styles.container}>
-            <ScrollView contentContainerStyle={styles.scrollWithNav}>
-                <Text style={styles.title}>Hello, world!</Text>
-                <HorizontalScrollWithTouch
-                    scrollTitle="Groups"
-                    scrollableItems={groups}
-                    titleLocation="groupName"
-                    mapper="group"
-                    navigation={navigation}
-                /><HorizontalScrollWithTouch
-                    scrollTitle="Upcoming Events"
-                    scrollableItems={upcoming}
-                    titleLocation="eventName"
-                    mapper="event"
-                    navigation={navigation}
-                />
-            </ScrollView>
-            <NavBar navigation={navigation}/>
+        <View style={styles.scrollWithNav}>
+            <Text style={styles.title}>Welcome</Text>
+            {groups?.length ? <HorizontalScrollWithTouch
+                scrollTitle="Your Groups"
+                scrollableItems={groups}
+                mapper="group"
+                navigation={navigation}
+            /> : <></>}
+            {upcoming?.length ? <HorizontalScrollWithTouch
+                scrollTitle="Upcoming Events"
+                scrollableItems={upcoming}
+                mapper="event"
+                navigation={navigation}
+            /> : null}
+            {!groups?.length ? <Text>Not part of any groups. Join a group to see events here!</Text> : null}
         </View>
     )
 }

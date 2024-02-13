@@ -1,43 +1,46 @@
 import { StyleSheet } from "react-native";
-
+// COLORS: #042A2B, #5EB1BF, #CDEDF6, #EF7B45, #D84727 --- https://coolors.co/042a2b-5eb1bf-cdedf6-ef7b45-d84727
 export const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: '#CDEDF6',
         alignItems: 'center',
         justifyContent: 'center',
-        width: '100%'
+        width: 'auto'
     },
     verticalSpread: {
         flex: 1,
-        width: '100%',
+        width: 'auto',
         justifyContent: 'flex-start'
     },
     scrollWithNav: {
         flex: 1,
-        width: '100%',
+        width: '90%',
+        alignSelf: 'center',
         justifyContent: 'center'
     },
     horizontalScroller: {
-        backgroundColor: '#fff',
         fontSize: '20px',
-        width: '100%'
+        width: 'auto',
+        padding: 5
     },
     horizontalScrollerWrapper: {
-        width: 250,
         borderTopColor: 'grey',
         borderTopWidth: '1px',
         borderBottomColor: 'grey',
-        borderBottomWidth: '1px',
         width: '100%'
     },
     card: {
-        width: 150,
+        width: 200,
+        height: 200,
+        textAlign: 'center'
+    },
+    bigCard: {
+        width: '90%',
+        alignSelf: 'center',
         height: 150,
         marginBottom: 15,
-        padding: 0,
-        textAlign: 'center',
-        boxShadow: '1 2 2 black'
+        padding: 0
     },
     cardTitleWrapper: {
         borderBottomColor: 'grey',
@@ -50,7 +53,7 @@ export const styles = StyleSheet.create({
         padding: 0
     },
     viewTitle: {
-        color: 'rgb(150, 150, 150)',
+        color: 'rgb(125, 125, 125)',
         margin: 10
     },
     horizontalFlex: {
@@ -59,12 +62,9 @@ export const styles = StyleSheet.create({
     },
     textInput: {
         fontSize: 20,
-        borderWidth: 1,
-        borderColor: 'grey',
-        borderRadius: 30,
+        width: '80%',
         margin: 5,
-        padding: 10,
-        textAlign: 'center',
+        alignSelf: 'center',
         color: 'black'
     },
     modalButton: {
@@ -94,18 +94,23 @@ export const styles = StyleSheet.create({
         color: 'red'
     },
     title: {
-        fontSize: 30
+        fontSize: 30,
+        alignSelf: 'flex-start',
+        width: '100%'
     },
     button: {
-        margin: 100
+        width: '50%',
+        alignSelf: 'center'
     },
     navbar: {
-        width: '100%',
+        width: 'auto',
         backgroundColor: 'green',
         height: 75,
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'space-around'
+        justifyContent: 'space-around',
+        alignSelf: 'flex-end',
+        justifySelf: 'flex-end'
     },
     alignCenterVertical: {
         display: 'flex',
@@ -135,5 +140,9 @@ export const styles = StyleSheet.create({
         border: '1px solid rgb(140, 140, 140)',
         borderRadius: 15,
         padding: 15
+    },
+    formikStep: {
+        height: '100%',
+        justifyContent: 'center'
     }
 });

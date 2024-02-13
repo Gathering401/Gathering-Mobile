@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Formik } from 'formik';
-import { Button, View, Modal } from 'react-native';
+import { View, Modal } from 'react-native';
+import { Button } from 'react-native-paper';
 
 import DateInput from './inputs/DateInput';
 import PriceInput from './inputs/PriceInput';
@@ -32,7 +33,7 @@ export default function CustomFormik({ steps, moreInformation, setMoreInformatio
             {({ handleChange, handleBlur, handleSubmit, values, setFieldValue }) => (
                 <Modal>
                     {steps.map((step, index) => (
-                        <View style={index === currentStep ? {} : styles.hidden} key={index}>
+                        <View style={index === currentStep ? styles.formikStep : styles.hidden} key={index}>
                         {
                             step.map((field, index2) => {
                                 switch(field.type) {
@@ -167,15 +168,14 @@ export default function CustomFormik({ steps, moreInformation, setMoreInformatio
                         }
                         {
                             setMoreInformation && 
-                                <Button
-                                    title={moreInformation ? "Less Information" : "More Information"}
-                                    onPress={() => setMoreInformation(!moreInformation)}
-                                />
+                                <Button onPress={() => setMoreInformation(!moreInformation)} mode="outlined">
+                                    {moreInformation ? "Less Information" : "More Information"}
+                                </Button>
                         }
                         {
                             index === steps.length - 1 ? 
-                            <Button title="Submit" onPress={handleSubmit}/> :
-                            <Button onPress={() => setCurrentStep(currentStep + 1)} title="Continue" />
+                            <Button onPress={handleSubmit} mode="outlined">Submit</Button> :
+                            <Button onPress={() => setCurrentStep(currentStep + 1)} mode="outlined">Continue</Button>
                         }
                         </View>
                     ))}

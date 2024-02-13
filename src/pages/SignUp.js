@@ -1,43 +1,33 @@
-import { useState, useRef } from 'react';
-import axios from 'axios';
+import { useState } from 'react';
+import { gql, useMutation } from '@apollo/client';
+import * as SecureStore from 'expo-secure-store';
+
+import Loader from '../components/helpers/Loader';
 
 import { TouchableWithoutFeedback, Keyboard, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import CustomFormik from '../components/CustomFormik';
-import moment from 'moment-timezone';
 import { styles } from '../styles/main-styles';
 
-import { REACT_APP_API_URL } from '@env';
+import _ from 'lodash';
 
 export default function SignUp({ navigation }) {
     let [date, setDate] = useState(new Date());
-
-    const postNewUser = async (values) => {
-        try {
-            const response = await axios({
-                method: 'POST',
-                url: `${REACT_APP_API_URL}/graphql`,
-                data: {
-                    firstName: values.firstName,
-                    lastName: values.lastName,
-                    username: values.username,
-                    password: values.password,
-                    email: values.email,
-                    phoneNumber: values.phone,
-                    birthDate: moment(date).toISOString()
-                },
-                headers: {
-                    'content-type': 'application/json'
-                }
-            });
-
-            if(response) {
-                navigation.navigate('Login', {
-                    desiredUsername: values.username
-                });
-            }
-        } catch(err) {
-            console.log('Error', err);
+    
+    const SIGNUP_MUTATION = gql`mutation SignUp($userData: UserDataInput!) {
+        register(userData: $userData) {
+            token
         }
+    }`;
+
+    const [submitRegistration, { errors, loading } ] = useMutation(SIGNUP_MUTATION);
+    
+    if(errors) {
+        console.log('Error ', errors[0]);
+        return null;
+    }
+    
+    if(loading) {
+        return <Loader />
     }
     
     return (
@@ -65,9 +55,25 @@ export default function SignUp({ navigation }) {
                                 { label: 'Birth Date', type: 'date', initial: date, fieldName: 'birthDate', date, setDate }
                             ]
                         ]}
-                        formSubmit={postNewUser}
+                        formSubmit={(values) => {
+                            submitRegistration({
+                                variables: {
+                                    userData: {
+                                        ..._.omit(values, ['confirmPassword']),
+                                        phone: Number(values.phone.replace(/[^0-9.]/g, '')),
+                                        timezone: 'America/Chicago'
+                                    }
+                                },
+                                onCompleted: async ({ register }) => {
+                                    await SecureStore.setItemAsync('token', register.token);
+                                    navigation.navigate('Home');
+                                },
+                                onError: (error) => {
+                                    console.log('Error: ', JSON.stringify(error, null, 2));
+                                }
+                            });
+                        }}
                     />
-                    
                 </ScrollView>
             </KeyboardAvoidingView>
         </TouchableWithoutFeedback>

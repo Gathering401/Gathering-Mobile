@@ -1,5 +1,5 @@
 import { gql, useMutation } from '@apollo/client';
-import { TouchableWithoutFeedback, KeyboardAvoidingView, Keyboard, Platform } from 'react-native';
+import { View, TouchableWithoutFeedback, KeyboardAvoidingView, Keyboard, Platform, Text } from 'react-native';
 import * as SecureStore from 'expo-secure-store';
 
 import Loader from '../components/helpers/Loader';
@@ -12,6 +12,8 @@ export default function Login({ navigation }) {
     const LOGIN_MUTATION = gql`mutation LogIn($username: String!, $password: String!) {
         login(username: $username, password: $password) {
             token
+            username
+            firstName
         }
     }`;
 
@@ -27,30 +29,32 @@ export default function Login({ navigation }) {
     }
     
     return (
-        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()} >
-            <KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : "height"}
-                style={styles.container}
-            >
-                <CustomFormik steps={[
-                    [
-                        { label: 'Username', type: 'text', initial: '', placeholder: 'jane.doe', fieldName: 'username'},
-                        { label: 'Password', type: 'password', initial: '', placeholder: 'password', fieldName: 'password'}
-                    ]
-                ]}
-                formSubmit={(values) => {
-                    submitLogin({
-                        variables: values,
-                        onCompleted: async ({ login }) => {
-                            await SecureStore.setItemAsync('token', login.token);
-                            navigation.navigate('Home');
-                        },
-                        onError: (error) => {
-                            console.log('Error', error);
-                        }});
-                }}
-                />
-            </KeyboardAvoidingView>
-        </TouchableWithoutFeedback>
+        <View style={styles.container}>
+            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+                <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
+                    <CustomFormik steps={[
+                        [
+                            { label: 'Username', type: 'text', initial: '', placeholder: 'jane.doe', fieldName: 'username'},
+                            { label: 'Password', type: 'password', initial: '', placeholder: 'password', fieldName: 'password'}
+                        ]
+                    ]}
+                    formSubmit={(values) => {
+                        submitLogin({
+                            variables: values,
+                            onCompleted: async ({ login }) => {
+                                console.log(login);
+                                await SecureStore.setItemAsync('token', login.token);
+
+                                navigation.navigate('Home');
+                            },
+                            onError: (error) => {
+                                console.log('Error: ', JSON.stringify(error, null, 2));
+                            }
+                        });
+                    }}
+                    />
+                </KeyboardAvoidingView>
+            </TouchableWithoutFeedback>
+        </View>
     )
 }

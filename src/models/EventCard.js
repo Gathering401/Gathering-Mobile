@@ -2,7 +2,7 @@ import { View, Text } from 'react-native';
 
 import moment from 'moment-timezone';
 
-export const MapToEventCard = ({event}) => {
+export const EventCard = ({event}) => {
     return (
         <View>
             <Text>When: {moment(event.eventDate).format('h:mm a')}</Text>

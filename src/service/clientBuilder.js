@@ -16,6 +16,7 @@ export function buildClient() {
         }
     });
 
+    console.log(REACT_APP_API_URL);
     //
     //
     //

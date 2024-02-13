@@ -1,18 +1,27 @@
 import { View, ScrollView, TouchableOpacity, Text } from 'react-native';
-import { Card } from '@rneui/base';
+import { Card } from 'react-native-paper';
 
 import { styles } from '../styles/main-styles';
 
-import { MapTo } from '../models/Mapper';
+import { MapTo } from '../models/mapper';
 
-export default function HorizontalScrollWithTouch({ scrollTitle, scrollableItems, titleLocation, mapper, navigation }) {
+
+export default function HorizontalScrollWithTouch({ scrollTitle, scrollableItems, mapper, navigation }) {
     const navigate = (obj) => {
         switch(mapper) {
             case 'event':
-                navigation.navigate('Event', { eventId: obj.eventId, groupId: obj.groupId });
+                navigation.navigate('EventsTab', {
+                    screen: 'Event',
+                    initial: false,
+                    params: { eventId: obj.eventId, groupId: obj.groupId }
+                });
                 break;
             case 'group':
-                navigation.navigate('Group', { id: obj.groupId });
+                navigation.navigate('GroupsTab', {
+                    screen: 'Group',
+                    initial: false,
+                    params: { id: obj.groupId }
+                });
                 break;
             default:
                 break;
@@ -20,19 +29,12 @@ export default function HorizontalScrollWithTouch({ scrollTitle, scrollableItems
     }
 
     return (
-        <View style={{...styles.horizontalScrollerWrapper}}>
+        <View style={styles.horizontalScrollerWrapper}>
             <Text style={styles.viewTitle}>{scrollTitle}</Text>
             <ScrollView style={styles.horizontalScroller} horizontal={true}>
                 {scrollableItems.map((obj, i) => (
                     <TouchableOpacity onPress={() => navigate(obj)} key={i}>
-                        <Card containerStyle={styles.card}>
-                            <View style={styles.cardTitleWrapper}>
-                                <Card.Title style={styles.cardTitle}>
-                                    {obj[titleLocation]}
-                                </Card.Title>
-                            </View>
-                            <MapTo mapper={mapper} obj={obj} />
-                        </Card>
+                        <MapTo mapper={mapper} obj={obj} />
                     </TouchableOpacity>
                 ))}
             </ScrollView>

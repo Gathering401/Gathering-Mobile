@@ -1,6 +1,5 @@
 import { Text, View } from 'react-native';
-// import { FiCheck, FiX } from 'react-icons/fi';
-// import { RiQuestionMark } from 'react-icons/ri';
+import { Icon } from 'react-native-paper';
 
 import moment from 'moment-timezone';
 
@@ -9,14 +8,14 @@ import InvitationResponse from '../components/InvitationResponse';
 
 import { DaysOfWeek, DaysOfMonth, MonthsOfYear } from '../enums/enums';
 
-export const MapToInvitationCard = ({invitation}) => {
+export const InvitationCard = ({invitation}) => {
     const happensEvery = () => {
-        switch(`${invitation.eRepeat}`) {
-            case '0':
+        switch(invitation.repeat) {
+            case 'weekly':
                 return DaysOfWeek[invitation.dayOfWeek];
-            case '1':
+            case 'monthly':
                 return `${DaysOfMonth[invitation.dayOfMonth]} of the month`;
-            case '2':
+            case 'annually':
                 return `${DaysOfMonth[invitation.dayOfMonth]} of ${MonthsOfYear[invitation.monthOfYear]}`
             default:
                 return 'Does not repeat.';
@@ -25,15 +24,27 @@ export const MapToInvitationCard = ({invitation}) => {
     
     return (
         <>
-            <Text>{invitation.eRepeat === 3 ? 'When' : 'Starts On'}: {moment(invitation.firstEventDate).format('MM/DD/YY h:mm a')}</Text>
-            {invitation.eRepeat !== 3 && <Text>
+            <Text>{invitation.repeat === 'never' ? 'When' : 'Starts On'}: {moment(invitation.firstEventDate).format('MM/DD/YY h:mm a')}</Text>
+            {invitation.repeat !== 'never' && <Text>
                 Every: {happensEvery()}
             </Text>
             }
             <View style={{...styles.container, ...styles.horizontalFlex}}>
-                {/* <InvitationResponse status={1} component={<FiCheck color='green'/>} id={invitation.eventRepeatId}/>
-                <InvitationResponse status={3} component={<RiQuestionMark color='blue'/>} id={invitation.eventRepeatId}/>
-                <InvitationResponse status={2} component={<FiX color='red'/>} id={invitation.eventRepeatId}/> */}
+                <InvitationResponse
+                    status={'attending'}
+                    component={<Icon source='check' color='green'/>}
+                    id={invitation.eventRepeatId}
+                />
+                <InvitationResponse
+                    status={'maybe'}
+                    component={<Icon source='help' color='blue'/>}
+                    id={invitation.eventRepeatId}
+                />
+                <InvitationResponse
+                    status={'declined'}
+                    component={<Icon source='close' color='red'/>}
+                    id={invitation.eventRepeatId}
+                />
             </View>
         </>
     )
