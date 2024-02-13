@@ -1,34 +1,35 @@
-import axios from 'axios';
 import { useState } from 'react';
-import * as SecureStore from 'expo-secure-store';
+import { gql, useMutation } from '@apollo/client';
 
 import CustomFormik from './CustomFormik';
-
-import { REACT_APP_API_URL } from '@env';
 
 export default function GroupCreate({ close }) {    
     let [selectedCard, setSelectedCard] = useState(null);
 
-    const postGroup = async (values) => {
-        const token = await SecureStore.getItemAsync('token');
-        const response = await axios({
-            method: 'POST',
-            url: `${REACT_APP_API_URL}/graphql`,
-            data: {
-                groupName: values.groupName,
-                location: values.location,
-                description: values.description,
-                groupSize: selectedCard.value
-            },
-            headers: {
-                authorization: `Bearer ${token}`,
-                'content-type': 'application/json'
+    const CREATE_GROUP_MUTATION = gql`mutation CreateGroup($groupData: GroupDataInput!) {
+        createGroup(groupData: $groupData) {
+            groupId
+            groupName
+            description
+            inviteOnly
+            owner {
+                username
+                firstName
+                lastName
             }
-        })
-
-        if(response?.data) {
-            close(false);
+            location
         }
+    }`;
+
+    const [submitGroup, { errors, loading }] = useMutation(CREATE_GROUP_MUTATION);
+
+    if(errors) {
+        console.log('Error: ', errors);
+        return null;
+    }
+
+    if(loading) {
+        return <Loader />
     }
 
     return (
@@ -52,7 +53,22 @@ export default function GroupCreate({ close }) {
                     ], footer: '$500' }
                 ] }
             ]]}
-            formSubmit={postGroup}
+            formSubmit={(values) => {
+                submitGroup({
+                    variables: values,
+                    onCompleted: async ({ groupId }) => {
+                        navigation.navigate('GroupsTab', {
+                            screen: 'Group',
+                            params: {
+                                groupId
+                            }
+                        });
+                    },
+                    onError: (error) => {
+                        console.log('Error: ', error);
+                    }
+                })
+            }}
         />
     )
 };

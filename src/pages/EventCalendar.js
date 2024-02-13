@@ -101,7 +101,7 @@ export default function EventCalendar({ navigation }) {
     return (
         <View style={{...styles.container, marginTop: '10%'}}>
             <View style={styles.verticalSpread}>
-                <CreateButton type="event" setCreated={setEventCreated}/>
+                <CreateButton type="event" setCreated={setEventCreated} navigation={navigation}/>
                 {events.size > 0
                     ? <>
                         <CalendarList

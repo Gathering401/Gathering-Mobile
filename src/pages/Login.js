@@ -44,8 +44,9 @@ export default function Login({ navigation }) {
                                 navigation.navigate('Home');
                             },
                             onError: (error) => {
-                                console.log('Error', error);
-                            }});
+                                console.log('Error: ', error);
+                            }
+                        });
                     }}
                     />
                 </KeyboardAvoidingView>
