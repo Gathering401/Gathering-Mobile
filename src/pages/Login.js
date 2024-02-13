@@ -12,6 +12,8 @@ export default function Login({ navigation }) {
     const LOGIN_MUTATION = gql`mutation LogIn($username: String!, $password: String!) {
         login(username: $username, password: $password) {
             token
+            username
+            firstName
         }
     }`;
 
@@ -40,11 +42,13 @@ export default function Login({ navigation }) {
                         submitLogin({
                             variables: values,
                             onCompleted: async ({ login }) => {
+                                console.log(login);
                                 await SecureStore.setItemAsync('token', login.token);
+
                                 navigation.navigate('Home');
                             },
                             onError: (error) => {
-                                console.log('Error: ', error);
+                                console.log('Error: ', JSON.stringify(error, null, 2));
                             }
                         });
                     }}

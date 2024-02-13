@@ -1,9 +1,15 @@
-import { View, Text } from 'react-native';
+import { Text } from 'react-native';
+import { Card } from 'react-native-paper';
+import { styles } from '../styles/main-styles';
 
-export const MapToGroupCard = ({group}) => {
+export const GroupCard = ({group}) => {
+    console.log(group);
     return (
-        <View>
-            <Text>{group.description}</Text>
-        </View>
+        <Card style={styles.card}>
+            <Card.Title title={group.groupName}/>
+            <Card.Content>
+                <Text>{group.description}</Text>
+            </Card.Content>
+        </Card>
     )
 }

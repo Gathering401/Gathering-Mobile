@@ -1,15 +1,15 @@
-import { MapToEventCard } from './EventCard';
-import { MapToInvitationCard } from './InvitationCard';
-import { MapToGroupCard } from './GroupCard';
+import { EventCard } from './EventCard';
+import { InvitationCard } from './InvitationCard';
+import { GroupCard } from './GroupCard';
 
 export function MapTo({mapper, obj}) {
     switch(mapper) {
         case 'event':
-            return <MapToEventCard event={obj} />;
+            return <EventCard event={obj} />;
         case 'invitation':
-            return <MapToInvitationCard invitation={obj} />;
+            return <InvitationCard invitation={obj} />;
         case 'group':
-            return <MapToGroupCard group={obj} />;
+            return <GroupCard group={obj} />;
         default:
             return null;
     }

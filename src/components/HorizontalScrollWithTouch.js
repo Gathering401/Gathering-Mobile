@@ -1,12 +1,12 @@
 import { View, ScrollView, TouchableOpacity, Text } from 'react-native';
-import { Card } from '@rneui/base';
+import { Card } from 'react-native-paper';
 
 import { styles } from '../styles/main-styles';
 
 import { MapTo } from '../models/mapper';
 
 
-export default function HorizontalScrollWithTouch({ scrollTitle, scrollableItems, titleLocation, mapper, navigation }) {
+export default function HorizontalScrollWithTouch({ scrollTitle, scrollableItems, mapper, navigation }) {
     const navigate = (obj) => {
         switch(mapper) {
             case 'event':
@@ -29,19 +29,12 @@ export default function HorizontalScrollWithTouch({ scrollTitle, scrollableItems
     }
 
     return (
-        <View style={{...styles.horizontalScrollerWrapper}}>
+        <View style={styles.horizontalScrollerWrapper}>
             <Text style={styles.viewTitle}>{scrollTitle}</Text>
             <ScrollView style={styles.horizontalScroller} horizontal={true}>
                 {scrollableItems.map((obj, i) => (
                     <TouchableOpacity onPress={() => navigate(obj)} key={i}>
-                        <Card containerStyle={styles.card}>
-                            <View style={styles.cardTitleWrapper}>
-                                <Card.Title style={styles.cardTitle}>
-                                    {obj[titleLocation]}
-                                </Card.Title>
-                            </View>
-                            <MapTo mapper={mapper} obj={obj} />
-                        </Card>
+                        <MapTo mapper={mapper} obj={obj} />
                     </TouchableOpacity>
                 ))}
             </ScrollView>

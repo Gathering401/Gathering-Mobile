@@ -66,7 +66,7 @@ export default function App() {
                 <SafeAreaProvider>
                     <Tab.Navigator screenOptions={({ route }) => ({
                         headerShown: false,
-                        tabBarIcon: ({ color, size }) => {
+                        tabBarIcon: ({ focused, size }) => {
                             let iconName;
 
                             if (route.name === 'HomeTab') {
@@ -77,9 +77,9 @@ export default function App() {
                                 iconName = 'account-group';
                             }
 
-                            return <Icon source={iconName} size={size} color={color} />;
+                            return <Icon source={focused ? iconName : iconName + '-outline'} size={size} color='#042A2B' />;
                         },
-                        tabBarActiveTintColor: '#D84727',
+                        tabBarActiveTintColor: '#042A2B',
                         tabBarInactiveTintColor: '#042A2B',
                         tabBarStyle: {backgroundColor: '#5EB1BF'}
                         })}
@@ -87,7 +87,7 @@ export default function App() {
                         <Tab.Screen name="HomeTab" component={HomeStackScreen} options={{ title: "Home" }}/>
                         <Tab.Screen name="CalendarTab" component={CalendarStackScreen} options={{ title: "Calendar" }}/>
                         <Tab.Screen name="GroupsTab" component={GroupStackScreen} options={{ title: "Groups" }}/>
-                        {/*THIS GOES ON NAVIGATION TABS FOR NOTIFICATIONS ==== tabBarBadge: 3*/}
+                        {/*THIS GOES ON NAVIGATION TABS FOR NOTIFICATIONS NOT SURE HOW TO DYNAMIC IT ==== tabBarBadge: 3*/}
                     </Tab.Navigator>
                 </SafeAreaProvider>
             </ApolloProvider>

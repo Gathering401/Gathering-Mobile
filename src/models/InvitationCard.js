@@ -8,7 +8,7 @@ import InvitationResponse from '../components/InvitationResponse';
 
 import { DaysOfWeek, DaysOfMonth, MonthsOfYear } from '../enums/enums';
 
-export const MapToInvitationCard = ({invitation}) => {
+export const InvitationCard = ({invitation}) => {
     const happensEvery = () => {
         switch(invitation.repeat) {
             case 'weekly':

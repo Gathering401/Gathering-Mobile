@@ -6,38 +6,34 @@ export const styles = StyleSheet.create({
         backgroundColor: '#CDEDF6',
         alignItems: 'center',
         justifyContent: 'center',
-        width: '100%'
+        width: 'auto'
     },
     verticalSpread: {
         flex: 1,
-        width: '100%',
+        width: 'auto',
         justifyContent: 'flex-start'
     },
     scrollWithNav: {
         flex: 1,
-        width: '100%',
+        width: '90%',
+        alignSelf: 'center',
         justifyContent: 'center'
     },
     horizontalScroller: {
-        backgroundColor: '#fff',
         fontSize: '20px',
-        width: '100%'
+        width: 'auto',
+        padding: 5
     },
     horizontalScrollerWrapper: {
-        width: 250,
         borderTopColor: 'grey',
         borderTopWidth: '1px',
         borderBottomColor: 'grey',
-        borderBottomWidth: '1px',
         width: '100%'
     },
     card: {
-        width: 150,
-        height: 150,
-        marginBottom: 15,
-        padding: 0,
-        textAlign: 'center',
-        boxShadow: '1 2 2 black'
+        width: 200,
+        height: 200,
+        textAlign: 'center'
     },
     bigCard: {
         width: '90%',
@@ -57,7 +53,7 @@ export const styles = StyleSheet.create({
         padding: 0
     },
     viewTitle: {
-        color: 'rgb(150, 150, 150)',
+        color: 'rgb(125, 125, 125)',
         margin: 10
     },
     horizontalFlex: {
@@ -98,14 +94,16 @@ export const styles = StyleSheet.create({
         color: 'red'
     },
     title: {
-        fontSize: 30
+        fontSize: 30,
+        alignSelf: 'flex-start',
+        width: '100%'
     },
     button: {
         width: '50%',
         alignSelf: 'center'
     },
     navbar: {
-        width: '100%',
+        width: 'auto',
         backgroundColor: 'green',
         height: 75,
         display: 'flex',

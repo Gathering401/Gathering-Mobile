@@ -6,7 +6,7 @@ import Loader from './helpers/Loader';
 
 import { styles } from '../styles/main-styles';
 
-export default function LoggedInHome({navigation}) {
+export default function LoggedInHome({ navigation }) {
     const { data, errors, loading } = useQuery(gql`query GetGroupsAndUpcomingEvents {
         groups: getGroups {
             groupId
@@ -29,30 +29,28 @@ export default function LoggedInHome({navigation}) {
     }
 
     if(errors || !data) {
-        console.log('Error', errors);
+        console.log('Error: ', errors);
         return null;
     }
 
     const { upcoming, groups } = data;
     
     return (
-        <ScrollView contentContainerStyle={styles.scrollWithNav}>
-            <Text style={styles.title}>Hello, world!</Text>
+        <View style={styles.scrollWithNav}>
+            <Text style={styles.title}>Welcome</Text>
             {groups?.length ? <HorizontalScrollWithTouch
-                scrollTitle="Groups"
+                scrollTitle="Your Groups"
                 scrollableItems={groups}
-                titleLocation="groupName"
                 mapper="group"
                 navigation={navigation}
             /> : <></>}
             {upcoming?.length ? <HorizontalScrollWithTouch
                 scrollTitle="Upcoming Events"
                 scrollableItems={upcoming}
-                titleLocation="eventName"
                 mapper="event"
                 navigation={navigation}
-            /> : <></>}
-            {!groups?.length ? <Text style={styles.subtitle}>Not part of any groups. Join a group to see events here!</Text> : <></>}
-        </ScrollView>
+            /> : null}
+            {!groups?.length ? <Text>Not part of any groups. Join a group to see events here!</Text> : null}
+        </View>
     )
 }
