@@ -8,6 +8,17 @@ export const styles = StyleSheet.create({
         justifyContent: 'center',
         width: 'auto'
     },
+    calendarContainer: {
+        flex: 1,
+        backgroundColor: '#CDEDF6',
+        justifyContent: 'space-around',
+        width: '100%'
+    },
+    calendar: {
+        borderRadius: 10,
+        width: '90%',
+        alignSelf: 'center'
+    },
     verticalSpread: {
         flex: 1,
         width: 'auto',
@@ -32,7 +43,8 @@ export const styles = StyleSheet.create({
     },
     card: {
         width: 200,
-        height: 200,
+        height: 150,
+        marginRight: 10,
         textAlign: 'center'
     },
     bigCard: {

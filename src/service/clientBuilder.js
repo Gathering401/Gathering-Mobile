@@ -20,6 +20,7 @@ export function buildClient() {
     //
     //
     //
+    //
     const httpLink = createHttpLink({
         uri: `${REACT_APP_API_URL}/graphql`
     });

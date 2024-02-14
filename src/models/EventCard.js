@@ -1,14 +1,18 @@
-import { View, Text } from 'react-native';
-
+import { Text } from 'react-native';
+import { Card } from 'react-native-paper';
 import moment from 'moment-timezone';
+
+import { styles } from '../styles/main-styles';
 
 export const EventCard = ({event}) => {
     return (
-        <View>
-            <Text>When: {moment(event.eventDate).format('h:mm a')}</Text>
-            <Text>What: {event.description}</Text>
-            {/* <Text>Where: {event.location.locationName}</Text> */}
+        <Card style={styles.card}>
+            <Card.Title title={event.eventName}/>
+            <Card.Content>
+                <Text>{event.eventDate}</Text>
+                <Text>{moment(event.eventDate).format('h:mm a')}</Text>
             <Text>Price: ${event.price}</Text>
-        </View>
+            </Card.Content>
+        </Card>
     )
 }
