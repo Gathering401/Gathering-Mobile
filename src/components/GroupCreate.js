@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { gql, useMutation } from '@apollo/client';
 
 import CustomFormik from './CustomFormik';
+import Loader from './helpers/Loader';
 
-export default function GroupCreate({ close }) {    
+export default function GroupCreate({ close, navigation }) {    
     let [selectedCard, setSelectedCard] = useState(null);
 
     const CREATE_GROUP_MUTATION = gql`mutation CreateGroup($groupData: GroupDataInput!) {
@@ -35,27 +36,16 @@ export default function GroupCreate({ close }) {
     return (
         <CustomFormik
             steps={[[
-                { label: 'Group Name', type: 'name', initial: '', placeholder: 'ISU Basketball Team', fieldName: 'groupName' },
-                { label: 'Description', type: 'paragraph', initial: '', placeholder: 'A place to schedule all basketball games for Iowa State University', fieldName: 'description' },
-                { label: 'Location', type: 'name', initial: '', placeholder: 'Ames, IA', fieldName: 'location' },
-                { label: 'Group Tier', type: 'cards', fieldName: 'groupSize', initial: selectedCard, selectedCard, setSelectedCard, cards: [
-                    { title: 'Free', value: 0, body: [
-                        'Max Members: 50',
-                        'Max Events per Month: 100'
-                    ], footer: '$0 w/promotions' },
-                    { title: 'Business', value: 1, body: [
-                        'Max Members: 500',
-                        'Max Events per Month: 2500'
-                    ], footer: '$50' },
-                    { title: 'Enterprise', value: 2, body: [
-                        'Unlimited Members',
-                        'Unlimited Events'
-                    ], footer: '$500' }
-                ] }
+                { label: 'Group Name', type: 'name', initial: '', placeholder: 'Group name', fieldName: 'groupName' },
+                { label: 'Description', type: 'paragraph', initial: '', placeholder: 'A group to share events with our people.', fieldName: 'description' },
+                { label: 'Location', type: 'name', initial: '', placeholder: 'New York, New York', fieldName: 'location' },
+                { label: 'Invite Only?', type: 'checkbox', initial: false, fieldName: 'inviteOnly'}
             ]]}
             formSubmit={(values) => {
                 submitGroup({
-                    variables: values,
+                    variables: {
+                        groupData: values
+                    },
                     onCompleted: async ({ groupId }) => {
                         navigation.navigate('GroupsTab', {
                             screen: 'Group',
@@ -65,7 +55,7 @@ export default function GroupCreate({ close }) {
                         });
                     },
                     onError: (error) => {
-                        console.log('Error: ', error);
+                        console.log('Error: ', JSON.stringify(error, null, 2));
                     }
                 })
             }}

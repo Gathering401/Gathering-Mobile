@@ -155,6 +155,7 @@ export const styles = StyleSheet.create({
     },
     formikStep: {
         height: '100%',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        backgroundColor: '#CDEDF6'
     }
 });

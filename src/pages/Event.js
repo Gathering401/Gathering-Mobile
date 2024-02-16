@@ -59,7 +59,7 @@ export default function Event({ route: { params: { eventId: id, groupId } }, nav
             }
         },
         onError: ((error) => {
-            console.log('Error: ', error);
+            console.log('Error: ', JSON.stringify(error, null, 2));
         })
     });
 

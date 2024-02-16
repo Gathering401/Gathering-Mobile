@@ -2,19 +2,18 @@ import { useState } from 'react';
 
 import { TouchableOpacity } from 'react-native';
 
-import GroupCreate from './GroupCreate';
 import EventCreate from './EventCreate';
 
 import { styles } from '../styles/main-styles';
 import { Button } from 'react-native-paper';
 
-export default function CreateButton({ type, setCreated, navigation }) {
-    let [showGroupCreate, setShowGroupCreate] = useState(false);
+export default function CreateButton({ type, navigation }) {
     let [showEventCreate, setShowEventCreate] = useState(false);
 
-    const closeGroupCreate = (groupCreate) => {
-        setShowGroupCreate(groupCreate);
-        setCreated(true);
+    const openCreateGroupForm = () => {
+        navigation.navigate('GroupsTab', {
+            screen: 'Create Group'
+        })
     }
 
     const closeEventCreate = (eventCreate) => {
@@ -24,13 +23,7 @@ export default function CreateButton({ type, setCreated, navigation }) {
     
     switch(type) {
         case 'group':
-            if(showGroupCreate) {
-                return <GroupCreate close={closeGroupCreate}/>
-            } else {
-                return (
-                    <Button icon="plus" onPress={() => setShowGroupCreate(true)}>New</Button>
-                )
-            }
+            return <Button mode='outlined' onPress={() => openCreateGroupForm()}>New Group</Button>
         case 'event':
             if(showEventCreate) {
                 return <EventCreate navigation={navigation} close={closeEventCreate}/>

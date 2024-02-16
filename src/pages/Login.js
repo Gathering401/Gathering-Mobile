@@ -29,32 +29,26 @@ export default function Login({ navigation }) {
     }
     
     return (
-        <View style={styles.container}>
-            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-                <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
-                    <CustomFormik steps={[
-                        [
-                            { label: 'Username', type: 'text', initial: '', placeholder: 'jane.doe', fieldName: 'username'},
-                            { label: 'Password', type: 'password', initial: '', placeholder: 'password', fieldName: 'password'}
-                        ]
-                    ]}
-                    formSubmit={(values) => {
-                        submitLogin({
-                            variables: values,
-                            onCompleted: async ({ login }) => {
-                                console.log(login);
-                                await SecureStore.setItemAsync('token', login.token);
+        <CustomFormik steps={[
+            [
+                { label: 'Username', type: 'text', initial: '', placeholder: 'jane.doe', fieldName: 'username'},
+                { label: 'Password', type: 'password', initial: '', placeholder: 'password', fieldName: 'password'}
+            ]
+        ]}
+        formSubmit={(values) => {
+            submitLogin({
+                variables: values,
+                onCompleted: async ({ login }) => {
+                    console.log(login);
+                    await SecureStore.setItemAsync('token', login.token);
 
-                                navigation.navigate('Home');
-                            },
-                            onError: (error) => {
-                                console.log('Error: ', JSON.stringify(error, null, 2));
-                            }
-                        });
-                    }}
-                    />
-                </KeyboardAvoidingView>
-            </TouchableWithoutFeedback>
-        </View>
+                    navigation.navigate('Home');
+                },
+                onError: (error) => {
+                    console.log('Error: ', JSON.stringify(error, null, 2));
+                }
+            });
+        }}
+        />
     )
 }

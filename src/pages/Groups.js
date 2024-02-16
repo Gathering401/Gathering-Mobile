@@ -45,7 +45,7 @@ export default function Groups({ navigation }) {
     
     return (
         <SafeAreaView style={styles.container}>
-            {/* <CreateButton type="group" /> */}
+            <CreateButton type="group" navigation={navigation} />
             <ScrollView style={{width: '100%'}}>
                 {
                     data?.groups?.length ?
