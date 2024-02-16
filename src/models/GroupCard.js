@@ -3,7 +3,6 @@ import { Card } from 'react-native-paper';
 import { styles } from '../styles/main-styles';
 
 export const GroupCard = ({group}) => {
-    console.log(group);
     return (
         <Card style={styles.card}>
             <Card.Title title={group.groupName}/>

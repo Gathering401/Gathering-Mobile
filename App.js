@@ -77,7 +77,7 @@ export default function App() {
                                 iconName = 'account-group';
                             }
 
-                            return <Icon source={focused ? iconName : iconName + '-outline'} size={size} color='#042A2B' />;
+                            return <Icon source={focused ? iconName : iconName + '-outline'} size={focused ? size * 1.1 : size} color='#042A2B' />;
                         },
                         tabBarActiveTintColor: '#042A2B',
                         tabBarInactiveTintColor: '#042A2B',

@@ -10,6 +10,7 @@ export default function HorizontalScrollWithTouch({ scrollTitle, scrollableItems
     const navigate = (obj) => {
         switch(mapper) {
             case 'event':
+            case 'invitation':
                 navigation.navigate('EventsTab', {
                     screen: 'Event',
                     initial: false,
