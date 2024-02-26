@@ -35,7 +35,7 @@ export default function GroupCreate({ close, navigation }) {
             steps={[[
                 { label: 'Group Name', type: 'name', initial: '', placeholder: 'Group name', fieldName: 'groupName' },
                 { label: 'Description', type: 'paragraph', initial: '', placeholder: 'A group to share events with our people.', fieldName: 'description' },
-                { label: 'Location', type: 'name', initial: '', placeholder: 'New York, New York', fieldName: 'location' },
+                { label: 'Location', type: 'location', initial: '', placeholder: 'New York, New York', fieldName: 'location' },
                 { label: 'Invite Only?', type: 'checkbox', initial: false, fieldName: 'inviteOnly'}
             ]]}
             formSubmit={(values) => {

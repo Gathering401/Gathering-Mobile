@@ -1,4 +1,3 @@
-import { View } from 'react-native';
 import { TextInput } from 'react-native-paper';
 
 import { styles } from '../../styles/main-styles';
@@ -7,10 +6,11 @@ export default function BasicInput({ handleChange, handleBlur, placeholder, valu
     return (
         <TextInput
             style={styles.textInput}
-            mode="outlined"
+            mode='outlined'
             label={label}
+            outlineColor='rgb(190, 190, 190)'
             placeholder={placeholder}
-            placeholderTextColor="rgb(190, 190, 190)"
+            placeholderTextColor='rgb(190, 190, 190)'
             required={required}
             secureTextEntry={secureTextEntry}
             autoCapitalize={autoCapitalize}
