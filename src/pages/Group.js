@@ -14,7 +14,6 @@ import { styles } from '../styles/main-styles';
 
 export default function Group({ route: { params: { id } }, navigation }) {
     let [location, setLocation] = useState(null);
-    let [group, setGroup] = useState({});
     
     const { data, errors, loading } = useQuery(gql`query getGroup($groupId: Int!) {
         group: getGroup(groupId: $groupId) {
@@ -42,20 +41,23 @@ export default function Group({ route: { params: { id } }, navigation }) {
     }`,
     {
         variables: { groupId: id },
-        onCompleted: async (response) => {
-            setGroup(response.group);
+        onCompleted: async ({ group }) => {
             const locationResponse = await axios({
                 method: 'GET',
-                url: `https://maps.googleapis.com/maps/api/geocode/json?place_id=${response.group.location}&key=${REACT_APP_GEO_CODE}`,
+                url: `https://maps.googleapis.com/maps/api/geocode/json?place_id=${group.location}&key=${REACT_APP_GEO_CODE}`,
                 headers: {
                     'Content-Type': 'application/json'
                 }
             }).catch(err => console.log(err));
 
-            const locationData = JSON.parse(JSON.stringify(locationResponse)).data?.results;
-            if(locationData) {
-                const compartmenalizedAddress = compAddress(locationData[0].address_components);
-                setLocation(compartmenalizedAddress);
+            if(locationResponse) {
+                const locationData = JSON.parse(JSON.stringify(locationResponse)).data?.results;
+                if(locationData) {
+                    const compartmenalizedAddress = compAddress(locationData[0].address_components);
+                    setLocation(compartmenalizedAddress);
+                }
+            } else {
+                setLocation(null)
             }
         }
     });
@@ -65,14 +67,14 @@ export default function Group({ route: { params: { id } }, navigation }) {
         return null;
     }
 
-    if(loading || !group.groupName) {
+    if(loading || !data.group.groupName) {
         return <Loader />
     }
     
     return (
         <View style={styles.container}>
-            <Text>{group.groupName}</Text>
-            <Text>{group.description}</Text>
+            <Text>{data.group.groupName}</Text>
+            <Text>{data.group.description}</Text>
             {location && <LocationText location={location}/>}
         </View>
     )

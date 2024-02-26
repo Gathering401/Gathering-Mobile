@@ -10,6 +10,7 @@ import EventCalendar from './src/pages/EventCalendar';
 import Groups from './src/pages/Groups';
 import Group from './src/pages/Group';
 import Event from './src/pages/Event';
+import GroupCreate from './src/components/GroupCreate.js';
 
 import { ApolloProvider } from '@apollo/client';
 
@@ -55,6 +56,7 @@ export default function App() {
             <GroupStack.Navigator screenOptions={{ headerShown: false }}>
                 <GroupStack.Screen name="Groups" component={Groups} />
                 <GroupStack.Screen name="Group" component={Group} />
+                <GroupStack.Screen name="Create Group" component={GroupCreate} />
                 <CalendarStack.Screen name="Group Event" component={Event} />
             </GroupStack.Navigator>
         )

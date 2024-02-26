@@ -31,51 +31,38 @@ export default function SignUp({ navigation }) {
     }
     
     return (
-        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-            <KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : "height"}
-                style={styles.container}
-            >
-                <ScrollView
-                    automaticallyAdjustKeyboardInsets={true}
-                    centerContent={true}
-                    snapToInterval={true}
-                >
-                    <CustomFormik steps={[
-                            [
-                                { label: 'First Name', type: 'name', initial: '', placeholder: 'Jane', fieldName: 'firstName' },
-                                { label: 'Last Name', type: 'name', initial: '', placeholder: 'Doe', fieldName: 'lastName' },
-                                { label: 'Username', type: 'text', initial: '', placeholder: 'jane.doe', fieldName: 'username' },
-                                { label: 'Password', type: 'password', initial: '', placeholder: '8 chars, 1 number, 1 capital, and 1 symbol', fieldName: 'password' },
-                                { label: 'Confirm Password', type: 'password', initial: '', placeholder: 'Confirm password', fieldName: 'confirmPassword' }
-                            ],
-                            [
-                                { label: 'Email', type: 'email', initial: '', fieldName: 'email' },
-                                { label: 'Phone Number', type: 'phone', initial: '', fieldName: 'phone' },
-                                { label: 'Birth Date', type: 'date', initial: date, fieldName: 'birthDate', date, setDate }
-                            ]
-                        ]}
-                        formSubmit={(values) => {
-                            submitRegistration({
-                                variables: {
-                                    userData: {
-                                        ..._.omit(values, ['confirmPassword']),
-                                        phone: Number(values.phone.replace(/[^0-9.]/g, '')),
-                                        timezone: 'America/Chicago'
-                                    }
-                                },
-                                onCompleted: async ({ register }) => {
-                                    await SecureStore.setItemAsync('token', register.token);
-                                    navigation.navigate('Home');
-                                },
-                                onError: (error) => {
-                                    console.log('Error: ', JSON.stringify(error, null, 2));
-                                }
-                            });
-                        }}
-                    />
-                </ScrollView>
-            </KeyboardAvoidingView>
-        </TouchableWithoutFeedback>
+        <CustomFormik steps={[
+                [
+                    { label: 'First Name', type: 'name', initial: '', placeholder: 'Jane', fieldName: 'firstName' },
+                    { label: 'Last Name', type: 'name', initial: '', placeholder: 'Doe', fieldName: 'lastName' },
+                    { label: 'Username', type: 'text', initial: '', placeholder: 'jane.doe', fieldName: 'username' },
+                    { label: 'Password', type: 'password', initial: '', placeholder: '8 chars, 1 number, 1 capital, and 1 symbol', fieldName: 'password' },
+                    { label: 'Confirm Password', type: 'password', initial: '', placeholder: 'Confirm password', fieldName: 'confirmPassword' }
+                ],
+                [
+                    { label: 'Email', type: 'email', initial: '', fieldName: 'email' },
+                    { label: 'Phone Number', type: 'phone', initial: '', fieldName: 'phone' },
+                    { label: 'Birth Date', type: 'date', initial: date, fieldName: 'birthDate', date, setDate }
+                ]
+            ]}
+            formSubmit={(values) => {
+                submitRegistration({
+                    variables: {
+                        userData: {
+                            ..._.omit(values, ['confirmPassword']),
+                            phone: Number(values.phone.replace(/[^0-9.]/g, '')),
+                            timezone: 'America/Chicago'
+                        }
+                    },
+                    onCompleted: async ({ register }) => {
+                        await SecureStore.setItemAsync('token', register.token);
+                        navigation.navigate('Home');
+                    },
+                    onError: (error) => {
+                        console.log('Error: ', JSON.stringify(error, null, 2));
+                    }
+                });
+            }}
+        />
     )
 }

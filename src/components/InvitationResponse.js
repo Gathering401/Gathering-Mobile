@@ -27,7 +27,7 @@ export default function InvitationResponse({status, component, id}) {
                 }, onCompleted: async () => {
                     navigation.navigate('HomeTab');
                 }, onError: (error) => {
-                    console.log('Error: ', error);
+                    console.log('Error: ', JSON.stringify(error, null, 2));
                 }
             })}>
             {component}

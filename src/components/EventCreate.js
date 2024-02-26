@@ -59,11 +59,11 @@ export default function EventCreate({ navigation }) {
                             location: values.location
                         }
                     },
-                    onCompleted: async () => {
+                    onCompleted: () => {
                         navigation.navigate('CalendarTab');
                     },
                     onError: (error) => {
-                        console.log('Error: ', error);
+                        console.log('Error: ', JSON.stringify(error, null, 2));
                     }
                 })
             }}
