@@ -73,11 +73,11 @@ export const styles = StyleSheet.create({
         justifyContent: 'space-around'
     },
     textInput: {
-        fontSize: 20,
+        fontSize: 16,
         width: '80%',
         margin: 5,
         alignSelf: 'center',
-        color: 'black'
+        color: 'rgb(190, 190, 190)'
     },
     modalButton: {
         borderWidth: 1,
@@ -157,5 +157,31 @@ export const styles = StyleSheet.create({
         height: '100%',
         justifyContent: 'center',
         backgroundColor: '#CDEDF6'
+    },
+    radioGroupContainer: {
+        alignSelf: 'center',
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+    },
+    radioAndLabelContainer: {
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+    },
+    checkbox: {
+        width: '80%',
+        borderWidth: 1,
+        borderColor: 'gray',
+        borderRadius: 5,
+        height: 50,
+        backgroundColor: 'white',
+        margin: 12,
+        fontSize: 16,
+        color: 'rgb(190, 190, 190)',
+        alignSelf: 'center',
+        display: 'flex',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
     }
 });

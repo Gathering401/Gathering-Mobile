@@ -1,12 +1,9 @@
-import { useState } from 'react';
 import { gql, useMutation } from '@apollo/client';
 
 import CustomFormik from './CustomFormik';
 import Loader from './helpers/Loader';
 
-export default function GroupCreate({ close, navigation }) {    
-    let [selectedCard, setSelectedCard] = useState(null);
-
+export default function GroupCreate({ close, navigation }) {
     const CREATE_GROUP_MUTATION = gql`mutation CreateGroup($groupData: GroupDataInput!) {
         createGroup(groupData: $groupData) {
             groupId
@@ -46,11 +43,11 @@ export default function GroupCreate({ close, navigation }) {
                     variables: {
                         groupData: values
                     },
-                    onCompleted: async ({ groupId }) => {
+                    onCompleted: async ({ createGroup: { groupId } }) => {
                         navigation.navigate('GroupsTab', {
                             screen: 'Group',
                             params: {
-                                groupId
+                                id: groupId
                             }
                         });
                     },
