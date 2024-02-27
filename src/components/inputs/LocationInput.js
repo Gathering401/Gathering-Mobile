@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useState } from 'react';
-import { ScrollView, View } from 'react-native';
+import { View } from 'react-native';
 import { TextInput, Card, Button } from 'react-native-paper';
 
 import { REACT_APP_GEO_CODE } from '@env';
@@ -18,7 +18,7 @@ const tryAgainText = 'If it looks correct, try being more precise.';
 export default function LocationInput({ fieldName, setFieldValue, handleBlur }) {
     const [locationToSearch, setLocationToSearch] = useState('');
     const [openLocationSearch, setOpenLocationSearch] = useState(false);
-    const [searchResults, setSearchResults] = useState([]);
+    const [searchResults, setSearchResults] = useState(null);
     const [displayError, setDisplayError] = useState({display: false, text: ''});
     
     const searchForLocation = async () => {
@@ -27,24 +27,28 @@ export default function LocationInput({ fieldName, setFieldValue, handleBlur }) 
                 method: 'GET',
                 url: `https://maps.googleapis.com/maps/api/geocode/json?address=${locationToSearch}&key=${REACT_APP_GEO_CODE}`
             });
-            
-            
-            if(results.length) {
-                setSearchResults(results);
+
+            const location = compAddress(results[0].address_components);
+            const formattedLocation = formatLocation(location, {
+                streetAddress: true,
+                cityState: true,
+                zip: true
+            });
+            if(formattedLocation.errors) {
+                setDisplayError({display: true, text: `Invalid address, missing following fields: ${formattedLocation.errors}.`});
+            } else {
+                setSearchResults({location: formattedLocation.formattedLocation, placeId: results[0].place_id});
             }
         } catch(err) {
             setDisplayError({display: true, text: `Invalid location. ${tryAgainText}`});
         }
     }
     
-    const locationSelected = (location, placeId) => {
-        setFieldValue(fieldName, placeId);
-        setLocationToSearch(formatLocation(location, {
-            streetAddress: true,
-            cityState: true,
-            zip: true
-        }));
+    const locationSelected = () => {
+        setFieldValue(fieldName, searchResults.placeId);
+        setLocationToSearch(searchResults.location);
         setOpenLocationSearch(false);
+        setSearchResults(null);
     }
     
     return <>
@@ -68,22 +72,17 @@ export default function LocationInput({ fieldName, setFieldValue, handleBlur }) 
             {openLocationSearch &&
                 <>
                     <Button style={styles.button} onPress={searchForLocation} mode="outlined">Search</Button>
-                    <ScrollView>
-                        {searchResults.map((result, index) => {
-                            const location = compAddress(result.address_components);
-                            return (
-                                <Card style={styles.locationCard} onPress={() => locationSelected(location, result.place_id)} key={index}>
-                                    <Card.Title title={<LocationText
-                                        location={location}
-                                        options={{
-                                            streetAddress: true,
-                                            cityState: true
-                                        }}/>
-                                    }/>
-                                </Card>
-                            )
-                        })}
-                    </ScrollView>
+                    {searchResults?.location ?
+                        <Card style={styles.locationCard} onPress={locationSelected}>
+                            <Card.Title title={<LocationText
+                                location={searchResults.location}
+                                options={{
+                                    streetAddress: true,
+                                    cityState: true,
+                                    zip: true
+                                }}/>
+                            }/>
+                        </Card> : null}
                 </>
             }
         </View>
