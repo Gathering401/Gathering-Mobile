@@ -11,9 +11,11 @@ import { compAddress } from '../service/compAddress';
 import { REACT_APP_GEO_CODE } from '@env';
 
 import { styles } from '../styles/main-styles';
+import { formatLocation } from '../components/helpers/locationFormatter';
 
 export default function Group({ route: { params: { id } }, navigation }) {
-    let [location, setLocation] = useState(null);
+    const [location, setLocation] = useState(null);
+    const [locationLoading, setLocationLoading] = useState(true);
     
     const { data, errors, loading } = useQuery(gql`query getGroup($groupId: Int!) {
         group: getGroup(groupId: $groupId) {
@@ -54,11 +56,16 @@ export default function Group({ route: { params: { id } }, navigation }) {
                 const locationData = JSON.parse(JSON.stringify(locationResponse)).data?.results;
                 if(locationData) {
                     const compartmenalizedAddress = compAddress(locationData[0].address_components);
-                    setLocation(compartmenalizedAddress);
+                    const location = formatLocation(compartmenalizedAddress, {
+                        streetAddress: true,
+                        cityState: true
+                    });
+                    setLocation(location.formattedLocation);
                 }
             } else {
-                setLocation(null)
+                setLocation(null);
             }
+            setLocationLoading(false);
         }
     });
 
@@ -67,15 +74,15 @@ export default function Group({ route: { params: { id } }, navigation }) {
         return null;
     }
 
-    if(loading || !data.group.groupName) {
+    if(loading || locationLoading || !data.group.groupName) {
         return <Loader />
     }
-    
+
     return (
         <View style={styles.container}>
             <Text>{data.group.groupName}</Text>
             <Text>{data.group.description}</Text>
-            {location && <LocationText location={location}/>}
+            {location ? <LocationText location={location} clickable={true}/> : null}
         </View>
     )
 }

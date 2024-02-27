@@ -46,10 +46,10 @@ export const compAddress = (addressComponents) => {
                 components.nonAddress = comp.long_name;
                 break;
             case 'postal_code':
-                components.zip = comp.long_name + (components.zip ?? '');
+                components.zip = comp.long_name + (components.zip ? `-${components.zip}` : '');
                 break;
             case 'postal_code_suffix':
-                components.zip = (components.zip ?? '') + comp.long_name;
+                components.zip = (components.zip ? `${components.zip}-` : '') + comp.long_name;
                 break;
             case 'natural_feature':
                 components.natural = comp.long_name;

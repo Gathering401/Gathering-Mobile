@@ -145,7 +145,9 @@ export const styles = StyleSheet.create({
     errorMessage: {
         color: 'red',
         textAlign: 'center',
-        fontSize: 12
+        fontSize: 12,
+        alignSelf: 'center',
+        width: '80%'
     },
     eventRepeatSelection: {
         fontSize: 30,
@@ -183,5 +185,12 @@ export const styles = StyleSheet.create({
         display: 'flex',
         flexDirection: 'row',
         flexWrap: 'wrap',
+    },
+    locationCard: {
+        width: '80%',
+        textAlign: 'auto',
+        paddingTop: 5,
+        alignSelf: 'center',
+        height: 50
     }
 });

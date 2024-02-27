@@ -132,6 +132,8 @@ export default function CustomFormik({ steps, moreInformation, setMoreInformatio
                                                         label={field.label}
                                                         placeholder={field.placeholder}
                                                         fieldName={field.fieldName}
+                                                        value={field.value}
+                                                        handleBlur={handleBlur}
                                                         setFieldValue={setFieldValue}
                                                         required={field.required}
                                                         key={`0${index2}`}
