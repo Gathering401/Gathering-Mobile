@@ -1,3 +1,4 @@
+import { findNodeHandle } from 'react-native';
 import { TextInput } from 'react-native-paper';
 
 import { styles } from '../../styles/main-styles';

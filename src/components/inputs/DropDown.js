@@ -1,25 +1,27 @@
 import { useState } from 'react';
-import { View } from 'react-native';
 
 import DropDownPicker from 'react-native-dropdown-picker';
-import Label from '../Label';
 
 import { styles } from '../../styles/main-styles';
 
-export default function DropDown({ label, options, setOptions, selected, setSelected }) {
-    let [open, setOpen] = useState(false);
+export default function DropDown({ label, initial, fieldName, setFieldValue, options, setOptions, multiple }) {
+    const [open, setOpen] = useState(false);
+    const [value, setValue] = useState(initial ?? null);
     
     return (
-        <View style={styles.inputAndLabel}>
-            <Label text={label} />
-            <DropDownPicker
-                open={open}
-                setOpen={setOpen}
-                value={selected}
-                setValue={setSelected}
-                items={options}
-                setItems={setOptions}
-            />
-        </View>
+        <DropDownPicker
+            style={styles.dropDown}
+            labelStyle={styles.dropDownLabels}
+            placeholder={label}
+            open={open}
+            setOpen={setOpen}
+            value={value}
+            setValue={setValue}
+            onChangeValue={id => setFieldValue(fieldName, id)}
+            items={options}
+            setItems={setOptions}
+            multiple={multiple}
+            listMode="SCROLLVIEW"
+        />
     )
 }

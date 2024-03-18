@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useState } from 'react';
-import { View } from 'react-native';
-import { TextInput, Card, Button } from 'react-native-paper';
+import { findNodeHandle, TouchableOpacity, View } from 'react-native';
+import { TextInput, Button, Text } from 'react-native-paper';
 
 import { REACT_APP_GEO_CODE } from '@env';
 
@@ -16,13 +16,16 @@ import { styles } from '../../styles/main-styles';
 const tryAgainText = 'If it looks correct, try being more precise.';
 
 export default function LocationInput({ fieldName, setFieldValue, handleBlur }) {
+    const noError = {display: false};
+
     const [locationToSearch, setLocationToSearch] = useState('');
     const [openLocationSearch, setOpenLocationSearch] = useState(false);
     const [searchResults, setSearchResults] = useState(null);
-    const [displayError, setDisplayError] = useState({display: false, text: ''});
+    const [displayError, setDisplayError] = useState(noError);
     
     const searchForLocation = async () => {
         try {
+            setDisplayError(noError)
             const { data: { results } } = await axios({
                 method: 'GET',
                 url: `https://maps.googleapis.com/maps/api/geocode/json?address=${locationToSearch}&key=${REACT_APP_GEO_CODE}`
@@ -69,21 +72,19 @@ export default function LocationInput({ fieldName, setFieldValue, handleBlur }) 
                 multiline={false}
                 value={locationToSearch}
             />
-            {openLocationSearch &&
-                <>
-                    <Button style={styles.button} onPress={searchForLocation} mode="outlined">Search</Button>
-                    {searchResults?.location ?
-                        <Card style={styles.locationCard} onPress={locationSelected}>
-                            <Card.Title title={<LocationText
-                                location={searchResults.location}
-                                options={{
-                                    streetAddress: true,
-                                    cityState: true,
-                                    zip: true
-                                }}/>
-                            }/>
-                        </Card> : null}
-                </>
+            {openLocationSearch && (searchResults?.location
+                ? <TouchableOpacity onPress={locationSelected} style={styles.locationSearched}>
+                    <Text variant="titleMedium">Tap if correct</Text>
+                    <LocationText
+                        location={searchResults?.location}
+                        options={{
+                            streetAddress: true,
+                            cityState: true,
+                            zip: true
+                        }}
+                    />
+                </TouchableOpacity>
+                : <Button style={styles.button} onPress={searchForLocation} mode="outlined">Search</Button>)
             }
         </View>
         {displayError.display && <ErrorMessage text={displayError.text} />}

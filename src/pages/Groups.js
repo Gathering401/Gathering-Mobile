@@ -3,9 +3,7 @@ import { gql, useQuery } from '@apollo/client';
 import { useState } from 'react';
 import { ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Text, Button, Card } from 'react-native-paper';
-
-import CreateButton from '../components/CreateButton';
+import { Text, Button, Card, Icon } from 'react-native-paper';
 
 import { styles } from '../styles/main-styles';
 
@@ -45,12 +43,30 @@ export default function Groups({ navigation }) {
     
     return (
         <SafeAreaView style={styles.container}>
-            <CreateButton type="group" navigation={navigation} />
+            <Button
+                mode='outlined'
+                style={styles.button}
+                onPress={() => navigation.navigate('GroupsTab', {
+                    screen: 'Create Group'
+                })}>
+                <Icon source='plus' color='#042A2B'/>New Group
+            </Button>
             <ScrollView style={{width: '100%'}}>
                 {
                     data?.groups?.length ?
                     data.groups.map((group) => (
-                        <Card style={styles.bigCard} key={group.groupId}>
+                        <Card
+                            onPress={() => {
+                                navigation.navigate('GroupsTab', {
+                                    screen: 'Group',
+                                    params: {
+                                        id: group.groupId
+                                    }
+                                })
+                            }}
+                            style={styles.bigCard}
+                            key={group.groupId}
+                        >
                             <Card.Title style={styles.cardTitle} title={group.groupName}/>
                             <Card.Content>
                                 <Text variant='bodyMedium'>{group.description}</Text>
