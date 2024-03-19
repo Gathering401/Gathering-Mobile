@@ -1,76 +1,76 @@
-import { useState, useCallback } from 'react';
-import { View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Button } from 'react-native-paper';
+import { useState } from 'react';
+import { View, Keyboard } from 'react-native';
+import { TextInput } from 'react-native-paper';
 
 import { DateTime } from 'luxon';
 
-import { DatePickerModal } from 'react-native-paper-dates';
+import { styles } from '../../styles/main-styles';
 
-export default function DateInput({ label, fieldName, setFieldValue }) {
-    let [date, setDate] = useState(new Date());
-    let [show, setShow] = useState(false);
+import { DatePickerModal, TimePickerModal } from 'react-native-paper-dates';
 
-    const onConfirm = (date) => {
-        setShow(false);
-        setDate(date);
-        setFieldValue(fieldName, DateTime.fromJSDate(date).startOf('day'));
+export default function DateInput({ label, fieldName, setFieldValue, handleBlur }) {
+    const [date, setDate] = useState(DateTime.now());
+    const [openDateInput, setOpenDateInput] = useState(false);
+    const [openTimeInput, setOpenTimeInput] = useState(false);
+
+    const onDateConfirm = ({date}) => {
+        setOpenDateInput(false);
+        setOpenTimeInput(true);
+        setDate(DateTime.fromJSDate(date));
+    }
+
+    const onTimeConfirm = ({hours, minutes}) => {
+        const dateWithTime = date.startOf('day').plus({ hours, minutes });
+        setDate(dateWithTime);
+        setFieldValue(fieldName, dateWithTime.toISO());
+        onDismiss();
     }
 
     const onDismiss = () => {
-        setShow(false);
+        setOpenDateInput(false);
+        setOpenTimeInput(false);
     }
 
     return (
         <View>
-            <SafeAreaView>
-                <Button onPress={() => setShow(true)} uppercase={false}>{label}: {DateTime.fromJSDate(date).toFormat('DDD')}</Button>
-                <DatePickerModal
-                    locale="en"
-                    mode="single"
-                    visible={show}
-                    onDismiss={onDismiss}
-                    date={date}
-                    onConfirm={({date}) => onConfirm(date)}
-                />
-            </SafeAreaView>
-            {/* <Label text="Is it recurring?" />
-            <CheckBox
-                value={showRepeat}
-                onValueChange={() => setShowRepeat(!showRepeat)}
+            <TextInput
+                style={{...styles.textInput, textAlign: 'auto'}}
+                mode='outlined'
+                label={label}
+                outlineColor='rgb(190, 190, 190)'
+                placeholder={label}
+                placeholderTextColor='rgb(190, 190, 190)'
+                required={true}
+                autoCapitalize='words'
+                spellCheck={false}
+                onTouchEnd={() => Keyboard.dismiss()}
+                onPressIn={() => setOpenDateInput(true)}
+                onBlur={handleBlur(fieldName)}
+                multiline={false}
+                value={date.toLocaleString({
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: '2-digit'
+                })}
             />
-            {showRepeat &&
-                <View>
-                    <EventRepeatSelection
-                        setShowRepeat={setShowRepeat}
-                        setFieldValue={setFieldValue}
-                        setDisplay={determineDisplayDate}
-                        selectedDate={dateFromDate}
-                        value='Weekly'
-                    />
-                    <EventRepeatSelection
-                        setShowRepeat={setShowRepeat}
-                        setFieldValue={setFieldValue}
-                        setDisplay={determineDisplayDate}
-                        selectedDate={dateFromDate}
-                        value='Monthly'
-                    />
-                    <EventRepeatSelection
-                        setShowRepeat={setShowRepeat}
-                        setFieldValue={setFieldValue}
-                        setDisplay={determineDisplayDate}
-                        selectedDate={dateFromDate}
-                        value='Annually'
-                    />
-                    <EventRepeatSelection
-                        setShowRepeat={setShowRepeat}
-                        setFieldValue={setFieldValue}
-                        setDisplay={determineDisplayDate}
-                        selectedDate={dateFromDate}
-                        value='Never'
-                    />
-                </View>
-            }*/}
+            <DatePickerModal
+                locale="en"
+                mode="single"
+                visible={openDateInput}
+                onDismiss={onDismiss}
+                date={new Date(date.toISO())}
+                onConfirm={onDateConfirm}
+            />
+            <TimePickerModal
+                locale="en"
+                visible={openTimeInput}
+                onDismiss={onDismiss}
+                hours={1}
+                onConfirm={onTimeConfirm}
+                defaultInputType='keyboard'
+            />
         </View>
     )
 }

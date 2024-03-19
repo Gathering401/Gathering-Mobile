@@ -39,7 +39,6 @@ export default function Login({ navigation }) {
             submitLogin({
                 variables: values,
                 onCompleted: async ({ login }) => {
-                    console.log(login);
                     await SecureStore.setItemAsync('token', login.token);
 
                     navigation.navigate('Home');

@@ -2,11 +2,11 @@ import { StyleSheet } from "react-native";
 // COLORS: #042A2B, #5EB1BF, #CDEDF6, #EF7B45, #D84727 --- https://coolors.co/042a2b-5eb1bf-cdedf6-ef7b45-d84727
 export const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flexGrow: 1,
         backgroundColor: '#CDEDF6',
         alignItems: 'center',
         justifyContent: 'center',
-        width: 'auto'
+        width: '100%'
     },
     calendarContainer: {
         flex: 1,
@@ -77,7 +77,8 @@ export const styles = StyleSheet.create({
         width: '80%',
         margin: 5,
         alignSelf: 'center',
-        color: 'rgb(190, 190, 190)'
+        color: 'rgb(190, 190, 190)',
+        borderRadius: 5
     },
     modalButton: {
         borderWidth: 1,
@@ -155,8 +156,14 @@ export const styles = StyleSheet.create({
         borderRadius: 15,
         padding: 15
     },
+    form: {
+        width: '100%',
+        flexGrow: 1,
+        justifyContent: 'center'
+    },
     formikStep: {
         height: '100%',
+        width: '100%',
         justifyContent: 'center',
         backgroundColor: '#CDEDF6'
     },
@@ -174,7 +181,7 @@ export const styles = StyleSheet.create({
     checkbox: {
         width: '80%',
         borderWidth: 1,
-        borderColor: 'gray',
+        borderColor: 'grey',
         borderRadius: 5,
         height: 50,
         backgroundColor: 'white',
@@ -186,11 +193,36 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
         flexWrap: 'wrap',
     },
-    locationCard: {
+    locationSearched: {
         width: '80%',
-        textAlign: 'auto',
-        paddingTop: 5,
+        backgroundColor: 'white',
         alignSelf: 'center',
-        height: 50
+        paddingVertical: 5,
+        paddingHorizontal: 15,
+        display: 'flex',
+        borderStyle: 'solid',
+        borderColor: 'grey',
+        borderWidth: 1,
+        borderRadius: 5
+    },
+    dropDown: {
+        width: '80%',
+        alignSelf: 'center',
+        marginTop: 10,
+        marginBottom: 5,
+        borderColor: 'rgb(190, 190, 190)',
+        borderRadius: 5
+    },
+    dropDownContainer: {
+        width: '80%',
+        alignSelf: 'center',
+        marginTop: 10,
+        borderBottomRadius: 5,
+        borderTopWidth: 0,
+        borderColor: 'rgb(190, 190, 190)'
+    },
+    dropDownLabels: {
+        color: 'rgb(75, 75, 75)',
+        fontSize: 16
     }
 });

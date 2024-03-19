@@ -1,5 +1,4 @@
 export const formatLocation = (location, options = {}) => {
-    console.log(location, options)
     let locationArray = [];
     let missingArray = [];
     const response = {};

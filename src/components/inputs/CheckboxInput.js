@@ -1,10 +1,7 @@
-import { useState } from 'react';
 import { Checkbox } from 'react-native-paper';
 import { styles } from '../../styles/main-styles';
 
-export default function CheckboxInput({ handleChange, fieldName, label }) {
-    const [checked, setChecked] = useState(true);
-    
+export default function CheckboxInput({ handleChange, fieldName, label, checked, setChecked }) {
     return (
         <Checkbox.Item
             accessibilityLabel={label}

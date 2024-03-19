@@ -3,7 +3,7 @@ import { gql, useMutation } from '@apollo/client';
 import CustomFormik from './CustomFormik';
 import Loader from './helpers/Loader';
 
-export default function GroupCreate({ close, navigation }) {
+export default function GroupCreate({ navigation }) {
     const CREATE_GROUP_MUTATION = gql`mutation CreateGroup($groupData: GroupDataInput!) {
         createGroup(groupData: $groupData) {
             groupId

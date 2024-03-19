@@ -1,5 +1,6 @@
 import { gql, useQuery } from '@apollo/client';
-import { View, ScrollView, Text } from 'react-native';
+import { View, Text } from 'react-native';
+import { Button, Icon } from 'react-native-paper';
 
 import HorizontalScrollWithTouch from './HorizontalScrollWithTouch';
 import Loader from './helpers/Loader';
@@ -22,7 +23,9 @@ export default function LoggedInHome({ navigation }) {
             eventDate
             price
         }
-    }`);
+    }`, {
+        fetchPolicy: "no-cache",    
+    });
 
     if(loading) {
         return <Loader />;
@@ -50,6 +53,14 @@ export default function LoggedInHome({ navigation }) {
                 mapper="event"
                 navigation={navigation}
             /> : null}
+            <Button
+                mode='outlined'
+                style={{ ...styles.button, marginTop: 15 }}
+                onPress={() => navigation.navigate('CalendarTab', {
+                    screen: 'Create Event'
+                })}>
+                <Icon source='plus' color='#042A2B' />New Event
+            </Button>
             {!groups?.length ? <Text>Not part of any groups. Join a group to see events here!</Text> : null}
         </View>
     )

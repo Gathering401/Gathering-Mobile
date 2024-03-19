@@ -3,15 +3,16 @@ import axios from 'axios';
 import { useQuery, gql } from '@apollo/client';
 import { View, Text } from 'react-native';
 import { useState } from 'react';
+import { Button, Icon } from 'react-native-paper';
 
 import Loader from '../components/helpers/Loader';
 import LocationText from '../components/LocationText';
 import { compAddress } from '../service/compAddress';
+import { formatLocation } from '../components/helpers/locationFormatter';
 
 import { REACT_APP_GEO_CODE } from '@env';
 
 import { styles } from '../styles/main-styles';
-import { formatLocation } from '../components/helpers/locationFormatter';
 
 export default function Group({ route: { params: { id } }, navigation }) {
     const [location, setLocation] = useState(null);
@@ -83,6 +84,17 @@ export default function Group({ route: { params: { id } }, navigation }) {
             <Text>{data.group.groupName}</Text>
             <Text>{data.group.description}</Text>
             {location ? <LocationText location={location} clickable={true}/> : null}
+            <Button
+                mode='outlined'
+                style={styles.button}
+                onPress={() => navigation.navigate('CalendarTab', {
+                    screen: 'Create Event',
+                    params: {
+                        groupId: id
+                    }
+                })}>
+                <Icon source='plus' color='#042A2B' />New Event
+            </Button>
         </View>
     )
 }

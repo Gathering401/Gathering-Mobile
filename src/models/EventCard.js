@@ -1,6 +1,6 @@
 import { Text } from 'react-native';
 import { Card } from 'react-native-paper';
-import moment from 'moment-timezone';
+import { DateTime } from 'luxon';
 
 import { styles } from '../styles/main-styles';
 
@@ -9,10 +9,10 @@ export const EventCard = ({event}) => {
         <Card style={styles.card}>
             <Card.Title title={event.eventName}/>
             <Card.Content>
-                <Text>{event.eventDate}</Text>
-                <Text>{moment(event.eventDate).format('h:mm a')}</Text>
-            <Text>Price: ${event.price}</Text>
+                <Text>Date: {DateTime.fromISO(event.eventDate).toFormat('DDD')}</Text>
+                <Text>Time: {DateTime.fromISO(event.eventDate).toFormat('t')}</Text>
+            <Text>Price: {event.price ? `$${event.price}` : 'Free'}</Text>
             </Card.Content>
         </Card>
-    )
+    );
 }
