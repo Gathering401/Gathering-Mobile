@@ -11,7 +11,7 @@ export const EventCard = ({event}) => {
             <Card.Content>
                 <Text>Date: {DateTime.fromISO(event.eventDate).toFormat('DDD')}</Text>
                 <Text>Time: {DateTime.fromISO(event.eventDate).toFormat('t')}</Text>
-            <Text>Price: ${event.price}</Text>
+            <Text>Price: {event.price ? `$${event.price}` : 'Free'}</Text>
             </Card.Content>
         </Card>
     );

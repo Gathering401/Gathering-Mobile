@@ -1,5 +1,4 @@
 import { View, ScrollView, TouchableOpacity, Text } from 'react-native';
-import { Card } from 'react-native-paper';
 
 import { styles } from '../styles/main-styles';
 
@@ -11,10 +10,10 @@ export default function HorizontalScrollWithTouch({ scrollTitle, scrollableItems
         switch(mapper) {
             case 'event':
             case 'invitation':
-                navigation.navigate('EventsTab', {
+                navigation.navigate('CalendarTab', {
                     screen: 'Event',
                     initial: false,
-                    params: { eventId: obj.eventId, groupId: obj.groupId }
+                    params: { eventId: obj.eventId, groupId: obj.groupId, repeated: false }
                 });
                 break;
             case 'group':

@@ -114,12 +114,16 @@ export default function CustomFormik({ steps, moreInformation, setMoreInformatio
                                                 fieldName={field.fieldName}
                                                 initial={field.initial}
                                                 setFieldValue={setFieldValue}
+                                                open={field.open}
+                                                setOpen={field.setOpen}
+                                                closeOthers={field.closeOthers}
                                                 options={field.options}
                                                 setOptions={field.setOptions}
                                                 selected={field.selected}
                                                 setSelected={field.setSelected}
                                                 required={field.required}
                                                 multiple={field.multiple}
+                                                zIndex={field.zIndex}
                                                 key={`0${index2}`}
                                             />
                                         case 'cards':
@@ -146,6 +150,8 @@ export default function CustomFormik({ steps, moreInformation, setMoreInformatio
                                                 label={field.label}
                                                 handleChange={handleChange}
                                                 fieldName={field.fieldName}
+                                                checked={field.checked}
+                                                setChecked={field.setChecked}
                                                 key={`0${index2}`}
                                             />
                                         default:

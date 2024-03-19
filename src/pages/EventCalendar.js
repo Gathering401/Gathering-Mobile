@@ -36,7 +36,7 @@ export default function EventCalendar({ navigation }) {
         }
     }`;
 
-    const { data, errors } = useQuery(EVENT_QUERY, {
+    const { data, loading, errors } = useQuery(EVENT_QUERY, {
         fetchPolicy: "no-cache",
         variables: {
             ...variables,
@@ -45,7 +45,6 @@ export default function EventCalendar({ navigation }) {
         },
         onCompleted: ({events}) => {
             setMarkedDates(events.reduce((a,c) => {
-                console.log(c.eventDate.substring(0,10));
                 const date = c.eventDate.substring(0,10);
                 if(!a[date]) {
                     a[date] = {marked: true}
@@ -60,7 +59,6 @@ export default function EventCalendar({ navigation }) {
         return null;
     }
 
-    console.log('surely theres things, right?', markedDates)
     return (
         <SafeAreaView style={styles.calendarContainer}>
             <Calendar
@@ -69,7 +67,8 @@ export default function EventCalendar({ navigation }) {
                     setCurrentDate(DateTime.fromISO(date.dateString))
                     setSelectedDate(DateTime.fromISO(date.dateString))
                 }}
-                initialDate={currentDate.toISO()}
+                displayLoadingIndicator={loading}
+                initialDate={selectedDate.toISO()}
                 markedDates={markedDates}
                 onDayPress={(date) => setSelectedDate(DateTime.fromISO(date.dateString))}
             />

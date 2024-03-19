@@ -1,13 +1,15 @@
-import moment from 'moment-timezone';
 import { useState } from 'react';
 import { gql, useMutation, useQuery } from '@apollo/client';
 
 import CustomFormik from './CustomFormik';
-import { DateTime } from 'luxon';
 
 export default function EventCreate({ navigation, route }) {
     const [moreInformation, setMoreInformation] = useState(false);
     const [groupDropdownOptions, setGroupDropdownOptions] = useState([]);
+    const [repeatOpen, setRepeatOpen] = useState(false);
+    const [groupOpen, setGroupOpen] = useState(false);
+    const [foodChecked, setFoodChecked] = useState(false);
+
     const repeatDropdownOptions = [
         { label: 'Never', value: 'never' },
         { label: 'Weekly', value: 'weekly' },
@@ -17,10 +19,8 @@ export default function EventCreate({ navigation, route }) {
 
     const CREATE_EVENT_MUTATION = gql`mutation CreateEvent($groupId: Int!, $eventData: EventDataInput!) {
         createEvent(groupId: $groupId, eventData: $eventData) {
-            eventName
-            eventDate
-            description
-            location
+            eventId
+            groupId
         }
     }`;
 
@@ -59,39 +59,42 @@ export default function EventCreate({ navigation, route }) {
                     { label: 'Event Name', type: 'name', initial: '', placeholder: 'Event Name', fieldName: 'eventName', required: true },
                     { label: 'Description', type: 'paragraph', initial: '', placeholder: 'Description of your event', fieldName: 'description' },
                     { label: 'Event Date', type: 'date', initial: new Date(), fieldName: 'eventDate', required: true },
-                    { label: 'Reoccurence', type: 'dropdown', initial: 'never', fieldName: 'eRepeat', multiple: false, options: repeatDropdownOptions, required: true },
+                    { label: 'Reoccurence', type: 'dropdown', initial: 'never', fieldName: 'repeat', multiple: false, options: repeatDropdownOptions, required: true, open: repeatOpen, setOpen: setRepeatOpen, closeOthers: () => setGroupOpen(false), zIndex: 2000 },
                     { label: 'Location', type: 'location', initial: '', fieldName: 'location', placeholder: 'Location', required: true },
-                    ...(route?.params?.groupId ? [] : [
-                        { label: 'Group', type: 'dropdown', initial: null, fieldName: 'groupId', multiple: false, options: groupDropdownOptions, required: true }
-                    ]),
+                    { label: 'Group', type: 'dropdown', initial: route?.params?.groupId ?? null, fieldName: 'groupId', multiple: false, options: groupDropdownOptions, required: true, open: groupOpen, setOpen: setGroupOpen, closeOthers: () => setRepeatOpen(false), zIndex: 1 },
 
                     ...(moreInformation ? [
                         { label: 'Will it cost anything?', type: 'price', initial: 0, fieldName: 'price' },
-                        { label: 'Will there be food?', type: 'checkbox', initial: false, fieldName: 'food' }
+                        { label: 'Will there be food?', type: 'checkbox', initial: foodChecked, checked: foodChecked, setChecked: setFoodChecked, fieldName: 'food' },
+                        ...(foodChecked ? [{ label: 'What kinds of food?', type: 'paragraph', initial: '', fieldName: 'foodDescription' }] : [])
                     ] : [])
                 ]
             ]}
             moreInformation={moreInformation}
             setMoreInformation={setMoreInformation}
             formSubmit={(values) => {
-                console.log('values', values)
                 submitEvent({
                     variables: {
-                        groupId: route?.params?.groupId ?? values.groupId,
+                        groupId: route?.params?.groupId || values.groupId,
                         eventData: {
                             eventName: values.eventName,
                             food: !!values.food,
+                            foodDescription: values.foodDescription,
                             price: values.price ?? 0,
                             description: values.description,
-                            eventRepeat: values.eRepeat,
+                            eventRepeat: values.repeat,
                             eventDate: values.eventDate,
-                            location: values.location
+                            location: values.location,
                         }
                     },
                     onCompleted: (response) => {
-                        console.log('hello', response)
                         navigation.navigate('CalendarTab', {
-                            screen: 'Calendar'
+                            screen: 'Event',
+                            params: {
+                                eventId: response.createEvent.eventId,
+                                groupId: response.createEvent.groupId,
+                                repeated: true
+                            }
                         });
                     },
                     onError: (error) => {

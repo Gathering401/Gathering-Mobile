@@ -8,30 +8,33 @@ import moment from 'moment-timezone';
 import Loader from '../components/helpers/Loader';
 import LocationText from '../components/LocationText';
 import { compAddress } from '../service/compAddress';
+import { formatLocation } from '../components/helpers/locationFormatter';
 
 import { REACT_APP_GEO_CODE } from '@env';
 
 import { styles } from '../styles/main-styles';
 
-export default function Event({ route: { params: { eventId: id, groupId } }, navigation }) {
-    let [location, setLocation] = useState(null);
-    let [event, setEvent] = useState({});
+export default function Event({ route: { params: { eventId: id, groupId, repeated } }, navigation }) {
+    const [location, setLocation] = useState(null);
+    const [locationLoading, setLocationLoading] = useState(true);
+    const [event, setEvent] = useState({});
     
-    const { loading } = useQuery(gql`query getRepeatedEvent($id: Int!, $groupId: Int!) {
-        event: getIndividualEvent(id: $id, groupId: $groupId) {
+    const { loading } = useQuery(gql`query getRepeatedEventAndGroupInfo($id: Int!, $groupId: Int!) {
+        event: ${repeated ? 'getRepeatedEvent' : 'getIndividualEvent'}(id: $id, groupId: $groupId) {
             eventId
             groupId
             eventName
-            description
-            eventDate
+            description${repeated ? `
+            eventRepeat` : ''}
+            eventDate${repeated ? 's' : ''}
             location
-            price
-            food
             invitedUsers {
                 userId
                 username
                 rsvp
             }
+        }
+        group: getGroup(groupId: $groupId) {
             groupName
         }
     }`,
@@ -48,22 +51,27 @@ export default function Event({ route: { params: { eventId: id, groupId } }, nav
                 }
             }).catch(err => console.log(err));
 
-            const locationData = JSON.parse(JSON.stringify(locationResponse)).data?.results;
-            if(locationData) {
-                const compartmenalizedAddress = compAddress(locationData[0].address_components);
-
-                compartmenalizedAddress.lat = locationData[0].geometry.location.lat;
-                compartmenalizedAddress.lng = locationData[0].geometry.location.lng;
-                
-                setLocation(compartmenalizedAddress);
+            if(locationResponse) {
+                const locationData = JSON.parse(JSON.stringify(locationResponse)).data?.results;
+                if(locationData) {
+                    const compartmenalizedAddress = compAddress(locationData[0].address_components);
+                    const location = formatLocation(compartmenalizedAddress, {
+                        streetAddress: true,
+                        cityState: true
+                    });
+                    setLocation(location.formattedLocation);
+                }
+            } else {
+                setLocation(null);
             }
+            setLocationLoading(false);
         },
         onError: ((error) => {
             console.log('Error: ', JSON.stringify(error, null, 2));
         })
     });
 
-    if(loading || !event.eventName) {
+    if(loading || locationLoading || !event.eventName) {
         return <Loader />
     }
     
@@ -72,7 +80,7 @@ export default function Event({ route: { params: { eventId: id, groupId } }, nav
             <Text>{event.eventName}</Text>
             <Text>{event.description}</Text>
             <Text>{moment(event.eventDate, 'MM/DD/YYYY h:mma Z').format('h:mma M/DD/YY')}</Text>
-            {location && <LocationText location={location} clickable={true}/>}
+            {location ? <LocationText location={location} clickable={true}/> : null}
         </View>
     )
 }

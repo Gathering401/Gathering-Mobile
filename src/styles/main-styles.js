@@ -213,6 +213,14 @@ export const styles = StyleSheet.create({
         borderColor: 'rgb(190, 190, 190)',
         borderRadius: 5
     },
+    dropDownContainer: {
+        width: '80%',
+        alignSelf: 'center',
+        marginTop: 10,
+        borderBottomRadius: 5,
+        borderTopWidth: 0,
+        borderColor: 'rgb(190, 190, 190)'
+    },
     dropDownLabels: {
         color: 'rgb(75, 75, 75)',
         fontSize: 16
