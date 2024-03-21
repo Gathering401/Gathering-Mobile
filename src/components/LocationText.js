@@ -1,4 +1,5 @@
-import { Text, TouchableOpacity, Platform, Linking } from 'react-native';
+import { TouchableOpacity, Platform, Linking } from 'react-native';
+import { Text } from 'react-native-paper';
 
 export default function LocationText({ location, clickable }) {
     // this will need to be made much more verbose. Plan in the future is to look at current user's location, compare to the location being passed in, and base the formatting on that comparison (i.e. more specific if it's a closer region, less specific if far)
@@ -22,7 +23,7 @@ export default function LocationText({ location, clickable }) {
                 Linking.openURL(url);
             }
         }>
-            <Text>{location}</Text>
+            <Text variant="bodyLarge" style={{textDecorationLine: 'underline'}}>{location}</Text>
         </TouchableOpacity>
     )
 }

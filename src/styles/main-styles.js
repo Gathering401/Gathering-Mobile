@@ -8,6 +8,17 @@ export const styles = StyleSheet.create({
         justifyContent: 'center',
         width: '100%'
     },
+    detailsPage: {
+        flexGrow: 1,
+        backgroundColor: '#CDEDF6',
+        alignItems: 'center',
+        justifyContent: 'space-around',
+        alignSelf: 'center',
+        width: '90%'
+    },
+    details: {
+        alignItems: 'center'
+    },
     calendarContainer: {
         flex: 1,
         backgroundColor: '#CDEDF6',

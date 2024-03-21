@@ -1,12 +1,15 @@
 import axios from 'axios';
 
 import { useQuery, gql } from '@apollo/client';
-import { View, Text } from 'react-native';
 import { useState } from 'react';
-import { Button, Icon } from 'react-native-paper';
+import { View } from 'react-native';
+import { Button, Icon, Text } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Loader from '../components/helpers/Loader';
 import LocationText from '../components/LocationText';
+import HorizontalScrollWithTouch from '../components/HorizontalScrollWithTouch';
+
 import { compAddress } from '../service/compAddress';
 import { formatLocation } from '../components/helpers/locationFormatter';
 
@@ -40,6 +43,17 @@ export default function Group({ route: { params: { id } }, navigation }) {
                 lastName
             }
             location
+            currentUser {
+                role
+            }
+            upcoming: upcomingEvents {
+                eventId
+                groupName
+                eventName
+                description
+                eventDate
+                price
+            }
         }
     }`,
     {
@@ -75,26 +89,42 @@ export default function Group({ route: { params: { id } }, navigation }) {
         return null;
     }
 
-    if(loading || locationLoading || !data.group.groupName) {
+    if(loading || !data?.group?.groupName) {
         return <Loader />
     }
 
+    const isOwner = data.group.currentUser.role === 'owner';
+    const isAdmin = isOwner || data.group.currentUser.role === 'admin';
+    const isCreator = isAdmin || data.group.currentUser.role === 'creator';
+
     return (
-        <View style={styles.container}>
-            <Text>{data.group.groupName}</Text>
-            <Text>{data.group.description}</Text>
-            {location ? <LocationText location={location} clickable={true}/> : null}
-            <Button
-                mode='outlined'
-                style={styles.button}
-                onPress={() => navigation.navigate('CalendarTab', {
-                    screen: 'Create Event',
-                    params: {
-                        groupId: id
+        <SafeAreaView style={styles.container}>
+            <View style={styles.detailsPage}>
+                <View style={styles.details}>
+                    <Text variant="headlineLarge" style={styles.detailsHeader}>{data.group.groupName}</Text>
+                    <Text variant="bodyLarge" style={styles.detailsSubheader}>{data.group.description}</Text>
+                    {location && !locationLoading ? <LocationText location={location} clickable={true}/> : null}
+                    {isCreator &&
+                        <Button
+                            mode='outlined'
+                            style={styles.button}
+                            onPress={() => navigation.navigate('CalendarTab', {
+                                screen: 'Create Event',
+                                params: {
+                                    groupId: id
+                                }
+                            })}>
+                            <Icon source='plus' color='#042A2B' />New Event
+                        </Button>
                     }
-                })}>
-                <Icon source='plus' color='#042A2B' />New Event
-            </Button>
-        </View>
+                </View>
+                {data?.group?.upcoming?.length ? <HorizontalScrollWithTouch
+                    scrollTitle="Upcoming Events"
+                    scrollableItems={data.group.upcoming}
+                    mapper="event"
+                    navigation={navigation}
+                /> : null}
+            </View>
+        </SafeAreaView>
     )
 }
