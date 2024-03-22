@@ -6,5 +6,6 @@
 
 #### To Run
 
-Make sure to run an `npm install` after cloning.  
-From there, no need for an emulator, just run `npm run web` and the application should open in your browser.
+**Disclaimer**: This can only be run on mobile.  
+To run, download the Expo GO app from the app store.  
+From there, it should be as simple as running `npm start`, opening up the Expo GO app, and the development server should appear on the menu. 
