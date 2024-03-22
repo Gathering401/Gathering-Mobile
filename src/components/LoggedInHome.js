@@ -6,35 +6,37 @@ import HorizontalScrollWithTouch from './HorizontalScrollWithTouch';
 import Loader from './helpers/Loader';
 
 import { styles } from '../styles/main-styles';
+import { loggedInHome } from '../mockData/mockData';
 
 export default function LoggedInHome({ navigation }) {
-    const { data, errors, loading } = useQuery(gql`query GetGroupsAndUpcomingEvents {
-        groups: getGroups {
-            groupId
-            groupName
-            description
-        }
-        upcoming: getUpcomingEvents {
-            eventId
-            groupId
-            groupName
-            eventName
-            description
-            eventDate
-            price
-        }
-    }`, {
-        fetchPolicy: "no-cache",    
-    });
+    const data = loggedInHome;
+    // const { data, errors, loading } = useQuery(gql`query GetGroupsAndUpcomingEvents {
+    //     groups: getGroups {
+    //         groupId
+    //         groupName
+    //         description
+    //     }
+    //     upcoming: getUpcomingEvents {
+    //         eventId
+    //         groupId
+    //         groupName
+    //         eventName
+    //         description
+    //         eventDate
+    //         price
+    //     }
+    // }`, {
+    //     fetchPolicy: "no-cache",    
+    // });
 
-    if(loading) {
-        return <Loader />;
-    }
+    // if(loading) {
+    //     return <Loader />;
+    // }
 
-    if(errors || !data) {
-        console.log('Error: ', errors);
-        return null;
-    }
+    // if((errors || !data) && !mockData) {
+    //     console.log('Error: ', errors);
+    //     return null;
+    // }
 
     const { upcoming, groups } = data;
     

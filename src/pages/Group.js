@@ -17,81 +17,84 @@ import { REACT_APP_GEO_CODE } from '@env';
 
 import { styles } from '../styles/main-styles';
 
+import { group } from '../mockData/mockData';
+
 export default function Group({ route: { params: { id } }, navigation }) {
-    const [location, setLocation] = useState(null);
-    const [locationLoading, setLocationLoading] = useState(true);
+    // const [location, setLocation] = useState(null);
+    // const [locationLoading, setLocationLoading] = useState(true);
     
-    const { data, errors, loading } = useQuery(gql`query getGroup($groupId: Int!) {
-        group: getGroup(groupId: $groupId) {
-            groupName
-            description
-            inviteOnly
-            groupUsers {
-                username
-                firstName
-                lastName
-            }
-            joinRequests {
-                username
-                firstName
-                lastName
-                status
-            }
-            owner {
-                username
-                firstName
-                lastName
-            }
-            location
-            currentUser {
-                role
-            }
-            upcoming: upcomingEvents {
-                eventId
-                groupName
-                eventName
-                description
-                eventDate
-                price
-            }
-        }
-    }`,
-    {
-        variables: { groupId: id },
-        onCompleted: async ({ group }) => {
-            const locationResponse = await axios({
-                method: 'GET',
-                url: `https://maps.googleapis.com/maps/api/geocode/json?place_id=${group.location}&key=${REACT_APP_GEO_CODE}`,
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            }).catch(err => console.log(err));
+    const data = group;
+    // const { data, errors, loading } = useQuery(gql`query getGroup($groupId: Int!) {
+    //     group: getGroup(groupId: $groupId) {
+    //         groupName
+    //         description
+    //         inviteOnly
+    //         groupUsers {
+    //             username
+    //             firstName
+    //             lastName
+    //         }
+    //         joinRequests {
+    //             username
+    //             firstName
+    //             lastName
+    //             status
+    //         }
+    //         owner {
+    //             username
+    //             firstName
+    //             lastName
+    //         }
+    //         location
+    //         currentUser {
+    //             role
+    //         }
+    //         upcoming: upcomingEvents {
+    //             eventId
+    //             groupName
+    //             eventName
+    //             description
+    //             eventDate
+    //             price
+    //         }
+    //     }
+    // }`,
+    // {
+    //     variables: { groupId: id },
+    //     onCompleted: async ({ group }) => {
+    //         const locationResponse = await axios({
+    //             method: 'GET',
+    //             url: `https://maps.googleapis.com/maps/api/geocode/json?place_id=${group.location}&key=${REACT_APP_GEO_CODE}`,
+    //             headers: {
+    //                 'Content-Type': 'application/json'
+    //             }
+    //         }).catch(err => console.log(err));
 
-            if(locationResponse) {
-                const locationData = JSON.parse(JSON.stringify(locationResponse)).data?.results;
-                if(locationData) {
-                    const compartmenalizedAddress = compAddress(locationData[0].address_components);
-                    const location = formatLocation(compartmenalizedAddress, {
-                        streetAddress: true,
-                        cityState: true
-                    });
-                    setLocation(location.formattedLocation);
-                }
-            } else {
-                setLocation(null);
-            }
-            setLocationLoading(false);
-        }
-    });
+    //         if(locationResponse) {
+    //             const locationData = JSON.parse(JSON.stringify(locationResponse)).data?.results;
+    //             if(locationData) {
+    //                 const compartmenalizedAddress = compAddress(locationData[0].address_components);
+    //                 const location = formatLocation(compartmenalizedAddress, {
+    //                     streetAddress: true,
+    //                     cityState: true
+    //                 });
+    //                 setLocation(location.formattedLocation);
+    //             }
+    //         } else {
+    //             setLocation(null);
+    //         }
+    //         setLocationLoading(false);
+    //     }
+    // });
 
-    if(errors) {
-        console.log('Error: ', errors);
-        return null;
-    }
+    // if(errors) {
+    //     console.log('Error: ', errors);
+    //     return null;
+    // }
 
-    if(loading || !data?.group?.groupName) {
-        return <Loader />
-    }
+    // if(loading || !data?.group?.groupName) {
+    //     return <Loader />
+    // }
 
     const isOwner = data.group.currentUser.role === 'owner';
     const isAdmin = isOwner || data.group.currentUser.role === 'admin';
@@ -103,7 +106,7 @@ export default function Group({ route: { params: { id } }, navigation }) {
                 <View style={styles.details}>
                     <Text variant="headlineLarge" style={styles.detailsHeader}>{data.group.groupName}</Text>
                     <Text variant="bodyLarge" style={styles.detailsSubheader}>{data.group.description}</Text>
-                    {location && !locationLoading ? <LocationText location={location} clickable={true}/> : null}
+                    {/* {location && !locationLoading ? <LocationText location={location} clickable={true}/> : null} */}
                     {isCreator &&
                         <Button
                             mode='outlined'
