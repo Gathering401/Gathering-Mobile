@@ -3,6 +3,7 @@ import { View, Text } from 'react-native';
 import { Button, Icon } from 'react-native-paper';
 
 import HorizontalScrollWithTouch from './HorizontalScrollWithTouch';
+import LogoutButton from './inputs/LogoutButton';
 import Loader from './helpers/Loader';
 
 import { styles } from '../styles/main-styles';
@@ -41,6 +42,7 @@ export default function LoggedInHome({ navigation }) {
     return (
         <View style={styles.scrollWithNav}>
             <Text style={styles.title}>Welcome</Text>
+            <LogoutButton navigation={navigation}/>
             {groups?.length ? <HorizontalScrollWithTouch
                 scrollTitle="Your Groups"
                 scrollableItems={groups}
