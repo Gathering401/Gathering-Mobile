@@ -23,10 +23,8 @@ export default function HomeScreen({navigation}) {
 
         getToken();
     }, [isFocused]);
-    console.log('token', token);
 
     const authenticated = authenticateUser(token);
-    console.log('authenticated', authenticated);
     
     return (
         <View style={styles.container}>

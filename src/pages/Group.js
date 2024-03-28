@@ -23,6 +23,7 @@ export default function Group({ route: { params: { id } }, navigation }) {
     
     const { data, errors, loading } = useQuery(gql`query getGroup($groupId: Int!) {
         group: getGroup(groupId: $groupId) {
+            groupId
             groupName
             description
             inviteOnly
@@ -48,6 +49,7 @@ export default function Group({ route: { params: { id } }, navigation }) {
             }
             upcoming: upcomingEvents {
                 eventId
+                groupId
                 groupName
                 eventName
                 description

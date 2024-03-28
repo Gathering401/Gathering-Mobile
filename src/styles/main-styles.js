@@ -43,7 +43,8 @@ export const styles = StyleSheet.create({
     },
     horizontalScroller: {
         fontSize: '20px',
-        width: 'auto',
+        width: '100%',
+        alignSelf: 'center',
         padding: 5
     },
     horizontalScrollerWrapper: {
@@ -76,6 +77,7 @@ export const styles = StyleSheet.create({
         padding: 0
     },
     viewTitle: {
+        alignSelf: 'center',
         color: 'rgb(125, 125, 125)',
         margin: 10
     },

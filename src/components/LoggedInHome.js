@@ -24,9 +24,7 @@ export default function LoggedInHome({ navigation }) {
             eventDate
             price
         }
-    }`, {
-        fetchPolicy: "no-cache",    
-    });
+    }`);
 
     if(loading) {
         return <Loader />;

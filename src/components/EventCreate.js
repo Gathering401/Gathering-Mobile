@@ -10,12 +10,13 @@ export default function EventCreate({ navigation, route }) {
     const [groupOpen, setGroupOpen] = useState(false);
     const [foodChecked, setFoodChecked] = useState(false);
 
-    const repeatDropdownOptions = [
+    const [repeatDropdownOptions, setRepeatDropdownOptions] = useState([
+        { label: '', value: null },
         { label: 'Never', value: 'never' },
         { label: 'Weekly', value: 'weekly' },
         { label: 'Monthly', value: 'monthly' },
         { label: 'Annually', value: 'annually' }
-    ]
+    ]);
 
     const CREATE_EVENT_MUTATION = gql`mutation CreateEvent($groupId: Int!, $eventData: EventDataInput!) {
         createEvent(groupId: $groupId, eventData: $eventData) {
@@ -35,10 +36,13 @@ export default function EventCreate({ navigation, route }) {
 
     const { groupsErrors, groupsLoading } = useQuery(GET_GROUPS_QUERY, {
         onCompleted: ({ groups }) => {
-            setGroupDropdownOptions(groups.map(g => ({
-                value: g.groupId,
-                label: g.groupName
-            })))
+            setGroupDropdownOptions([
+                { label: '', value: null },
+                ...groups.map(g => ({
+                    value: g.groupId,
+                    label: g.groupName
+                }))
+            ])
         }
     });
 
@@ -59,9 +63,9 @@ export default function EventCreate({ navigation, route }) {
                     { label: 'Event Name', type: 'name', initial: '', placeholder: 'Event Name', fieldName: 'eventName', required: true },
                     { label: 'Description', type: 'paragraph', initial: '', placeholder: 'Description of your event', fieldName: 'description' },
                     { label: 'Event Date', type: 'date', initial: new Date(), fieldName: 'eventDate', required: true },
-                    { label: 'Reoccurence', type: 'dropdown', initial: 'never', fieldName: 'repeat', multiple: false, options: repeatDropdownOptions, required: true, open: repeatOpen, setOpen: setRepeatOpen, closeOthers: () => setGroupOpen(false), zIndex: 2000 },
+                    { label: 'Repeat', type: 'dropdown', initial: 'never', fieldName: 'repeat', multiple: false, options: repeatDropdownOptions, setOptions: setRepeatDropdownOptions, required: true, open: repeatOpen, setOpen: setRepeatOpen, closeOthers: () => setGroupOpen(false), zIndex: 2000 },
                     { label: 'Location', type: 'location', initial: '', fieldName: 'location', placeholder: 'Location', required: true },
-                    { label: 'Group', type: 'dropdown', initial: route?.params?.groupId ?? null, fieldName: 'groupId', multiple: false, options: groupDropdownOptions, required: true, open: groupOpen, setOpen: setGroupOpen, closeOthers: () => setRepeatOpen(false), zIndex: 1 },
+                    { label: 'Group', type: 'dropdown', initial: route?.params?.groupId ?? null, fieldName: 'groupId', multiple: false, options: groupDropdownOptions, setOptions: setGroupDropdownOptions, required: true, open: groupOpen, setOpen: setGroupOpen, closeOthers: () => setRepeatOpen(false), zIndex: 1 },
 
                     ...(moreInformation ? [
                         { label: 'Will it cost anything?', type: 'price', initial: 0, fieldName: 'price' },
@@ -93,7 +97,7 @@ export default function EventCreate({ navigation, route }) {
                             params: {
                                 eventId: response.createEvent.eventId,
                                 groupId: response.createEvent.groupId,
-                                repeated: true
+                                repeated: response.createEvent.repeat
                             }
                         });
                     },

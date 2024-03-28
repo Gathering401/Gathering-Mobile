@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useQuery, gql } from '@apollo/client';
 import { View, Text } from 'react-native';
 import { useState } from 'react';
-import moment from 'moment-timezone';
+import { DateTime } from 'luxon';
 
 import Loader from '../components/helpers/Loader';
 import LocationText from '../components/LocationText';
@@ -20,13 +20,13 @@ export default function Event({ route: { params: { eventId: id, groupId, repeate
     const [event, setEvent] = useState({});
     
     const { loading } = useQuery(gql`query getRepeatedEventAndGroupInfo($id: Int!, $groupId: Int!) {
-        event: ${repeated ? 'getRepeatedEvent' : 'getIndividualEvent'}(id: $id, groupId: $groupId) {
+        event: ${repeated !== 'never' ? 'getRepeatedEvent' : 'getIndividualEvent'}(id: $id, groupId: $groupId) {
             eventId
             groupId
             eventName
-            description${repeated ? `
+            description${repeated !== 'never' ? `
             eventRepeat` : ''}
-            eventDate${repeated ? 's' : ''}
+            eventDate${repeated !== 'never' ? 's' : ''}
             location
             invitedUsers {
                 userId
@@ -74,12 +74,19 @@ export default function Event({ route: { params: { eventId: id, groupId, repeate
     if(loading || locationLoading || !event.eventName) {
         return <Loader />
     }
-    
+
+    const displayDate = repeated !== 'never'
+        ? <>
+            <Text>Upcoming Dates</Text>
+            <Text>{event.eventDates.slice(0, 4).map(d => DateTime.fromISO(d).toFormat('LLLL d')).join(', ')}</Text>
+        </>
+        : <Text>{DateTime.fromISO(event.eventDate).toFormat('fff')}</Text>
+
     return (
         <View style={styles.container}>
             <Text>{event.eventName}</Text>
             <Text>{event.description}</Text>
-            <Text>{moment(event.eventDate, 'MM/DD/YYYY h:mma Z').format('h:mma M/DD/YY')}</Text>
+            {displayDate}
             {location ? <LocationText location={location} clickable={true}/> : null}
         </View>
     )
