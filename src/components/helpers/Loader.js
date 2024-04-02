@@ -1,9 +1,11 @@
-import { View, Text } from 'react-native';
+import { ActivityIndicator } from "react-native-paper";
+import { View } from 'react-native';
+import { styles } from "../../styles/main-styles";
 
 export default function Loader() {
     return (
-        <View>
-            <Text>Loading...</Text>
+        <View style={styles.container}>
+            <ActivityIndicator animating={true}/>
         </View>
     )
 }

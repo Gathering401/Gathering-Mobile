@@ -8,6 +8,13 @@ export const styles = StyleSheet.create({
         justifyContent: 'center',
         width: '100%'
     },
+    hamburger: {
+        position: 'absolute',
+        left: 0
+    },
+    header: {
+        backgroundColor: '#CDEDF6'
+    },
     detailsPage: {
         flexGrow: 1,
         backgroundColor: '#CDEDF6',

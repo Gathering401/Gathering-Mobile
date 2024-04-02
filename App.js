@@ -12,13 +12,15 @@ import Group from './src/pages/Group';
 import Event from './src/pages/Event';
 import GroupCreate from './src/components/GroupCreate.js';
 import EventCreate from './src/components/EventCreate.js';
+import HeaderMenu from './src/components/HeaderMenu.js';
 
 import { ApolloProvider } from '@apollo/client';
 
 import { buildClient } from './src/service/clientBuilder';
 
 import { en, registerTranslation } from 'react-native-paper-dates';
-import { Icon } from 'react-native-paper';
+import { Icon, PaperProvider } from 'react-native-paper';
+import { styles } from './src/styles/main-styles.js';
 
 registerTranslation('en', en);
 
@@ -57,7 +59,14 @@ export default function App() {
         return (
             <GroupStack.Navigator screenOptions={{ headerShown: false }}>
                 <GroupStack.Screen name="Groups" component={Groups} />
-                <GroupStack.Screen name="Group" component={Group} />
+                <GroupStack.Screen name="Group" component={Group} options={{
+                    headerShown: true,
+                    headerLeft: HeaderMenu,
+                    headerStyle: styles.header,
+                    headerBackButtonMenuEnabled: false,
+                    headerTitle: '',
+                    headerShadowVisible: false
+                }} />
                 <GroupStack.Screen name="Create Group" component={GroupCreate} />
             </GroupStack.Navigator>
         )
@@ -67,31 +76,33 @@ export default function App() {
         <NavigationContainer>
             <ApolloProvider client={client}>
                 <SafeAreaProvider>
-                    <Tab.Navigator screenOptions={({ route }) => ({
-                        headerShown: false,
-                        tabBarIcon: ({ focused, size }) => {
-                            let iconName;
+                    <PaperProvider>
+                        <Tab.Navigator screenOptions={({ route }) => ({
+                            headerShown: false,
+                            tabBarIcon: ({ focused, size }) => {
+                                let iconName;
 
-                            if (route.name === 'HomeTab') {
-                                iconName = 'home';
-                            } else if (route.name === 'CalendarTab') {
-                                iconName = 'calendar-account';
-                            } else if (route.name === 'GroupsTab') {
-                                iconName = 'account-group';
-                            }
+                                if (route.name === 'HomeTab') {
+                                    iconName = 'home';
+                                } else if (route.name === 'CalendarTab') {
+                                    iconName = 'calendar-account';
+                                } else if (route.name === 'GroupsTab') {
+                                    iconName = 'account-group';
+                                }
 
-                            return <Icon source={focused ? iconName : iconName + '-outline'} size={focused ? size * 1.1 : size} color='#042A2B' />;
-                        },
-                        tabBarActiveTintColor: '#042A2B',
-                        tabBarInactiveTintColor: '#042A2B',
-                        tabBarStyle: {backgroundColor: '#5EB1BF'}
-                        })}
-                    >
-                        <Tab.Screen name="HomeTab" component={HomeStackScreen} options={{ title: "Home" }}/>
-                        <Tab.Screen name="CalendarTab" component={CalendarStackScreen} options={{ title: "Calendar" }}/>
-                        <Tab.Screen name="GroupsTab" component={GroupStackScreen} options={{ title: "Groups" }}/>
-                        {/*THIS GOES ON NAVIGATION TABS FOR NOTIFICATIONS NOT SURE HOW TO DYNAMIC IT ==== tabBarBadge: 3*/}
-                    </Tab.Navigator>
+                                return <Icon source={focused ? iconName : iconName + '-outline'} size={focused ? size * 1.1 : size} color='#042A2B' />;
+                            },
+                            tabBarActiveTintColor: '#042A2B',
+                            tabBarInactiveTintColor: '#042A2B',
+                            tabBarStyle: {backgroundColor: '#5EB1BF'}
+                            })}
+                        >
+                            <Tab.Screen name="HomeTab" component={HomeStackScreen} options={{ title: "Home" }}/>
+                            <Tab.Screen name="CalendarTab" component={CalendarStackScreen} options={{ title: "Calendar" }}/>
+                            <Tab.Screen name="GroupsTab" component={GroupStackScreen} options={{ title: "Groups" }}/>
+                            {/*THIS GOES ON NAVIGATION TABS FOR NOTIFICATIONS NOT SURE HOW TO DYNAMIC IT ==== tabBarBadge: 3*/}
+                        </Tab.Navigator>
+                    </PaperProvider>
                 </SafeAreaProvider>
             </ApolloProvider>
         </NavigationContainer>

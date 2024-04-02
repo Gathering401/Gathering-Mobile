@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useQuery, gql } from '@apollo/client';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { Button, Icon, Text } from 'react-native-paper';
+import { Button, Icon, Text, ActivityIndicator, Menu } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Loader from '../components/helpers/Loader';
@@ -83,6 +83,11 @@ export default function Group({ route: { params: { id } }, navigation }) {
                 setLocation(null);
             }
             setLocationLoading(false);
+
+            navigation.setOptions({
+                ...navigation.options,
+                
+            });
         }
     });
 
@@ -105,7 +110,7 @@ export default function Group({ route: { params: { id } }, navigation }) {
                 <View style={styles.details}>
                     <Text variant="headlineLarge" style={styles.detailsHeader}>{data.group.groupName}</Text>
                     <Text variant="bodyLarge" style={styles.detailsSubheader}>{data.group.description}</Text>
-                    {location && !locationLoading ? <LocationText location={location} clickable={true}/> : null}
+                    {location && !locationLoading ? <LocationText location={location} clickable={true}/> : <ActivityIndicator animating={true}/>}
                     {isCreator &&
                         <Button
                             mode='outlined'
