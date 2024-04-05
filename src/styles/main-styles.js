@@ -8,9 +8,11 @@ export const styles = StyleSheet.create({
         justifyContent: 'center',
         width: '100%'
     },
+    hamburgerWrapper: {
+        alignSelf: 'flex-start'
+    },
     hamburger: {
-        position: 'absolute',
-        left: 0
+        flexBasis: 'auto'
     },
     header: {
         backgroundColor: '#CDEDF6'
@@ -19,7 +21,7 @@ export const styles = StyleSheet.create({
         flexGrow: 1,
         backgroundColor: '#CDEDF6',
         alignItems: 'center',
-        justifyContent: 'space-around',
+        justifyContent: 'space-between',
         alignSelf: 'center',
         width: '90%'
     },

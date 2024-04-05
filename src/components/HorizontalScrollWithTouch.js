@@ -3,7 +3,7 @@ import { View, ScrollView, TouchableOpacity, Text } from 'react-native';
 import { styles } from '../styles/main-styles';
 
 import { MapTo } from '../models/mapper';
-
+import HeaderMenu from '../components/HeaderMenu.js';
 
 export default function HorizontalScrollWithTouch({ scrollTitle, scrollableItems, mapper, navigation }) {
     const navigate = (obj) => {

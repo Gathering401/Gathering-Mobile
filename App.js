@@ -12,7 +12,6 @@ import Group from './src/pages/Group';
 import Event from './src/pages/Event';
 import GroupCreate from './src/components/GroupCreate.js';
 import EventCreate from './src/components/EventCreate.js';
-import HeaderMenu from './src/components/HeaderMenu.js';
 
 import { ApolloProvider } from '@apollo/client';
 
@@ -59,14 +58,7 @@ export default function App() {
         return (
             <GroupStack.Navigator screenOptions={{ headerShown: false }}>
                 <GroupStack.Screen name="Groups" component={Groups} />
-                <GroupStack.Screen name="Group" component={Group} options={{
-                    headerShown: true,
-                    headerLeft: HeaderMenu,
-                    headerStyle: styles.header,
-                    headerBackButtonMenuEnabled: false,
-                    headerTitle: '',
-                    headerShadowVisible: false
-                }} />
+                <GroupStack.Screen name="Group" component={Group} />
                 <GroupStack.Screen name="Create Group" component={GroupCreate} />
             </GroupStack.Navigator>
         )

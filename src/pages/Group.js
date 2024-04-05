@@ -3,12 +3,13 @@ import axios from 'axios';
 import { useQuery, gql } from '@apollo/client';
 import { useState } from 'react';
 import { View } from 'react-native';
-import { Button, Icon, Text, ActivityIndicator, Menu } from 'react-native-paper';
+import { Button, Icon, Text, ActivityIndicator, Modal, Portal } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import Loader from '../components/helpers/Loader';
 import LocationText from '../components/LocationText';
 import HorizontalScrollWithTouch from '../components/HorizontalScrollWithTouch';
+import HeaderMenu from '../components/HeaderMenu';
 
 import { compAddress } from '../service/compAddress';
 import { formatLocation } from '../components/helpers/locationFormatter';
@@ -16,10 +17,12 @@ import { formatLocation } from '../components/helpers/locationFormatter';
 import { REACT_APP_GEO_CODE } from '@env';
 
 import { styles } from '../styles/main-styles';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 export default function Group({ route: { params: { id } }, navigation }) {
     const [location, setLocation] = useState(null);
     const [locationLoading, setLocationLoading] = useState(true);
+    const [groupMembersOpen, setGroupMembersOpen] = useState(false);
     
     const { data, errors, loading } = useQuery(gql`query getGroup($groupId: Int!) {
         group: getGroup(groupId: $groupId) {
@@ -31,6 +34,7 @@ export default function Group({ route: { params: { id } }, navigation }) {
                 username
                 firstName
                 lastName
+                role
             }
             joinRequests {
                 username
@@ -83,11 +87,6 @@ export default function Group({ route: { params: { id } }, navigation }) {
                 setLocation(null);
             }
             setLocationLoading(false);
-
-            navigation.setOptions({
-                ...navigation.options,
-                
-            });
         }
     });
 
@@ -100,13 +99,28 @@ export default function Group({ route: { params: { id } }, navigation }) {
         return <Loader />
     }
 
-    const isOwner = data.group.currentUser.role === 'owner';
-    const isAdmin = isOwner || data.group.currentUser.role === 'admin';
-    const isCreator = isAdmin || data.group.currentUser.role === 'creator';
+    const role = data.group.currentUser.role;
+    const isOwner = role === 'owner';
+    const isAdmin = isOwner || role === 'admin';
+    const isCreator = isAdmin || role === 'creator';
 
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.detailsPage}>
+                <HeaderMenu groupId={id} setGroupMembersOpen={setGroupMembersOpen} role={role}/>
+                <Portal>
+                    <Modal
+                        visible={groupMembersOpen}
+                        onDismiss={() => setGroupMembersOpen(false)}
+                    >
+                        <KeyboardAwareScrollView
+                            style={{ width: '100%' }}
+                            contentContainerStyle={styles.listModal}
+                        >
+                            {data.group.groupUsers.map(member => createGroupMemberTile(member, role))}
+                        </KeyboardAwareScrollView>
+                    </Modal>
+                </Portal>
                 <View style={styles.details}>
                     <Text variant="headlineLarge" style={styles.detailsHeader}>{data.group.groupName}</Text>
                     <Text variant="bodyLarge" style={styles.detailsSubheader}>{data.group.description}</Text>
@@ -134,4 +148,12 @@ export default function Group({ route: { params: { id } }, navigation }) {
             </View>
         </SafeAreaView>
     )
+
+    function createGroupMemberTile(member, role) {
+        const displayName = `${member.firstName} ${member.lastName} (${member.username})`;
+
+        return <Text style={styles.groupMember} key={member.username}>
+            {displayName}
+        </Text>
+    }
 }
