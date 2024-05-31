@@ -10,6 +10,7 @@ import Loader from '../components/helpers/Loader';
 import LocationText from '../components/LocationText';
 import HorizontalScrollWithTouch from '../components/HorizontalScrollWithTouch';
 import HeaderMenu from '../components/HeaderMenu';
+import GroupMemberTiles from '../components/GroupMemberTiles';
 
 import { compAddress } from '../service/compAddress';
 import { formatLocation } from '../components/helpers/locationFormatter';
@@ -17,20 +18,20 @@ import { formatLocation } from '../components/helpers/locationFormatter';
 import { REACT_APP_GEO_CODE } from '@env';
 
 import { styles } from '../styles/main-styles';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 export default function Group({ route: { params: { id } }, navigation }) {
     const [location, setLocation] = useState(null);
     const [locationLoading, setLocationLoading] = useState(true);
     const [groupMembersOpen, setGroupMembersOpen] = useState(false);
     
-    const { data, errors, loading } = useQuery(gql`query getGroup($groupId: Int!) {
+    const GROUP_QUERY = gql`query getGroup($groupId: Int!) {
         group: getGroup(groupId: $groupId) {
             groupId
             groupName
             description
             inviteOnly
-            groupUsers {
+            groupMembers {
+                userId
                 username
                 firstName
                 lastName
@@ -61,8 +62,9 @@ export default function Group({ route: { params: { id } }, navigation }) {
                 price
             }
         }
-    }`,
-    {
+    }`
+
+    const { data, errors, loading } = useQuery(GROUP_QUERY, {
         variables: { groupId: id },
         onCompleted: async ({ group }) => {
             const locationResponse = await axios({
@@ -87,7 +89,8 @@ export default function Group({ route: { params: { id } }, navigation }) {
                 setLocation(null);
             }
             setLocationLoading(false);
-        }
+        },
+        fetchPolicy: 'no-cache'
     });
 
     if(errors) {
@@ -106,19 +109,14 @@ export default function Group({ route: { params: { id } }, navigation }) {
 
     return (
         <SafeAreaView style={styles.container}>
+            <HeaderMenu groupId={id} setGroupMembersOpen={setGroupMembersOpen} role={role}/>
             <View style={styles.detailsPage}>
-                <HeaderMenu groupId={id} setGroupMembersOpen={setGroupMembersOpen} role={role}/>
                 <Portal>
                     <Modal
-                        visible={groupMembersOpen}
+                        visible={isAdmin && groupMembersOpen}
                         onDismiss={() => setGroupMembersOpen(false)}
                     >
-                        <KeyboardAwareScrollView
-                            style={{ width: '100%' }}
-                            contentContainerStyle={styles.listModal}
-                        >
-                            {data.group.groupUsers.map(member => createGroupMemberTile(member, role))}
-                        </KeyboardAwareScrollView>
+                        <GroupMemberTiles groupId={id} members={data.group.groupMembers} role={role} />
                     </Modal>
                 </Portal>
                 <View style={styles.details}>
@@ -148,12 +146,4 @@ export default function Group({ route: { params: { id } }, navigation }) {
             </View>
         </SafeAreaView>
     )
-
-    function createGroupMemberTile(member, role) {
-        const displayName = `${member.firstName} ${member.lastName} (${member.username})`;
-
-        return <Text style={styles.groupMember} key={member.username}>
-            {displayName}
-        </Text>
-    }
 }

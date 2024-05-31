@@ -10,7 +10,7 @@ import { styles } from '../styles/main-styles';
 import Loader from '../components/helpers/Loader';
 
 export default function Groups({ navigation }) {
-    let [searchForNew, setSearchForNew] = useState(false);
+    // let [searchForNew, setSearchForNew] = useState(false);
 
     const { data, errors, loading } = useQuery(gql`query GetGroups {
         groups: getGroups(includeDetails: true) {
@@ -18,7 +18,7 @@ export default function Groups({ navigation }) {
             groupName
             description
             location
-            groupUsers {
+            groupMembers {
                 username
                 firstName
                 lastName
@@ -77,7 +77,7 @@ export default function Groups({ navigation }) {
                 }
                 <Button
                     onPress={() => {
-                        setSearchForNew(true);
+                        // setSearchForNew(true);
                         getNewSearchGroups();
                     }}
                     mode="outlined"

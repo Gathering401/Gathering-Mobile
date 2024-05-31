@@ -21,7 +21,7 @@ export const styles = StyleSheet.create({
         flexGrow: 1,
         backgroundColor: '#CDEDF6',
         alignItems: 'center',
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         alignSelf: 'center',
         width: '90%'
     },
@@ -246,5 +246,41 @@ export const styles = StyleSheet.create({
     dropDownLabels: {
         color: 'rgb(75, 75, 75)',
         fontSize: 16
+    },
+    groupMembersModal: {
+        width: '100%',
+        backgroundColor: 'white',
+        alignSelf: 'center',
+        padding: 10
+    },
+    groupMemberCard: {
+        flex: 1,
+        width: '100%',
+        flexDirection: 'row',
+        alignContent: 'center',
+        borderBottomColor: 'rgb(190, 190, 190)',
+        borderBottomWidth: 1
+    },
+    groupMember: {
+        width: 300,
+        alignSelf: 'center'
+    },
+    roleDropDown: {
+        borderLeftWidth: 1,
+        paddingLeft: 10,
+        width: 100,
+        borderColor: 'rgb(190, 190, 190)',
+        marginVertical: 5
+    },
+    saveButton: {
+        borderRadius: 5
+    },
+    groupMembersHeader: {
+        width: '100%',
+        flexDirection: 'row',
+        alignContent: 'center',
+        justifyContent: 'space-between'
+        // borderBottomColor: 'rgb(190, 190, 190)',
+        // borderBottomWidth: 1
     }
 });

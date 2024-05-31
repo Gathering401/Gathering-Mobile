@@ -48,7 +48,7 @@ export default function LoggedInHome({ navigation }) {
                 navigation={navigation}
             /> : <></>}
             {upcoming?.length ? <HorizontalScrollWithTouch
-                scrollTitle="Upcoming Events"
+                scrollTitle="What's next?"
                 scrollableItems={upcoming}
                 mapper="event"
                 navigation={navigation}

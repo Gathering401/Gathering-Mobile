@@ -16,16 +16,18 @@ export function buildClient() {
         }
     });
 
+    console.log('does it work', REACT_APP_API_URL);
     const httpLink = createHttpLink({
         uri: `${REACT_APP_API_URL}/graphql`
     });
+    console.log('does it work 2', httpLink)
 
     return new ApolloClient({
         link: authLink.concat(httpLink),
         cache: new InMemoryCache({
             typePolicies: {
                 Group: {
-                    keyFields: ['groupName']
+                    keyFields: ['groupId']
                 },
                 Event: {
                     keyFields: ['eventId']

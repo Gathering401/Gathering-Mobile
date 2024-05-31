@@ -12,5 +12,5 @@ export function authenticateUser(token) {
         }
     });
 
-    return !!data;
+    return data?.authenticate;
 }
