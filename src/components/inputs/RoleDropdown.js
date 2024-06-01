@@ -6,7 +6,7 @@ import { Dropdown } from 'react-native-element-dropdown';
 import { styles } from '../../styles/main-styles';
 import { Icon } from 'react-native-paper';
 
-export default function RoleDropdown({ member, memberChanges, setMemberChanges }) {
+export default function RoleDropdown({ member, memberChanges, setMemberChanges, disable }) {
     const [role, setRole] = useState(member.role);
     const [isFocus, setIsFocus] = useState(false);
 
@@ -18,6 +18,7 @@ export default function RoleDropdown({ member, memberChanges, setMemberChanges }
     ]
     
     return <Dropdown
+        disable={disable}
         style={styles.roleDropDown}
         placeholder={_.capitalize(role)}
         data={options}
@@ -28,17 +29,16 @@ export default function RoleDropdown({ member, memberChanges, setMemberChanges }
         onBlur={() => setIsFocus(false)}
         onChange={item => {
             setRole(item.value);
-            console.log('member', member);
             const newMemberChanges = [...memberChanges, { role: item.value, userId: member.userId }];
-            console.log('hello', newMemberChanges)
             setMemberChanges(newMemberChanges)
             setIsFocus(false);
         }}
-        renderRightIcon={() => (
+        renderRightIcon={() => disable ?
+            null :
             <Icon
                 size={20}
                 source={isFocus ? 'chevron-down' : 'chevron-right'}
             />
-        )}
+        }
     />
 }

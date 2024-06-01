@@ -262,13 +262,13 @@ export const styles = StyleSheet.create({
         borderBottomWidth: 1
     },
     groupMember: {
-        width: 300,
+        flexBasis: '60%',
         alignSelf: 'center'
     },
     roleDropDown: {
         borderLeftWidth: 1,
         paddingLeft: 10,
-        width: 100,
+        flexBasis: '25%',
         borderColor: 'rgb(190, 190, 190)',
         marginVertical: 5
     },
@@ -280,7 +280,5 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
         alignContent: 'center',
         justifyContent: 'space-between'
-        // borderBottomColor: 'rgb(190, 190, 190)',
-        // borderBottomWidth: 1
     }
 });

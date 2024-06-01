@@ -24,7 +24,7 @@ export default function Group({ route: { params: { id } }, navigation }) {
     const [locationLoading, setLocationLoading] = useState(true);
     const [groupMembersOpen, setGroupMembersOpen] = useState(false);
     
-    const GROUP_QUERY = gql`query getGroup($groupId: Int!) {
+    const GROUP_QUERY = gql`query GetGroup($groupId: Int!) {
         group: getGroup(groupId: $groupId) {
             groupId
             groupName
@@ -50,6 +50,7 @@ export default function Group({ route: { params: { id } }, navigation }) {
             }
             location
             currentUser {
+                userId
                 role
             }
             upcoming: upcomingEvents {
@@ -116,7 +117,7 @@ export default function Group({ route: { params: { id } }, navigation }) {
                         visible={isAdmin && groupMembersOpen}
                         onDismiss={() => setGroupMembersOpen(false)}
                     >
-                        <GroupMemberTiles groupId={id} members={data.group.groupMembers} role={role} />
+                        <GroupMemberTiles groupId={id} groupName={data.group.groupName} members={data.group.groupMembers} currentUser={data.group.currentUser} />
                     </Modal>
                 </Portal>
                 <View style={styles.details}>
