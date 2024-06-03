@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { useQuery, gql } from '@apollo/client';
+import { useQuery, useMutation } from '@apollo/client';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { Button, Icon, Text, ActivityIndicator, Modal, Portal } from 'react-native-paper';
@@ -18,52 +18,13 @@ import { formatLocation } from '../components/helpers/locationFormatter';
 import { REACT_APP_GEO_CODE } from '@env';
 
 import { styles } from '../styles/main-styles';
+import { GROUP_QUERY, UPDATE_OWNER_AND_LEAVE_MUTATION } from '../models/Queries';
 
 export default function Group({ route: { params: { id } }, navigation }) {
     const [location, setLocation] = useState(null);
     const [locationLoading, setLocationLoading] = useState(true);
     const [groupMembersOpen, setGroupMembersOpen] = useState(false);
-    
-    const GROUP_QUERY = gql`query GetGroup($groupId: Int!) {
-        group: getGroup(groupId: $groupId) {
-            groupId
-            groupName
-            description
-            inviteOnly
-            groupMembers {
-                userId
-                username
-                firstName
-                lastName
-                role
-            }
-            joinRequests {
-                username
-                firstName
-                lastName
-                status
-            }
-            owner {
-                username
-                firstName
-                lastName
-            }
-            location
-            currentUser {
-                userId
-                role
-            }
-            upcoming: upcomingEvents {
-                eventId
-                groupId
-                groupName
-                eventName
-                description
-                eventDate
-                price
-            }
-        }
-    }`
+    const [openNewOwnerModal, setOpenNewOwnerModal] = useState(false);
 
     const { data, errors, loading } = useQuery(GROUP_QUERY, {
         variables: { groupId: id },
@@ -94,6 +55,8 @@ export default function Group({ route: { params: { id } }, navigation }) {
         fetchPolicy: 'no-cache'
     });
 
+    const [updateOwnerAndLeaveGroup] = useMutation(UPDATE_OWNER_AND_LEAVE_MUTATION);
+
     if(errors) {
         console.log('Error: ', errors);
         return null;
@@ -103,21 +66,30 @@ export default function Group({ route: { params: { id } }, navigation }) {
         return <Loader />
     }
 
-    const role = data.group.currentUser.role;
+    const currentUser = data.group.currentUser;
+    const role = currentUser.role;
     const isOwner = role === 'owner';
     const isAdmin = isOwner || role === 'admin';
     const isCreator = isAdmin || role === 'creator';
 
     return (
         <SafeAreaView style={styles.container}>
-            <HeaderMenu groupId={id} setGroupMembersOpen={setGroupMembersOpen} role={role}/>
+            <HeaderMenu groupId={id} group={data.group} setGroupMembersOpen={setGroupMembersOpen} setOpenNewOwnerModal={setOpenNewOwnerModal} currentUser={currentUser}/>
             <View style={styles.detailsPage}>
                 <Portal>
                     <Modal
                         visible={isAdmin && groupMembersOpen}
                         onDismiss={() => setGroupMembersOpen(false)}
                     >
-                        <GroupMemberTiles groupId={id} groupName={data.group.groupName} members={data.group.groupMembers} currentUser={data.group.currentUser} />
+                        <GroupMemberTiles groupId={id} groupName={data.group.groupName} members={data.group.groupMembers} currentUser={data.group.currentUser} asSelectors={false} />
+                    </Modal>
+                </Portal>
+                <Portal>
+                    <Modal
+                        visible={openNewOwnerModal}
+                        onDismiss={() => setOpenNewOwnerModal(false)}
+                    >
+                        <GroupMemberTiles groupId={id} groupName={data.group.groupName} members={data.group.groupMembers} currentUser={data.group.currentUser} asSelectors={true} selectableOnPress={updateOwnerAndLeaveGroup} navigation={navigation} setOpenNewOwnerModal={setOpenNewOwnerModal}/>
                     </Modal>
                 </Portal>
                 <View style={styles.details}>

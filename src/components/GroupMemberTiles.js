@@ -1,6 +1,6 @@
 import { useMutation, gql } from '@apollo/client';
 import { useState } from 'react';
-import { View, ScrollView, Alert } from 'react-native';
+import { View, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { Button, Icon, Text } from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
@@ -9,7 +9,7 @@ import SaveButton from './inputs/buttons/SaveButton';
 
 import { styles } from '../styles/main-styles';
 
-export default function GroupMemberTiles({ groupId, groupName, members, currentUser: { role, userId: currentUserId } }) {
+export default function GroupMemberTiles({ groupId, groupName, members, currentUser: { role, userId: currentUserId }, asSelectors, selectableOnPress, navigation, setOpenNewOwnerModal }) {
     const [memberChanges, setMemberChanges] = useState([]);
 
     const UPDATE_MEMBERS_MUTATION = gql`mutation UpdateGroupMemberRoles($groupId: Int!, $membersToUpdate: [GroupMemberInput]!) {
@@ -70,30 +70,57 @@ export default function GroupMemberTiles({ groupId, groupName, members, currentU
                     const hasAdminPower = 'owner' === role ||
                         ('admin' === role && ['creator', 'member'].includes(member.role));
 
-                    return <View style={styles.groupMemberCard} key={index}>
-                        <View style={styles.groupMember}>
-                            <Text variant="bodyLarge">{displayName}</Text>
+                    return <TouchableOpacity
+                        key={index}
+                        disabled={!asSelectors || isCurrentUser}
+                        onPress={() => {
+                            selectableOnPress({
+                                variables: {
+                                    membersToUpdate: [{
+                                        userId: member.userId,
+                                        role: 'owner'
+                                    }],
+                                    groupId,
+                                    userId: currentUserId
+                                },
+                                onError: (error) => {
+                                    console.log(JSON.stringify(error, null, 2))
+                                },
+                                onCompleted: () => {
+                                    setOpenNewOwnerModal(false);
+                                    navigation.navigate('HomeTab', {
+                                        screen: 'Home'
+                                    });
+                                },
+                                refetchQueries: ['GetGroupsAndUpcomingEvents']
+                            });
+                        }}
+                    >
+                        <View style={styles.groupMemberCard}>
+                            <View style={{...styles.groupMember, ...(asSelectors ? {flexBasis: '80%'} : {})}}>
+                                <Text variant="bodyLarge">{displayName}</Text>
+                            </View>
+                            {hasAdminPower && !asSelectors &&
+                                <Button
+                                    onPress={() => removeMember(member.userId, displayName)}
+                                    disabled={!hasAdminPower || isCurrentUser}
+                                >
+                                    <Icon source="account-remove" color={isCurrentUser ?
+                                        "#bdbdbd" :
+                                        "#ab0c00"
+                                    } size={30} />
+                                </Button>
+                            }
+                            <RoleDropdown
+                                hasAdminPower={hasAdminPower}
+                                member={member}
+                                zIndex={members.length - index}
+                                memberChanges={memberChanges}
+                                setMemberChanges={setMemberChanges}
+                                disable={!hasAdminPower || isCurrentUser || asSelectors}
+                            />
                         </View>
-                        {hasAdminPower &&
-                            <Button
-                                onPress={() => removeMember(member.userId, displayName)}
-                                disabled={!hasAdminPower || isCurrentUser}
-                            >
-                                <Icon source="account-remove" color={isCurrentUser ?
-                                    "#bdbdbd" :
-                                    "#ab0c00"
-                                } size={30} />
-                            </Button>
-                        }
-                        <RoleDropdown
-                            hasAdminPower={hasAdminPower}
-                            member={member}
-                            zIndex={members.length - index}
-                            memberChanges={memberChanges}
-                            setMemberChanges={setMemberChanges}
-                            disable={!hasAdminPower || currentUserId === member.userId}
-                        />
-                    </View>
+                    </TouchableOpacity>
                 })}
             </ScrollView>
         </KeyboardAwareScrollView>
