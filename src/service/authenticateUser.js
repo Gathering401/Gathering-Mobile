@@ -1,9 +1,8 @@
 import { gql, useQuery } from '@apollo/client';
+import { AUTHENTICATE_QUERY } from '../models/Queries';
 
 export function authenticateUser(token) {
-    const { data } = useQuery(gql`query Authenticate($token: String!) {
-        authenticate(token: $token)
-    }`, {
+    const { data } = useQuery(AUTHENTICATE_QUERY, {
         variables: {
             token
         },

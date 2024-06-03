@@ -2,23 +2,9 @@ import { gql, useMutation } from '@apollo/client';
 
 import CustomFormik from './CustomFormik';
 import Loader from './helpers/Loader';
+import { CREATE_GROUP_MUTATION } from '../models/Queries';
 
 export default function GroupCreate({ navigation }) {
-    const CREATE_GROUP_MUTATION = gql`mutation CreateGroup($groupData: GroupDataInput!) {
-        createGroup(groupData: $groupData) {
-            groupId
-            groupName
-            description
-            inviteOnly
-            owner {
-                username
-                firstName
-                lastName
-            }
-            location
-        }
-    }`;
-
     const [submitGroup, { errors, loading }] = useMutation(CREATE_GROUP_MUTATION);
 
     if(errors) {

@@ -4,15 +4,9 @@ import * as SecureStore from 'expo-secure-store';
 import Loader from '../components/helpers/Loader';
 
 import CustomFormik from '../components/CustomFormik';
+import { LOGIN_MUTATION } from '../models/Queries';
 
 export default function Login({ navigation }) {
-    const LOGIN_MUTATION = gql`mutation LogIn($username: String!, $password: String!) {
-        login(username: $username, password: $password) {
-            token
-            username
-        }
-    }`;
-
     const [submitLogin, { errors, loading } ] = useMutation(LOGIN_MUTATION);
     
     if(errors) {

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { gql, useMutation, useQuery } from '@apollo/client';
 
 import CustomFormik from './CustomFormik';
+import { CREATE_EVENT_MUTATION, GET_GROUPS_QUERY } from '../models/Queries';
 
 export default function EventCreate({ navigation, route }) {
     const [moreInformation, setMoreInformation] = useState(false);
@@ -18,21 +19,7 @@ export default function EventCreate({ navigation, route }) {
         { label: 'Annually', value: 'annually' }
     ]);
 
-    const CREATE_EVENT_MUTATION = gql`mutation CreateEvent($groupId: Int!, $eventData: EventDataInput!) {
-        createEvent(groupId: $groupId, eventData: $eventData) {
-            eventId
-            groupId
-        }
-    }`;
-
     const [submitEvent, { eventErrors, eventLoading }] = useMutation(CREATE_EVENT_MUTATION);
-
-    const GET_GROUPS_QUERY = gql`query GetGroups {
-        groups: getGroups {
-            groupName
-            groupId
-        }
-    }`;
 
     const { groupsErrors, groupsLoading } = useQuery(GET_GROUPS_QUERY, {
         onCompleted: ({ groups }) => {

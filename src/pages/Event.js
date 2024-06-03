@@ -13,31 +13,14 @@ import { formatLocation } from '../components/helpers/locationFormatter';
 import { REACT_APP_GEO_CODE } from '@env';
 
 import { styles } from '../styles/main-styles';
+import { REPEATED_EVENT_AND_GROUP_QUERY } from '../models/Queries';
 
 export default function Event({ route: { params: { eventId: id, groupId, repeated } }, navigation }) {
     const [location, setLocation] = useState(null);
     const [locationLoading, setLocationLoading] = useState(true);
     const [event, setEvent] = useState({});
     
-    const { loading } = useQuery(gql`query getRepeatedEventAndGroupInfo($id: Int!, $groupId: Int!) {
-        event: ${repeated !== 'never' ? 'getRepeatedEvent' : 'getIndividualEvent'}(id: $id, groupId: $groupId) {
-            eventId
-            groupId
-            eventName
-            description${repeated !== 'never' ? `
-            eventRepeat` : ''}
-            eventDate${repeated !== 'never' ? 's' : ''}
-            location
-            invitedUsers {
-                userId
-                username
-                rsvp
-            }
-        }
-        group: getGroup(groupId: $groupId) {
-            groupName
-        }
-    }`,
+    const { loading } = useQuery(REPEATED_EVENT_AND_GROUP_QUERY,
     {
         variables: { id, groupId },
         onCompleted: async (response) => {

@@ -1,11 +1,8 @@
 import { TouchableOpacity } from 'react-native';
 import { gql, useMutation } from '@apollo/client';
+import { INVITATION_RESPONSE_QUERY } from '../models/Queries';
 
 export default function InvitationResponse({status, component, id}) {
-    const INVITATION_RESPONSE_QUERY = gql`mutation RespondToInvitation($groupId: Int!, $eventId: Int!, $rsvp: RSVP!) {
-        respondToInvitation(groupId: $groupId, eventId: $eventId, rsvp: $rsvp)
-    }`;
-    
     const [respondToInvitation, { errors, loading }] = useMutation(INVITATION_RESPONSE_QUERY);
 
     if(errors) {

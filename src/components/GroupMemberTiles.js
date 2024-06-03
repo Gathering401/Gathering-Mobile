@@ -8,13 +8,10 @@ import RoleDropdown from './inputs/RoleDropdown';
 import SaveButton from './inputs/buttons/SaveButton';
 
 import { styles } from '../styles/main-styles';
+import { REMOVE_MEMBER_MUTATION, UPDATE_MEMBERS_MUTATION } from '../models/Queries';
 
 export default function GroupMemberTiles({ groupId, groupName, members, currentUser: { role, userId: currentUserId }, asSelectors, selectableOnPress, navigation, setOpenNewOwnerModal }) {
     const [memberChanges, setMemberChanges] = useState([]);
-
-    const UPDATE_MEMBERS_MUTATION = gql`mutation UpdateGroupMemberRoles($groupId: Int!, $membersToUpdate: [GroupMemberInput]!) {
-        updateGroupMemberRoles(groupId: $groupId, membersToUpdate: $membersToUpdate)
-    }`;
 
     const [submitMemberChanges, { loading }] = useMutation(UPDATE_MEMBERS_MUTATION, {
         variables: {
@@ -25,10 +22,6 @@ export default function GroupMemberTiles({ groupId, groupName, members, currentU
             setMemberChanges([]);
         }
     });
-
-    const REMOVE_MEMBER_MUTATION = gql`mutation RemoveMemberFromGroup($groupId: Int!, $userId: Int!) {
-        removeMemberFromGroup(groupId: $groupId, userId: $userId)
-    }`;
 
     const [removeMemberMutation, { removeMemberLoading }] = useMutation(REMOVE_MEMBER_MUTATION, {
         refetchQueries: ['GetGroup']

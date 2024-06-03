@@ -7,24 +7,10 @@ import LogoutButton from './inputs/LogoutButton';
 import Loader from './helpers/Loader';
 
 import { styles } from '../styles/main-styles';
+import { GROUPS_AND_UPCOMING_EVENTS_QUERY } from '../models/Queries';
 
 export default function LoggedInHome({ navigation }) {
-    const { data, errors, loading } = useQuery(gql`query GetGroupsAndUpcomingEvents {
-        groups: getGroups {
-            groupId
-            groupName
-            description
-        }
-        upcoming: getUpcomingEvents {
-            eventId
-            groupId
-            groupName
-            eventName
-            description
-            eventDate
-            price
-        }
-    }`);
+    const { data, errors, loading } = useQuery(GROUPS_AND_UPCOMING_EVENTS_QUERY);
 
     if(loading) {
         return <Loader />;
