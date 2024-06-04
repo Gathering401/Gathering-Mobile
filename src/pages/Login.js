@@ -1,4 +1,4 @@
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import * as SecureStore from 'expo-secure-store';
 
 import Loader from '../components/helpers/Loader';

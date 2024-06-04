@@ -1,4 +1,4 @@
-import { useMutation, gql } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { useState } from 'react';
 import { View, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { Button, Icon, Text } from 'react-native-paper';

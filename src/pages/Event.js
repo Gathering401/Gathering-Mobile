@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import { useQuery, gql } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { View, Text } from 'react-native';
 import { useState } from 'react';
 import { DateTime } from 'luxon';
@@ -20,7 +20,7 @@ export default function Event({ route: { params: { eventId: id, groupId, repeate
     const [locationLoading, setLocationLoading] = useState(true);
     const [event, setEvent] = useState({});
     
-    const { loading } = useQuery(REPEATED_EVENT_AND_GROUP_QUERY,
+    const { loading } = useQuery(REPEATED_EVENT_AND_GROUP_QUERY(repeated),
     {
         variables: { id, groupId },
         onCompleted: async (response) => {

@@ -1,4 +1,4 @@
-import { gql, useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { AUTHENTICATE_QUERY } from '../models/Queries';
 
 export function authenticateUser(token) {

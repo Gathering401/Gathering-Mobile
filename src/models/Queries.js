@@ -104,7 +104,7 @@ export const GROUPS_AND_UPCOMING_EVENTS_QUERY = gql`query GetGroupsAndUpcomingEv
     }
 }`
 
-export const REPEATED_EVENT_AND_GROUP_QUERY = gql`query getRepeatedEventAndGroupInfo($id: Int!, $groupId: Int!) {
+export const REPEATED_EVENT_AND_GROUP_QUERY = (repeated) => gql`query GetRepeatedEventAndGroupInfo($id: Int!, $groupId: Int!) {
     event: ${repeated !== 'never' ? 'getRepeatedEvent' : 'getIndividualEvent'}(id: $id, groupId: $groupId) {
         eventId
         groupId

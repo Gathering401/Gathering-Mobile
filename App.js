@@ -19,7 +19,6 @@ import { buildClient } from './src/service/clientBuilder';
 
 import { en, registerTranslation } from 'react-native-paper-dates';
 import { Icon, PaperProvider } from 'react-native-paper';
-import { styles } from './src/styles/main-styles.js';
 
 registerTranslation('en', en);
 

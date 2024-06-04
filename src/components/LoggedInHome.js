@@ -1,4 +1,4 @@
-import { gql, useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { View, Text } from 'react-native';
 import { Button, Icon } from 'react-native-paper';
 

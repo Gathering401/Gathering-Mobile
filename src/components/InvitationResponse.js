@@ -1,5 +1,5 @@
 import { TouchableOpacity } from 'react-native';
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import { INVITATION_RESPONSE_QUERY } from '../models/Queries';
 
 export default function InvitationResponse({status, component, id}) {
