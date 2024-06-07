@@ -1,31 +1,16 @@
-import { gql, useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { View, Text } from 'react-native';
 import { Button, Icon } from 'react-native-paper';
 
 import HorizontalScrollWithTouch from './HorizontalScrollWithTouch';
+import LogoutButton from './inputs/LogoutButton';
 import Loader from './helpers/Loader';
 
 import { styles } from '../styles/main-styles';
+import { GROUPS_AND_UPCOMING_EVENTS_QUERY } from '../models/Queries';
 
 export default function LoggedInHome({ navigation }) {
-    const { data, errors, loading } = useQuery(gql`query GetGroupsAndUpcomingEvents {
-        groups: getGroups {
-            groupId
-            groupName
-            description
-        }
-        upcoming: getUpcomingEvents {
-            eventId
-            groupId
-            groupName
-            eventName
-            description
-            eventDate
-            price
-        }
-    }`, {
-        fetchPolicy: "no-cache",    
-    });
+    const { data, errors, loading } = useQuery(GROUPS_AND_UPCOMING_EVENTS_QUERY);
 
     if(loading) {
         return <Loader />;
@@ -41,6 +26,7 @@ export default function LoggedInHome({ navigation }) {
     return (
         <View style={styles.scrollWithNav}>
             <Text style={styles.title}>Welcome</Text>
+            <LogoutButton navigation={navigation}/>
             {groups?.length ? <HorizontalScrollWithTouch
                 scrollTitle="Your Groups"
                 scrollableItems={groups}
@@ -48,7 +34,7 @@ export default function LoggedInHome({ navigation }) {
                 navigation={navigation}
             /> : <></>}
             {upcoming?.length ? <HorizontalScrollWithTouch
-                scrollTitle="Upcoming Events"
+                scrollTitle="What's next?"
                 scrollableItems={upcoming}
                 mapper="event"
                 navigation={navigation}

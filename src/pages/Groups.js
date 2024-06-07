@@ -1,4 +1,4 @@
-import { gql, useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 
 import { useState } from 'react';
 import { ScrollView } from 'react-native';
@@ -8,29 +8,12 @@ import { Text, Button, Card, Icon } from 'react-native-paper';
 import { styles } from '../styles/main-styles';
 
 import Loader from '../components/helpers/Loader';
+import { GET_GROUPS_QUERY } from '../models/Queries';
 
 export default function Groups({ navigation }) {
-    let [searchForNew, setSearchForNew] = useState(false);
+    // let [searchForNew, setSearchForNew] = useState(false);
 
-    const { data, errors, loading } = useQuery(gql`query GetGroups {
-        groups: getGroups(includeDetails: true) {
-            groupId
-            groupName
-            description
-            location
-            groupUsers {
-                username
-                firstName
-                lastName
-                role
-            }
-            owner {
-                username
-                firstName
-                lastName
-            }
-        }
-    }`);
+    const { data, errors, loading } = useQuery(GET_GROUPS_QUERY);
 
     if(loading) {
         return <Loader />
@@ -77,7 +60,7 @@ export default function Groups({ navigation }) {
                 }
                 <Button
                     onPress={() => {
-                        setSearchForNew(true);
+                        // setSearchForNew(true);
                         getNewSearchGroups();
                     }}
                     mode="outlined"

@@ -1,9 +1,9 @@
 import axios from 'axios';
 
-import { useQuery, gql } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { View, Text } from 'react-native';
 import { useState } from 'react';
-import moment from 'moment-timezone';
+import { DateTime } from 'luxon';
 
 import Loader from '../components/helpers/Loader';
 import LocationText from '../components/LocationText';
@@ -13,31 +13,14 @@ import { formatLocation } from '../components/helpers/locationFormatter';
 import { REACT_APP_GEO_CODE } from '@env';
 
 import { styles } from '../styles/main-styles';
+import { REPEATED_EVENT_AND_GROUP_QUERY } from '../models/Queries';
 
 export default function Event({ route: { params: { eventId: id, groupId, repeated } }, navigation }) {
     const [location, setLocation] = useState(null);
     const [locationLoading, setLocationLoading] = useState(true);
     const [event, setEvent] = useState({});
     
-    const { loading } = useQuery(gql`query getRepeatedEventAndGroupInfo($id: Int!, $groupId: Int!) {
-        event: ${repeated ? 'getRepeatedEvent' : 'getIndividualEvent'}(id: $id, groupId: $groupId) {
-            eventId
-            groupId
-            eventName
-            description${repeated ? `
-            eventRepeat` : ''}
-            eventDate${repeated ? 's' : ''}
-            location
-            invitedUsers {
-                userId
-                username
-                rsvp
-            }
-        }
-        group: getGroup(groupId: $groupId) {
-            groupName
-        }
-    }`,
+    const { loading } = useQuery(REPEATED_EVENT_AND_GROUP_QUERY(repeated),
     {
         variables: { id, groupId },
         onCompleted: async (response) => {
@@ -74,12 +57,19 @@ export default function Event({ route: { params: { eventId: id, groupId, repeate
     if(loading || locationLoading || !event.eventName) {
         return <Loader />
     }
-    
+
+    const displayDate = repeated !== 'never'
+        ? <>
+            <Text>Upcoming Dates</Text>
+            <Text>{event.eventDates.slice(0, 4).map(d => DateTime.fromISO(d).toFormat('LLLL d')).join(', ')}</Text>
+        </>
+        : <Text>{DateTime.fromISO(event.eventDate).toFormat('fff')}</Text>
+
     return (
         <View style={styles.container}>
             <Text>{event.eventName}</Text>
             <Text>{event.description}</Text>
-            <Text>{moment(event.eventDate, 'MM/DD/YYYY h:mma Z').format('h:mma M/DD/YY')}</Text>
+            {displayDate}
             {location ? <LocationText location={location} clickable={true}/> : null}
         </View>
     )

@@ -8,6 +8,26 @@ export const styles = StyleSheet.create({
         justifyContent: 'center',
         width: '100%'
     },
+    hamburgerWrapper: {
+        alignSelf: 'flex-start'
+    },
+    hamburger: {
+        flexBasis: 'auto'
+    },
+    header: {
+        backgroundColor: '#CDEDF6'
+    },
+    detailsPage: {
+        flexGrow: 1,
+        backgroundColor: '#CDEDF6',
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignSelf: 'center',
+        width: '90%'
+    },
+    details: {
+        alignItems: 'center'
+    },
     calendarContainer: {
         flex: 1,
         backgroundColor: '#CDEDF6',
@@ -32,7 +52,8 @@ export const styles = StyleSheet.create({
     },
     horizontalScroller: {
         fontSize: '20px',
-        width: 'auto',
+        width: '100%',
+        alignSelf: 'center',
         padding: 5
     },
     horizontalScrollerWrapper: {
@@ -65,6 +86,7 @@ export const styles = StyleSheet.create({
         padding: 0
     },
     viewTitle: {
+        alignSelf: 'center',
         color: 'rgb(125, 125, 125)',
         margin: 10
     },
@@ -224,5 +246,39 @@ export const styles = StyleSheet.create({
     dropDownLabels: {
         color: 'rgb(75, 75, 75)',
         fontSize: 16
+    },
+    groupMembersModal: {
+        width: '100%',
+        backgroundColor: 'white',
+        alignSelf: 'center',
+        padding: 10
+    },
+    groupMemberCard: {
+        flex: 1,
+        width: '100%',
+        flexDirection: 'row',
+        alignContent: 'center',
+        borderBottomColor: 'rgb(190, 190, 190)',
+        borderBottomWidth: 1
+    },
+    groupMember: {
+        flexBasis: '60%',
+        alignSelf: 'center'
+    },
+    roleDropDown: {
+        borderLeftWidth: 1,
+        paddingLeft: 10,
+        flexBasis: '25%',
+        borderColor: 'rgb(190, 190, 190)',
+        marginVertical: 5
+    },
+    saveButton: {
+        borderRadius: 5
+    },
+    groupMembersHeader: {
+        width: '100%',
+        flexDirection: 'row',
+        alignContent: 'center',
+        justifyContent: 'space-between'
     }
 });

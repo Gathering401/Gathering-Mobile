@@ -1,4 +1,4 @@
-import { gql, useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { useState } from 'react';
 import { View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -10,31 +10,13 @@ import { DateTime } from 'luxon';
 import HorizontalScrollWithTouch from '../components/HorizontalScrollWithTouch';
 
 import { styles } from '../styles/main-styles';
+import { EVENT_QUERY } from '../models/Queries';
 
 export default function EventCalendar({ navigation }) {
     const [currentDate, setCurrentDate] = useState(DateTime.now());
     const [variables, setVariables] = useState({});
     const [selectedDate, setSelectedDate] = useState(DateTime.now());
     const [markedDates, setMarkedDates] = useState({});
-    
-    const EVENT_QUERY = gql`query GetCalendarEvents($groupId: Int, $repeat: EventRepeat, $month: Int!, $year: Int!) {
-        events: getCalendarEvents(groupId: $groupId, repeat: $repeat, month: $month, year: $year) {
-            eventId
-            groupId
-            eventName
-            description
-            eventDate
-            price
-            location
-        }
-        invitations: getPendingInvitations {
-            eventId
-            groupId
-            eventDate
-            eventName
-            rsvp
-        }
-    }`;
 
     const { data, loading, errors } = useQuery(EVENT_QUERY, {
         fetchPolicy: "no-cache",

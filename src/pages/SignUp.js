@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { gql, useMutation } from '@apollo/client';
+import { useMutation } from '@apollo/client';
 import * as SecureStore from 'expo-secure-store';
 
 import Loader from '../components/helpers/Loader';
@@ -9,15 +9,10 @@ import CustomFormik from '../components/CustomFormik';
 import { styles } from '../styles/main-styles';
 
 import _ from 'lodash';
+import { SIGNUP_MUTATION } from '../models/Queries';
 
 export default function SignUp({ navigation }) {
     let [date, setDate] = useState(new Date());
-    
-    const SIGNUP_MUTATION = gql`mutation SignUp($userData: UserDataInput!) {
-        register(userData: $userData) {
-            token
-        }
-    }`;
 
     const [submitRegistration, { errors, loading } ] = useMutation(SIGNUP_MUTATION);
     
