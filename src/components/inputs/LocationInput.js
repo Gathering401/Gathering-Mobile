@@ -15,10 +15,10 @@ import { styles } from '../../styles/main-styles';
 
 const tryAgainText = 'If it looks correct, try being more precise.';
 
-export default function LocationInput({ fieldName, setFieldValue, handleBlur }) {
+export default function LocationInput({ fieldName, value, setFieldValue, handleBlur }) {
     const noError = {display: false};
 
-    const [locationToSearch, setLocationToSearch] = useState('');
+    const [locationToSearch, setLocationToSearch] = useState(value ?? '');
     const [openLocationSearch, setOpenLocationSearch] = useState(false);
     const [searchResults, setSearchResults] = useState(null);
     const [displayError, setDisplayError] = useState(noError);

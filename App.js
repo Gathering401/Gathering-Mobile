@@ -19,6 +19,7 @@ import { buildClient } from './src/service/clientBuilder';
 
 import { en, registerTranslation } from 'react-native-paper-dates';
 import { Icon, PaperProvider } from 'react-native-paper';
+import GroupUpdate from './src/components/GroupUpdate.js';
 
 registerTranslation('en', en);
 
@@ -59,6 +60,7 @@ export default function App() {
                 <GroupStack.Screen name="Groups" component={Groups} />
                 <GroupStack.Screen name="Group" component={Group} />
                 <GroupStack.Screen name="Create Group" component={GroupCreate} />
+                <GroupStack.Screen name="Update Group" component={GroupUpdate} />
             </GroupStack.Navigator>
         )
     }

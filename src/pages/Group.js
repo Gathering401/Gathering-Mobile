@@ -24,7 +24,7 @@ export default function Group({ route: { params: { id } }, navigation }) {
     const [location, setLocation] = useState(null);
     const [locationLoading, setLocationLoading] = useState(true);
     const [groupMembersOpen, setGroupMembersOpen] = useState(false);
-    const [openNewOwnerModal, setOpenNewOwnerModal] = useState(false);
+    const [newOwnerOpen, setNewOwnerOpen] = useState(false);
 
     const { data, errors, loading } = useQuery(GROUP_QUERY, {
         variables: { groupId: id },
@@ -52,7 +52,9 @@ export default function Group({ route: { params: { id } }, navigation }) {
             }
             setLocationLoading(false);
         },
-        fetchPolicy: 'no-cache'
+        fetchPolicy: 'no-cache',
+        refetchWritePolicy: 'overwrite',
+        notifyOnNetworkStatusChange: true
     });
 
     const [updateOwnerAndLeaveGroup] = useMutation(UPDATE_OWNER_AND_LEAVE_MUTATION);
@@ -74,7 +76,7 @@ export default function Group({ route: { params: { id } }, navigation }) {
 
     return (
         <SafeAreaView style={styles.container}>
-            <HeaderMenu groupId={id} group={data.group} setGroupMembersOpen={setGroupMembersOpen} setOpenNewOwnerModal={setOpenNewOwnerModal} currentUser={currentUser}/>
+            <HeaderMenu group={data.group} location={location} setGroupMembersOpen={setGroupMembersOpen} setNewOwnerOpen={setNewOwnerOpen} navigation={navigation} currentUser={currentUser}/>
             <View style={styles.detailsPage}>
                 <Portal>
                     <Modal
@@ -83,13 +85,11 @@ export default function Group({ route: { params: { id } }, navigation }) {
                     >
                         <GroupMemberTiles groupId={id} groupName={data.group.groupName} members={data.group.groupMembers} currentUser={data.group.currentUser} asSelectors={false} />
                     </Modal>
-                </Portal>
-                <Portal>
                     <Modal
-                        visible={openNewOwnerModal}
-                        onDismiss={() => setOpenNewOwnerModal(false)}
+                        visible={newOwnerOpen}
+                        onDismiss={() => setNewOwnerOpen(false)}
                     >
-                        <GroupMemberTiles groupId={id} groupName={data.group.groupName} members={data.group.groupMembers} currentUser={data.group.currentUser} asSelectors={true} selectableOnPress={updateOwnerAndLeaveGroup} navigation={navigation} setOpenNewOwnerModal={setOpenNewOwnerModal}/>
+                        <GroupMemberTiles groupId={id} groupName={data.group.groupName} members={data.group.groupMembers} currentUser={data.group.currentUser} asSelectors={true} selectableOnPress={updateOwnerAndLeaveGroup} navigation={navigation} setNewOwnerOpen={setNewOwnerOpen}/>
                     </Modal>
                 </Portal>
                 <View style={styles.details}>

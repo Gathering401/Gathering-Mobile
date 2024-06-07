@@ -143,6 +143,16 @@ export const EVENT_QUERY = gql`query GetCalendarEvents($groupId: Int, $repeat: E
     }
 }`;
 
+export const UPDATE_GROUP_MUTATION = gql`mutation UpdateGroup($groupId: Int!, $groupData: GroupDataInput!) {
+    updateGroup(groupId: $groupId, groupData: $groupData) {
+        groupId
+        groupName
+        description
+        location
+        inviteOnly
+    }
+}`
+
 export const LOGIN_MUTATION = gql`mutation LogIn($username: String!, $password: String!) {
     login(username: $username, password: $password) {
         token

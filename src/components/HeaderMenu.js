@@ -4,7 +4,7 @@ import { Button, Menu, Icon } from 'react-native-paper';
 
 import { styles } from '../styles/main-styles';
 
-export default function HeaderMenu({ group, setGroupMembersOpen, setOpenNewOwnerModal, currentUser }) {
+export default function HeaderMenu({ group, location, currentUser, setGroupMembersOpen, setNewOwnerOpen, navigation }) {
     const role = currentUser.role;
     const isOwner = role === 'owner';
     const isAdmin = isOwner || role === 'admin';
@@ -13,8 +13,20 @@ export default function HeaderMenu({ group, setGroupMembersOpen, setOpenNewOwner
     const [menuOpen, setMenuOpen] = useState(false);
 
     const openMembersModal = () => {
-        setGroupMembersOpen(true);
         setMenuOpen(false);
+        setGroupMembersOpen(true);
+    }
+
+    const openGroupSettings = () => {
+        setMenuOpen(false);
+        console.log('hello')
+        navigation.navigate('GroupsTab', {
+            screen: 'Update Group',
+            params: {
+                group,
+                location
+            }
+        })
     }
 
     const leaveGroup = () => {
@@ -28,7 +40,7 @@ export default function HeaderMenu({ group, setGroupMembersOpen, setOpenNewOwner
                 {
                     text: `Yes, leave group`,
                     onPress: () => {
-                        setOpenNewOwnerModal(true);
+                        setNewOwnerOpen(true);
                     }
                 }
             ]);
@@ -40,14 +52,29 @@ export default function HeaderMenu({ group, setGroupMembersOpen, setOpenNewOwner
             <Menu
                 visible={menuOpen}
                 onDismiss={() => setMenuOpen(false)}
+                anchorPosition='bottom'
                 anchor={
                     <Button onPress={() => setMenuOpen(true)}><Icon source='menu' size={30} color='#5EB1BF' /></Button>
                 }
                 style={styles.hamburger}
             >
-                {isAdmin && <Menu.Item onPress={openMembersModal} title="Group Members"/>}
-                {isAdmin && <Menu.Item onPress={() => {}} title="Group Settings"/>}
-                <Menu.Item onPress={leaveGroup} title="Leave Group" titleStyle={{ color: 'red' }} />
+                {isAdmin &&
+                    <Menu.Item
+                        onPress={openMembersModal}
+                        title="Group Members"
+                    />
+                }
+                {isAdmin &&
+                    <Menu.Item
+                        onPress={openGroupSettings}
+                        title="Group Settings"
+                    />
+                }
+                <Menu.Item
+                    onPress={leaveGroup}
+                    title="Leave Group"
+                    titleStyle={{ color: 'red' }}
+                />
             </Menu>
         </View>
     )
