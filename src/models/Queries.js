@@ -96,6 +96,7 @@ export const GROUPS_AND_UPCOMING_EVENTS_QUERY = gql`query GetGroupsAndUpcomingEv
     upcoming: getUpcomingEvents {
         eventId
         groupId
+        repeatedEventId
         groupName
         eventName
         description
@@ -104,14 +105,14 @@ export const GROUPS_AND_UPCOMING_EVENTS_QUERY = gql`query GetGroupsAndUpcomingEv
     }
 }`
 
-export const REPEATED_EVENT_AND_GROUP_QUERY = (repeated) => gql`query GetRepeatedEventAndGroupInfo($id: Int!, $groupId: Int!) {
-    event: ${repeated !== 'never' ? 'getRepeatedEvent' : 'getIndividualEvent'}(id: $id, groupId: $groupId) {
+export const REPEATED_EVENT_AND_GROUP_QUERY = gql`query GetRepeatedEventAndGroupInfo($id: Int!, $groupId: Int!) {
+    event: getRepeatedEvent(id: $id, groupId: $groupId) {
         eventId
         groupId
         eventName
-        description${repeated !== 'never' ? `
-        eventRepeat` : ''}
-        eventDate${repeated !== 'never' ? 's' : ''}
+        description
+        eventRepeat
+        eventDates
         location
         invitedUsers {
             userId
@@ -120,6 +121,7 @@ export const REPEATED_EVENT_AND_GROUP_QUERY = (repeated) => gql`query GetRepeate
         }
     }
     group: getGroup(groupId: $groupId) {
+        groupId
         groupName
     }
 }`;

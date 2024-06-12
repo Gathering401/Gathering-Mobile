@@ -1,26 +1,28 @@
 import axios from 'axios';
 
-import { useQuery } from '@apollo/client';
-import { View, Text } from 'react-native';
 import { useState } from 'react';
+import { useQuery } from '@apollo/client';
+import { View, SafeAreaView } from 'react-native';
+import { Text } from 'react-native-paper';
 import { DateTime } from 'luxon';
 
 import Loader from '../components/helpers/Loader';
 import LocationText from '../components/LocationText';
 import { compAddress } from '../service/compAddress';
 import { formatLocation } from '../components/helpers/locationFormatter';
+import { formatDate } from '../components/helpers/dateFormatter';
 
 import { REACT_APP_GEO_CODE } from '@env';
-
-import { styles } from '../styles/main-styles';
 import { REPEATED_EVENT_AND_GROUP_QUERY } from '../models/Queries';
 
-export default function Event({ route: { params: { eventId: id, groupId, repeated } }, navigation }) {
+import { styles } from '../styles/main-styles';
+
+export default function Event({ route: { params: { eventId: id, groupId } }, navigation }) {
     const [location, setLocation] = useState(null);
     const [locationLoading, setLocationLoading] = useState(true);
     const [event, setEvent] = useState({});
     
-    const { loading } = useQuery(REPEATED_EVENT_AND_GROUP_QUERY(repeated),
+    const { loading } = useQuery(REPEATED_EVENT_AND_GROUP_QUERY,
     {
         variables: { id, groupId },
         onCompleted: async (response) => {
@@ -58,19 +60,16 @@ export default function Event({ route: { params: { eventId: id, groupId, repeate
         return <Loader />
     }
 
-    const displayDate = repeated !== 'never'
-        ? <>
-            <Text>Upcoming Dates</Text>
-            <Text>{event.eventDates.slice(0, 4).map(d => DateTime.fromISO(d).toFormat('LLLL d')).join(', ')}</Text>
-        </>
-        : <Text>{DateTime.fromISO(event.eventDate).toFormat('fff')}</Text>
-
     return (
-        <View style={styles.container}>
-            <Text>{event.eventName}</Text>
-            <Text>{event.description}</Text>
-            {displayDate}
-            {location ? <LocationText location={location} clickable={true}/> : null}
-        </View>
+        <SafeAreaView style={styles.container}>
+            <View style={styles.details}>
+                <Text variant="headlineLarge" style={styles.detailsHeader}>{event.eventName}</Text>
+                <Text variant="bodyLarge" style={styles.detailsSubHeader}>{event.description}</Text>
+                <Text variant="bodyLarge">
+                    Happening {formatDate(event.eventRepeat, event.eventDates)}
+                </Text>
+                {location ? <LocationText location={location} clickable={true}/> : null}
+            </View>
+        </SafeAreaView>
     )
 }
