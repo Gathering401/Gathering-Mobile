@@ -50,6 +50,10 @@ export const UPDATE_OWNER_AND_LEAVE_MUTATION = gql`mutation UpdateOwnerAndLeaveG
     removeMemberFromGroup(groupId: $groupId, userId: $userId)
 }`;
 
+export const LEAVE_GROUP_MUTATION = gql`mutation LeaveGroupMutation($groupId: Int!, $userId: Int!) {
+    removeMemberFromGroup(groupId: $groupId, userId: $userId)
+}`
+
 export const CREATE_EVENT_MUTATION = gql`mutation CreateEvent($groupId: Int!, $eventData: EventDataInput!) {
     createEvent(groupId: $groupId, eventData: $eventData) {
         eventId
@@ -114,6 +118,10 @@ export const REPEATED_EVENT_AND_GROUP_QUERY = gql`query GetRepeatedEventAndGroup
         eventRepeat
         eventDates
         location
+        host {
+            userId
+            username
+        }
         invitedUsers {
             userId
             username
@@ -123,6 +131,10 @@ export const REPEATED_EVENT_AND_GROUP_QUERY = gql`query GetRepeatedEventAndGroup
     group: getGroup(groupId: $groupId) {
         groupId
         groupName
+        currentUser {
+            userId
+            role
+        }
     }
 }`;
     

@@ -10,7 +10,8 @@ import SaveButton from './inputs/buttons/SaveButton';
 import { styles } from '../styles/main-styles';
 import { REMOVE_MEMBER_MUTATION, UPDATE_MEMBERS_MUTATION } from '../models/Queries';
 
-export default function GroupMemberTiles({ groupId, groupName, members, currentUser: { role, userId: currentUserId }, asSelectors, selectableOnPress, navigation, setOpenNewOwnerModal }) {
+export default function GroupMemberTiles({ groupId, groupName, members, currentUser: { role, userId: currentUserId },
+    asSelectors, selectableOnPress, navigation, setOpenNewOwnerModal, asRsvp }) {
     const [memberChanges, setMemberChanges] = useState([]);
 
     const [submitMemberChanges, { loading }] = useMutation(UPDATE_MEMBERS_MUTATION, {
@@ -97,6 +98,7 @@ export default function GroupMemberTiles({ groupId, groupName, members, currentU
                                 <Button
                                     onPress={() => removeMember(member.userId, displayName)}
                                     disabled={!hasAdminPower || isCurrentUser}
+                                    loading={removeMemberLoading}
                                 >
                                     <Icon source="account-remove" color={isCurrentUser ?
                                         "#bdbdbd" :

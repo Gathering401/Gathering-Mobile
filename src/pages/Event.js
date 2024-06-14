@@ -8,6 +8,7 @@ import { DateTime } from 'luxon';
 
 import Loader from '../components/helpers/Loader';
 import LocationText from '../components/LocationText';
+import GroupMemberTiles from '../components/GroupMemberTiles';
 import { compAddress } from '../service/compAddress';
 import { formatLocation } from '../components/helpers/locationFormatter';
 import { formatDate } from '../components/helpers/dateFormatter';
@@ -17,17 +18,15 @@ import { REPEATED_EVENT_AND_GROUP_QUERY } from '../models/Queries';
 
 import { styles } from '../styles/main-styles';
 
-export default function Event({ route: { params: { eventId: id, groupId } }, navigation }) {
+export default function Event({ route: { params: { eventId, groupId } }, navigation }) {
     const [location, setLocation] = useState(null);
     const [locationLoading, setLocationLoading] = useState(true);
-    const [event, setEvent] = useState({});
+    const [attendingMembersOpen, setAttendingMembersOpen] = useState(false);
     
-    const { loading } = useQuery(REPEATED_EVENT_AND_GROUP_QUERY,
+    const { data: { event, group }, loading } = useQuery(REPEATED_EVENT_AND_GROUP_QUERY,
     {
-        variables: { id, groupId },
+        variables: { eventId, groupId },
         onCompleted: async (response) => {
-            setEvent(response.event);
-
             const locationResponse = await axios({
                 method: 'GET',
                 url: `https://maps.googleapis.com/maps/api/geocode/json?place_id=${response.event.location}&key=${REACT_APP_GEO_CODE}`,
@@ -56,19 +55,76 @@ export default function Event({ route: { params: { eventId: id, groupId } }, nav
         })
     });
 
+    const [menuOpen, setMenuOpen] = useState(false);
+
+    const openAttendingModal = () => {
+        setMenuOpen(false);
+        setAttendingMembersOpen(true);
+    }
+
     if(loading || locationLoading || !event.eventName) {
         return <Loader />
     }
 
+    const role = currentUser.role;
+    const isOwner = role === 'owner';
+    const isAdmin = isOwner || role === 'admin';
+    const isHost = isAdmin || currentUser.userId === event.host.userId
+    const eventMenuOptions = [
+        {
+            title: 'Attending',
+            onPress: openAttendingModal
+        },
+        {
+            title: 'Event Settings',
+            onPress: openEventSettings,
+            disabled: !isHost
+        },
+        {
+            title: 'Cancel Event',
+            onPress: cancelEvent,
+            disabled: !isHost,
+            warningText: true
+        }
+    ];
+
     return (
         <SafeAreaView style={styles.container}>
-            <View style={styles.details}>
-                <Text variant="headlineLarge" style={styles.detailsHeader}>{event.eventName}</Text>
-                <Text variant="bodyLarge" style={styles.detailsSubHeader}>{event.description}</Text>
-                <Text variant="bodyLarge">
-                    Happening {formatDate(event.eventRepeat, event.eventDates)}
-                </Text>
-                {location ? <LocationText location={location} clickable={true}/> : null}
+            <HeaderMenu
+                menuOptions={eventMenuOptions}
+                menuOpen={menuOpen}
+                setMenuOpen={setMenuOpen}
+            />
+            <View style={styles.detailsPage}>
+                <Portal>
+                    <Modal
+                        visible={isAdmin && attendingMembersOpen}
+                        onDismiss={() => setGroupMembersOpen(false)}
+                    >
+                        <GroupMemberTiles
+                            groupId={groupId} groupName={group.groupName} members={event.invitedUsers}
+                            currentUser={group.currentUser} asRsvp={true}
+                        />
+                    </Modal>
+                    <Modal
+                        visible={newOwnerOpen}
+                        onDismiss={() => setNewOwnerOpen(false)}
+                    >
+                        <GroupMemberTiles
+                            groupId={groupId} groupName={group.groupName} members={group.groupMembers}
+                            currentUser={group.currentUser} asSelectors={true} selectableOnPress={updateOwnerAndLeaveGroup}
+                            navigation={navigation} setNewOwnerOpen={setNewOwnerOpen}
+                        />
+                    </Modal>
+                </Portal>
+                <View style={styles.details}>
+                    <Text variant="headlineLarge" style={styles.detailsHeader}>{event.eventName}</Text>
+                    <Text variant="bodyLarge" style={styles.detailsSubHeader}>{event.description}</Text>
+                    <Text variant="bodyLarge">
+                        Happening {formatDate(event.eventRepeat, event.eventDates)}
+                    </Text>
+                    {location ? <LocationText location={location} clickable={true}/> : null}
+                </View>
             </View>
         </SafeAreaView>
     )
