@@ -163,7 +163,7 @@ export default function Group({ route: { params: { id } }, navigation }) {
                     >
                         <GroupMemberTiles
                             groupId={id} groupName={group.groupName} members={group.groupMembers}
-                            currentUser={group.currentUser} asSelectors={true} selectableOnPress={updateOwnerAndLeaveGroup}
+                            currentUser={currentUser} asSelectors={true} selectableOnPress={updateOwnerAndLeaveGroup}
                             navigation={navigation} setNewOwnerOpen={setNewOwnerOpen}
                         />
                     </Modal>

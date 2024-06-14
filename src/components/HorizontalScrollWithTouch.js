@@ -13,7 +13,11 @@ export default function HorizontalScrollWithTouch({ scrollTitle, scrollableItems
                 navigation.navigate('CalendarTab', {
                     screen: 'Event',
                     initial: false,
-                    params: { eventId: obj.repeatedEventId, groupId: obj.groupId }
+                    params: {
+                        repeatedEventId: obj.repeatedEventId,
+                        eventId: obj.eventId,
+                        groupId: obj.groupId
+                    }
                 });
                 break;
             case 'group':

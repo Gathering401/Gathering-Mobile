@@ -85,9 +85,8 @@ export default function EventCreate({ navigation, route }) {
                         navigation.navigate('CalendarTab', {
                             screen: 'Event',
                             params: {
-                                eventId: response.createEvent.eventId,
-                                groupId: response.createEvent.groupId,
-                                repeated: response.createEvent.repeat
+                                repeatedEventId: response.createEvent.repeatedEventId,
+                                groupId: response.createEvent.groupId
                             }
                         });
                     },

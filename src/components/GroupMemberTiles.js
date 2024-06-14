@@ -8,13 +8,14 @@ import RoleDropdown from './inputs/RoleDropdown';
 import SaveButton from './inputs/buttons/SaveButton';
 
 import { styles } from '../styles/main-styles';
-import { REMOVE_MEMBER_MUTATION, UPDATE_MEMBERS_MUTATION } from '../models/Queries';
+import { REMOVE_MEMBER_MUTATION, UPDATE_MEMBERS_MUTATION, SEND_RSVP_MUTATION } from '../models/Queries';
+import RsvpDropdown from './inputs/RsvpDropdown';
 
 export default function GroupMemberTiles({ groupId, groupName, members, currentUser: { role, userId: currentUserId },
     asSelectors, selectableOnPress, navigation, setOpenNewOwnerModal, asRsvp }) {
     const [memberChanges, setMemberChanges] = useState([]);
 
-    const [submitMemberChanges, { loading }] = useMutation(UPDATE_MEMBERS_MUTATION, {
+    const [submitMemberChanges, { loading: memberChangesLoading }] = useMutation(UPDATE_MEMBERS_MUTATION, {
         variables: {
             groupId,
             membersToUpdate: memberChanges
@@ -24,7 +25,7 @@ export default function GroupMemberTiles({ groupId, groupName, members, currentU
         }
     });
 
-    const [removeMemberMutation, { removeMemberLoading }] = useMutation(REMOVE_MEMBER_MUTATION, {
+    const [removeMemberMutation, { loading: removeMemberLoading }] = useMutation(REMOVE_MEMBER_MUTATION, {
         refetchQueries: ['GetGroup']
     });
 
@@ -48,11 +49,15 @@ export default function GroupMemberTiles({ groupId, groupName, members, currentU
         ]);
     }
 
+    const [sendRsvp] = useMutation(SEND_RSVP_MUTATION, {
+        refetchQueries: ['GetRepeatedEventAndGroupInfo']
+    });
+
     return <View style={styles.groupMembersModal}>
         <View style={styles.groupMembersHeader}>
             <Text variant="headlineSmall">Group Members</Text>
             {memberChanges.length > 0
-                && <SaveButton onPress={submitMemberChanges} loading={loading} />}
+                && <SaveButton onPress={submitMemberChanges} loading={memberChangesLoading} />}
         </View>
         <KeyboardAwareScrollView
             contentContainerStyle={styles.listModal}
@@ -63,6 +68,7 @@ export default function GroupMemberTiles({ groupId, groupName, members, currentU
                     const displayName = `${member.firstName} ${member.lastName} - ${member.username}${isCurrentUser ? ' (you)' : ''}`;
                     const hasAdminPower = 'owner' === role ||
                         ('admin' === role && ['creator', 'member'].includes(member.role));
+                    const showRemoveButton = hasAdminPower && !asSelectors && !asRsvp;
 
                     return <TouchableOpacity
                         key={index}
@@ -94,7 +100,7 @@ export default function GroupMemberTiles({ groupId, groupName, members, currentU
                             <View style={{...styles.groupMember, ...(asSelectors ? {flexBasis: '80%'} : {})}}>
                                 <Text variant="bodyLarge">{displayName}</Text>
                             </View>
-                            {hasAdminPower && !asSelectors &&
+                            {showRemoveButton &&
                                 <Button
                                     onPress={() => removeMember(member.userId, displayName)}
                                     disabled={!hasAdminPower || isCurrentUser}
@@ -106,14 +112,20 @@ export default function GroupMemberTiles({ groupId, groupName, members, currentU
                                     } size={30} />
                                 </Button>
                             }
-                            <RoleDropdown
-                                hasAdminPower={hasAdminPower}
-                                member={member}
-                                zIndex={members.length - index}
-                                memberChanges={memberChanges}
-                                setMemberChanges={setMemberChanges}
-                                disable={!hasAdminPower || isCurrentUser || asSelectors}
-                            />
+                            {!asRsvp &&
+                                <RoleDropdown
+                                    member={member}
+                                    memberChanges={memberChanges}
+                                    setMemberChanges={setMemberChanges}
+                                    disable={!hasAdminPower || isCurrentUser || asSelectors}
+                                />
+                            }
+                            {asRsvp &&
+                                <RsvpDropdown
+                                    sendRsvp={sendRsvp}
+                                    disable={!isCurrentUser}
+                                />
+                            }
                         </View>
                     </TouchableOpacity>
                 })}

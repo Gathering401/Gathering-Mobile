@@ -56,8 +56,8 @@ export const LEAVE_GROUP_MUTATION = gql`mutation LeaveGroupMutation($groupId: In
 
 export const CREATE_EVENT_MUTATION = gql`mutation CreateEvent($groupId: Int!, $eventData: EventDataInput!) {
     createEvent(groupId: $groupId, eventData: $eventData) {
-        eventId
         groupId
+        repeatedEventId
     }
 }`;
 
@@ -124,6 +124,8 @@ export const REPEATED_EVENT_AND_GROUP_QUERY = gql`query GetRepeatedEventAndGroup
         }
         invitedUsers {
             userId
+            firstName
+            lastName
             username
             rsvp
         }
@@ -165,7 +167,19 @@ export const UPDATE_GROUP_MUTATION = gql`mutation UpdateGroup($groupId: Int!, $g
         location
         inviteOnly
     }
-}`
+}`;
+
+export const SEND_RSVP_MUTATION = gql`mutation RespondToInvitation($groupId: Int!, $eventId: Int!, $rsvp: RSVP!) {
+    respondToInvitation(groupId: $groupId, eventId: $eventId, rsvp: $rsvp)
+}`;
+
+export const DELETE_REPEATED_EVENT_MUTATION = gql`mutation DeleteRepeatedEvent($groupId: Int!, $eventId: Int!) {
+    deleteRepeatedEvent(groupId: $groupId, eventId: $eventId)
+}`;
+
+export const DELETE_INDIVIDUAL_EVENT_MUTATION = gql`mutation DeleteIndividualEvent($groupId: Int!, $eventId: Int!) {
+    deleteIndividualEvent(groupId: $groupId, eventId: $eventId)
+}`;
 
 export const LOGIN_MUTATION = gql`mutation LogIn($username: String!, $password: String!) {
     login(username: $username, password: $password) {

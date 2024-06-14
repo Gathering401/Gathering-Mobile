@@ -1,31 +1,31 @@
 import axios from 'axios';
 
 import { useState } from 'react';
-import { useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { View, SafeAreaView } from 'react-native';
-import { Text } from 'react-native-paper';
-import { DateTime } from 'luxon';
+import { Text, Portal, Modal } from 'react-native-paper';
 
 import Loader from '../components/helpers/Loader';
 import LocationText from '../components/LocationText';
 import GroupMemberTiles from '../components/GroupMemberTiles';
+import HeaderMenu from '../components/HeaderMenu';
 import { compAddress } from '../service/compAddress';
 import { formatLocation } from '../components/helpers/locationFormatter';
 import { formatDate } from '../components/helpers/dateFormatter';
 
 import { REACT_APP_GEO_CODE } from '@env';
-import { REPEATED_EVENT_AND_GROUP_QUERY } from '../models/Queries';
+import { REPEATED_EVENT_AND_GROUP_QUERY, DELETE_REPEATED_EVENT_MUTATION, DELETE_INDIVIDUAL_EVENT_MUTATION } from '../models/Queries';
 
 import { styles } from '../styles/main-styles';
 
-export default function Event({ route: { params: { eventId, groupId } }, navigation }) {
+export default function Event({ route: { params: { eventId, repeatedEventId, groupId } }, navigation }) {
     const [location, setLocation] = useState(null);
     const [locationLoading, setLocationLoading] = useState(true);
     const [attendingMembersOpen, setAttendingMembersOpen] = useState(false);
     
-    const { data: { event, group }, loading } = useQuery(REPEATED_EVENT_AND_GROUP_QUERY,
+    const { data, loading } = useQuery(REPEATED_EVENT_AND_GROUP_QUERY,
     {
-        variables: { eventId, groupId },
+        variables: { id: repeatedEventId, groupId },
         onCompleted: async (response) => {
             const locationResponse = await axios({
                 method: 'GET',
@@ -55,6 +55,22 @@ export default function Event({ route: { params: { eventId, groupId } }, navigat
         })
     });
 
+    const [deleteRepeatedEvent] = useMutation(DELETE_REPEATED_EVENT_MUTATION, {
+        onCompleted: () => {
+            navigation.navigate('HomeTab', {
+                screen: 'Home'
+            })
+        }
+    });
+
+    const [deleteIndividualEvent] = useMutation(DELETE_INDIVIDUAL_EVENT_MUTATION, {
+        onCompleted: () => {
+            navigation.navigate('HomeTab', {
+                screen: 'Home'
+            })
+        }
+    })
+
     const [menuOpen, setMenuOpen] = useState(false);
 
     const openAttendingModal = () => {
@@ -62,10 +78,71 @@ export default function Event({ route: { params: { eventId, groupId } }, navigat
         setAttendingMembersOpen(true);
     }
 
-    if(loading || locationLoading || !event.eventName) {
+    const openEventSettings = () => {
+        setMenuOpen(false);
+        navigation.navigate('GroupsTab', {
+            screen: 'Update Group',
+            params: {
+                group,
+                location
+            }
+        })
+    }
+
+    const cancelEvent = () => {
+        setMenuOpen(false);
+        Alert.alert(`Cancel ${event.eventName}?`, 'This will remove the event from members calendars.', [
+            {
+                text: 'Nevermind',
+                style: 'cancel'
+            },
+            {
+                text: `Yes, cancel event`,
+                onPress: () => {
+                    if(eventId && event.eventRepeat !== 'never') {
+                        cancelWhichEvent();
+                    } else {
+                        deleteRepeatedEvent({
+                            variables: {
+                                groupId,
+                                eventId
+                            }
+                        })
+                    }
+                }
+            }
+        ]);
+    }
+
+    const cancelWhichEvent = () => {
+        Alert.alert('Just this one?', 'Or would you like to cancel every occurrence of this event?', [
+            {
+                text: 'Just this instance',
+                onPress: () => deleteIndividualEvent({
+                    variables: {
+                        groupId,
+                        eventId
+                    }
+                })
+            },
+            {
+                text: 'Cancel every occurrence',
+                onPress: () => deleteRepeatedEvent({
+                    variables: {
+                        groupId,
+                        eventId: repeatedEventId
+                    }
+                })
+            }
+        ])
+    }
+
+    if(loading || locationLoading || !data?.event || !data?.group) {
         return <Loader />
     }
 
+    const { event, group } = data;
+    const currentUser = group.currentUser;
     const role = currentUser.role;
     const isOwner = role === 'owner';
     const isAdmin = isOwner || role === 'admin';
@@ -99,21 +176,11 @@ export default function Event({ route: { params: { eventId, groupId } }, navigat
                 <Portal>
                     <Modal
                         visible={isAdmin && attendingMembersOpen}
-                        onDismiss={() => setGroupMembersOpen(false)}
+                        onDismiss={() => setAttendingMembersOpen(false)}
                     >
                         <GroupMemberTiles
                             groupId={groupId} groupName={group.groupName} members={event.invitedUsers}
-                            currentUser={group.currentUser} asRsvp={true}
-                        />
-                    </Modal>
-                    <Modal
-                        visible={newOwnerOpen}
-                        onDismiss={() => setNewOwnerOpen(false)}
-                    >
-                        <GroupMemberTiles
-                            groupId={groupId} groupName={group.groupName} members={group.groupMembers}
-                            currentUser={group.currentUser} asSelectors={true} selectableOnPress={updateOwnerAndLeaveGroup}
-                            navigation={navigation} setNewOwnerOpen={setNewOwnerOpen}
+                            currentUser={currentUser} asRsvp={true}
                         />
                     </Modal>
                 </Portal>
