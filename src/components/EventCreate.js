@@ -41,7 +41,7 @@ export default function EventCreate({ navigation, route }) {
         return null;
     }
 
-    if(eventLoading || groupsLoading) {
+    if(groupsLoading) {
         return <Loader />
     }
     
@@ -65,6 +65,7 @@ export default function EventCreate({ navigation, route }) {
             ]}
             moreInformation={moreInformation}
             setMoreInformation={setMoreInformation}
+            loading={eventLoading}
             formSubmit={(values) => {
                 submitEvent({
                     variables: {
@@ -73,7 +74,7 @@ export default function EventCreate({ navigation, route }) {
                             eventName: values.eventName,
                             food: !!values.food,
                             foodDescription: values.foodDescription,
-                            price: values.price ?? 0,
+                            price: Number(values.price ?? 0),
                             description: values.description,
                             eventRepeat: values.repeat,
                             eventDate: values.eventDate,
@@ -84,9 +85,8 @@ export default function EventCreate({ navigation, route }) {
                         navigation.navigate('CalendarTab', {
                             screen: 'Event',
                             params: {
-                                eventId: response.createEvent.eventId,
-                                groupId: response.createEvent.groupId,
-                                repeated: response.createEvent.repeat
+                                repeatedEventId: response.createEvent.repeatedEventId,
+                                groupId: response.createEvent.groupId
                             }
                         });
                     },

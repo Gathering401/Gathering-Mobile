@@ -18,7 +18,7 @@ import { styles } from '../styles/main-styles';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-export default function CustomFormik({ steps, moreInformation, setMoreInformation, formSubmit }) {
+export default function CustomFormik({ steps, moreInformation, setMoreInformation, formSubmit, loading }) {
     let [currentStep, setCurrentStep] = useState(0);
 
     return (
@@ -165,7 +165,7 @@ export default function CustomFormik({ steps, moreInformation, setMoreInformatio
                                 </Button>
                             }
                             {index === steps.length - 1 ? 
-                                <Button style={styles.button} onPress={handleSubmit} mode="outlined">Submit</Button> :
+                                <Button style={styles.button} onPress={handleSubmit} mode="outlined" loading={loading}>Submit</Button> :
                                 <Button style={styles.button} onPress={() => setCurrentStep(currentStep + 1)} mode="outlined">Continue</Button>
                             }
                             </View>
