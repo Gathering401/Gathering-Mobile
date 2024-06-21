@@ -124,7 +124,7 @@ export default function GroupMemberTiles({ groupId, eventId, groupName, members,
                                     disable={!hasAdminPower || isCurrentUser || asSelectors}
                                 />
                             }
-                            {asRsvp &&
+                            {asRsvp && (hasAdminPower || isCurrentUser) &&
                                 <RsvpDropdown
                                     groupId={groupId}
                                     eventId={eventId}

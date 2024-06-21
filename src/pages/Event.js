@@ -2,7 +2,7 @@ import axios from 'axios';
 
 import { useState } from 'react';
 import { useMutation, useQuery } from '@apollo/client';
-import { View, SafeAreaView } from 'react-native';
+import { View, SafeAreaView, Alert } from 'react-native';
 import { Text, Portal, Modal } from 'react-native-paper';
 
 import Loader from '../components/helpers/Loader';
@@ -28,7 +28,6 @@ export default function Event({ route: { params: { eventId, repeatedEventId, gro
     {
         variables: { id: repeatedEventId, groupId },
         onCompleted: async (response) => {
-            console.log(JSON.stringify(response));
             const locationResponse = await axios({
                 method: 'GET',
                 url: `https://maps.googleapis.com/maps/api/geocode/json?place_id=${response.event.location}&key=${REACT_APP_GEO_CODE}`,
@@ -62,7 +61,8 @@ export default function Event({ route: { params: { eventId, repeatedEventId, gro
             navigation.navigate('HomeTab', {
                 screen: 'Home'
             })
-        }
+        },
+        refetchQueries: ['GetGroupsAndUpcomingEvents']
     });
 
     const [deleteIndividualEvent] = useMutation(DELETE_INDIVIDUAL_EVENT_MUTATION, {
@@ -70,7 +70,8 @@ export default function Event({ route: { params: { eventId, repeatedEventId, gro
             navigation.navigate('HomeTab', {
                 screen: 'Home'
             })
-        }
+        },
+        refetchQueries: ['GetGroupsAndUpcomingEvents']
     })
 
     const [menuOpen, setMenuOpen] = useState(false);
