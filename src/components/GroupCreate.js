@@ -3,6 +3,7 @@ import { useMutation } from '@apollo/client';
 import CustomFormik from './CustomFormik';
 import Loader from './helpers/Loader';
 import { CREATE_GROUP_MUTATION } from '../models/Queries';
+import { logError } from './helpers/logError';
 
 export default function GroupCreate({ navigation }) {
     const [submitGroup, { errors, loading }] = useMutation(CREATE_GROUP_MUTATION, {
@@ -10,7 +11,7 @@ export default function GroupCreate({ navigation }) {
     });
 
     if(errors) {
-        console.log('Error: ', errors);
+        logError(errors);
         return null;
     }
 
@@ -40,7 +41,7 @@ export default function GroupCreate({ navigation }) {
                         });
                     },
                     onError: (error) => {
-                        console.log('Error: ', JSON.stringify(error, null, 2));
+                        logError(error);
                     }
                 })
             }}

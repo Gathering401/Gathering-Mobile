@@ -8,6 +8,7 @@ import LocationInput from './inputs/LocationInput';
 import { styles } from '../styles/main-styles';
 import { useMutation } from '@apollo/client';
 import { UPDATE_GROUP_MUTATION } from '../models/Queries';
+import { logError } from './helpers/logError';
 
 export default function GroupUpdate({ route: { params: { group, location } }, navigation }) {
     const [groupName, setGroupName] = useState(group.groupName);
@@ -34,7 +35,7 @@ export default function GroupUpdate({ route: { params: { group, location } }, na
             })
         },
         onError: (error) => {
-            console.log('Error: ', JSON.stringify(error, null, 2));
+            logError(error);
         },
         awaitRefetchQueries: true,
         refetchQueries: ['GetGroup', 'GetGroups', 'GetGroupsAndUpcomingEvents']

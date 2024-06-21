@@ -5,12 +5,13 @@ import Loader from '../components/helpers/Loader';
 
 import CustomFormik from '../components/CustomFormik';
 import { LOGIN_MUTATION } from '../models/Queries';
+import { logError } from '../components/helpers/logError';
 
 export default function Login({ navigation }) {
     const [submitLogin, { errors, loading } ] = useMutation(LOGIN_MUTATION);
     
     if(errors) {
-        console.log('Error', errors);
+        logError(errors);
         return null;
     }
     
@@ -34,7 +35,7 @@ export default function Login({ navigation }) {
                     navigation.navigate('Home');
                 },
                 onError: (error) => {
-                    console.log('Error: ', JSON.stringify(error, null, 2));
+                    logError(error);
                 }
             });
         }}

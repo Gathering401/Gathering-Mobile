@@ -5,8 +5,8 @@ import { Dropdown } from 'react-native-element-dropdown';
 import { styles } from '../../styles/main-styles';
 import { Icon } from 'react-native-paper';
 
-export default function RsvpDropdown({ sendRsvp, disable }) {
-    const [rsvp, setRsvp] = useState('pending');
+export default function RsvpDropdown({ groupId, eventId, sendRsvp, currentRsvp, disable }) {
+    const [rsvp, setRsvp] = useState(currentRsvp);
     const [isFocus, setIsFocus] = useState(false);
 
     const options = [
@@ -27,7 +27,13 @@ export default function RsvpDropdown({ sendRsvp, disable }) {
         onFocus={() => setIsFocus(true)}
         onBlur={() => {
             setIsFocus(false);
-            sendRsvp(rsvp);
+            sendRsvp({
+                variables: {
+                    groupId,
+                    eventId,
+                    rsvp
+                }
+            });
         }}
         onChange={item => {
             setRsvp(item.value);

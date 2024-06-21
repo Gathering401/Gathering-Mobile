@@ -1,5 +1,6 @@
 import { useQuery } from '@apollo/client';
 import { AUTHENTICATE_QUERY } from '../models/Queries';
+import { logError } from '../components/helpers/logError';
 
 export function authenticateUser(token) {
     const { data } = useQuery(AUTHENTICATE_QUERY, {
@@ -7,7 +8,7 @@ export function authenticateUser(token) {
             token
         },
         onError: (error) => {
-            console.log('Error: ', JSON.stringify(error, null, 2));
+            logError(error);
         }
     });
 

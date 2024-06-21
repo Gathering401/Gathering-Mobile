@@ -19,6 +19,7 @@ import { REACT_APP_GEO_CODE } from '@env';
 
 import { styles } from '../styles/main-styles';
 import { GROUP_QUERY, UPDATE_OWNER_AND_LEAVE_MUTATION } from '../models/Queries';
+import { logError } from '../components/helpers/logError';
 
 export default function Group({ route: { params: { id } }, navigation }) {
     const [location, setLocation] = useState(null);
@@ -106,7 +107,7 @@ export default function Group({ route: { params: { id } }, navigation }) {
     }
 
     if(errors) {
-        console.log('Error: ', errors);
+        logError(errors);
         return null;
     }
 

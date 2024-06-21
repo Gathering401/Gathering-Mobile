@@ -8,6 +8,7 @@ import Loader from './helpers/Loader';
 
 import { styles } from '../styles/main-styles';
 import { GROUPS_AND_UPCOMING_EVENTS_QUERY } from '../models/Queries';
+import { logError } from './helpers/logError';
 
 export default function LoggedInHome({ navigation }) {
     const { data, errors, loading } = useQuery(GROUPS_AND_UPCOMING_EVENTS_QUERY);
@@ -17,7 +18,7 @@ export default function LoggedInHome({ navigation }) {
     }
 
     if(errors || !data) {
-        console.log('Error: ', errors);
+        logError(errors)
         return null;
     }
 

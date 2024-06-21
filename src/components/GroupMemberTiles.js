@@ -10,8 +10,9 @@ import SaveButton from './inputs/buttons/SaveButton';
 import { styles } from '../styles/main-styles';
 import { REMOVE_MEMBER_MUTATION, UPDATE_MEMBERS_MUTATION, SEND_RSVP_MUTATION } from '../models/Queries';
 import RsvpDropdown from './inputs/RsvpDropdown';
+import { logError } from './helpers/logError';
 
-export default function GroupMemberTiles({ groupId, groupName, members, currentUser: { role, userId: currentUserId },
+export default function GroupMemberTiles({ groupId, eventId, groupName, members, currentUser: { role, userId: currentUserId },
     asSelectors, selectableOnPress, navigation, setOpenNewOwnerModal, asRsvp }) {
     const [memberChanges, setMemberChanges] = useState([]);
 
@@ -50,6 +51,9 @@ export default function GroupMemberTiles({ groupId, groupName, members, currentU
     }
 
     const [sendRsvp] = useMutation(SEND_RSVP_MUTATION, {
+        onError: (error) => {
+            logError(error);
+        },
         refetchQueries: ['GetRepeatedEventAndGroupInfo']
     });
 
@@ -84,7 +88,7 @@ export default function GroupMemberTiles({ groupId, groupName, members, currentU
                                     userId: currentUserId
                                 },
                                 onError: (error) => {
-                                    console.log(JSON.stringify(error, null, 2))
+                                    logError(error);
                                 },
                                 onCompleted: () => {
                                     setOpenNewOwnerModal(false);
@@ -122,7 +126,10 @@ export default function GroupMemberTiles({ groupId, groupName, members, currentU
                             }
                             {asRsvp &&
                                 <RsvpDropdown
+                                    groupId={groupId}
+                                    eventId={eventId}
                                     sendRsvp={sendRsvp}
+                                    currentRsvp={member.rsvp}
                                     disable={!isCurrentUser}
                                 />
                             }

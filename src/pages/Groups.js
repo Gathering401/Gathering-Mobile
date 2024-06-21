@@ -9,6 +9,7 @@ import { styles } from '../styles/main-styles';
 
 import Loader from '../components/helpers/Loader';
 import { GET_GROUPS_QUERY } from '../models/Queries';
+import { logError } from '../components/helpers/logError';
 
 export default function Groups({ navigation }) {
     // let [searchForNew, setSearchForNew] = useState(false);
@@ -20,7 +21,7 @@ export default function Groups({ navigation }) {
     }
 
     if(errors) {
-        console.log('Error', errors);
+        logError(errors);
         return null;
     }
     

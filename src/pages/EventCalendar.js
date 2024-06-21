@@ -11,6 +11,7 @@ import HorizontalScrollWithTouch from '../components/HorizontalScrollWithTouch';
 
 import { styles } from '../styles/main-styles';
 import { EVENT_QUERY } from '../models/Queries';
+import { logError } from '../components/helpers/logError';
 
 export default function EventCalendar({ navigation }) {
     const [currentDate, setCurrentDate] = useState(DateTime.now());
@@ -37,7 +38,7 @@ export default function EventCalendar({ navigation }) {
     });
     
     if(errors) {
-        console.log('Error', JSON.stringify(errors, null, 2));
+        logError(errors);
         return null;
     }
 
@@ -71,7 +72,7 @@ export default function EventCalendar({ navigation }) {
                 />
                 {data?.invitations?.length ? <HorizontalScrollWithTouch
                     scrollTitle="Pending Invitations"
-                    scrollableItems={invitations}
+                    scrollableItems={data.invitations}
                     mapper="invitation"
                     navigation={navigation}
                 /> : null}

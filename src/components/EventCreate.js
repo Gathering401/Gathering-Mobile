@@ -3,6 +3,7 @@ import { useMutation, useQuery } from '@apollo/client';
 
 import CustomFormik from './CustomFormik';
 import { CREATE_EVENT_MUTATION, GET_GROUPS_QUERY } from '../models/Queries';
+import { logError } from './helpers/logError';
 
 export default function EventCreate({ navigation, route }) {
     const [moreInformation, setMoreInformation] = useState(false);
@@ -36,8 +37,8 @@ export default function EventCreate({ navigation, route }) {
     });
 
     if(eventErrors || groupsErrors) {
-        console.log('Error: ', eventErrors);
-        console.log('Groups: ', groupsErrors);
+        logError(eventErrors, 'Events: ');
+        logError(groupsErrors, 'Groups: ');
         return null;
     }
 
@@ -91,7 +92,7 @@ export default function EventCreate({ navigation, route }) {
                         });
                     },
                     onError: (error) => {
-                        console.log('Error: ', JSON.stringify(error, null, 2));
+                        logError(error)
                     }
                 })
             }}

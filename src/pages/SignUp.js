@@ -10,6 +10,7 @@ import { styles } from '../styles/main-styles';
 
 import _ from 'lodash';
 import { SIGNUP_MUTATION } from '../models/Queries';
+import { logError } from '../components/helpers/logError';
 
 export default function SignUp({ navigation }) {
     let [date, setDate] = useState(new Date());
@@ -17,7 +18,7 @@ export default function SignUp({ navigation }) {
     const [submitRegistration, { errors, loading } ] = useMutation(SIGNUP_MUTATION);
     
     if(errors) {
-        console.log('Error ', errors[0]);
+        logError(errors);
         return null;
     }
     
@@ -54,7 +55,7 @@ export default function SignUp({ navigation }) {
                         navigation.navigate('Home');
                     },
                     onError: (error) => {
-                        console.log('Error: ', JSON.stringify(error, null, 2));
+                        logError(error);
                     }
                 });
             }}

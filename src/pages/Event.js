@@ -17,6 +17,7 @@ import { REACT_APP_GEO_CODE } from '@env';
 import { REPEATED_EVENT_AND_GROUP_QUERY, DELETE_REPEATED_EVENT_MUTATION, DELETE_INDIVIDUAL_EVENT_MUTATION } from '../models/Queries';
 
 import { styles } from '../styles/main-styles';
+import { logError } from '../components/helpers/logError';
 
 export default function Event({ route: { params: { eventId, repeatedEventId, groupId } }, navigation }) {
     const [location, setLocation] = useState(null);
@@ -27,6 +28,7 @@ export default function Event({ route: { params: { eventId, repeatedEventId, gro
     {
         variables: { id: repeatedEventId, groupId },
         onCompleted: async (response) => {
+            console.log(JSON.stringify(response));
             const locationResponse = await axios({
                 method: 'GET',
                 url: `https://maps.googleapis.com/maps/api/geocode/json?place_id=${response.event.location}&key=${REACT_APP_GEO_CODE}`,
@@ -51,7 +53,7 @@ export default function Event({ route: { params: { eventId, repeatedEventId, gro
             setLocationLoading(false);
         },
         onError: ((error) => {
-            console.log('Error: ', JSON.stringify(error, null, 2));
+            logError(error);
         })
     });
 
@@ -146,7 +148,7 @@ export default function Event({ route: { params: { eventId, repeatedEventId, gro
     const role = currentUser.role;
     const isOwner = role === 'owner';
     const isAdmin = isOwner || role === 'admin';
-    const isHost = isAdmin || currentUser.userId === event.host.userId
+    const hasHostPower = isAdmin || currentUser.userId === event.host.userId
     const eventMenuOptions = [
         {
             title: 'Attending',
@@ -155,12 +157,12 @@ export default function Event({ route: { params: { eventId, repeatedEventId, gro
         {
             title: 'Event Settings',
             onPress: openEventSettings,
-            disabled: !isHost
+            disabled: !hasHostPower
         },
         {
             title: 'Cancel Event',
             onPress: cancelEvent,
-            disabled: !isHost,
+            disabled: !hasHostPower,
             warningText: true
         }
     ];
@@ -179,7 +181,7 @@ export default function Event({ route: { params: { eventId, repeatedEventId, gro
                         onDismiss={() => setAttendingMembersOpen(false)}
                     >
                         <GroupMemberTiles
-                            groupId={groupId} groupName={group.groupName} members={event.invitedUsers}
+                            groupId={groupId} eventId={eventId} groupName={group.groupName} members={event.invitedUsers}
                             currentUser={currentUser} asRsvp={true}
                         />
                     </Modal>
