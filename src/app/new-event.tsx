@@ -1,7 +1,7 @@
 import {useState} from 'react';
 import {useRouter, useLocalSearchParams} from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
-import {useForm, Controller} from 'react-hook-form';
+import {useForm, Controller, FieldErrors} from 'react-hook-form';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import Toast from 'react-native-toast-message';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -16,7 +16,7 @@ import {GatheringGroup} from '../constants/GatheringGroup';
 import {Repetition, getRepetitionOptions, getRepetitionByValue} from '../constants/enums/Repetition';
 import {styles} from "../styles/new-event";
 import {AddressAutocomplete, AddressAutocompleteHandle} from "../components/AddressAutoComplete";
-import {SafeAreaView} from "react-native-safe-area-context";
+import {SafeAreaView, useSafeAreaInsets} from "react-native-safe-area-context";
 import {useAuthHeader} from "../hooks/useAuthHeader";
 import {AvailabilityModal} from "../components/AvailabilityModal";
 
@@ -46,6 +46,7 @@ const EventForm = () => {
     const [showRepetitionPicker, setShowRepetitionPicker] = useState(false);
 
     const authHeader = useAuthHeader();
+    const insets = useSafeAreaInsets();
 
     const isEditing = !!params.id;
     const editDateEnabled = params.editDateEnabled === 'true';
@@ -61,7 +62,8 @@ const EventForm = () => {
         SecureStore.getItemAsync('user').then(u => u && setUser(JSON.parse(u)));
     }, []);
 
-    const {control, handleSubmit, watch, setValue} = useForm({
+    const {control, handleSubmit, watch, setValue, formState: {isValid}} = useForm<EventValues>({
+        mode: 'onChange',
         defaultValues: {
             name: (params.name as string) ?? '',
             description: (params.description as string) ?? '',
@@ -75,7 +77,6 @@ const EventForm = () => {
     });
 
     const selectedDate = watch('date');
-    const selectedEndDate = watch('endDate');
     const selectedGroupId = watch('groupId');
     const selectedRepetition = watch('repetition');
 
@@ -222,42 +223,30 @@ const EventForm = () => {
     });
 
     const onSubmit = (values: EventValues) => {
-        if (!values.name.trim()) {
-            return Toast.show({type: 'error', text1: 'Name', text2: 'Event name is required'});
-        }
-        if (values.name.length > 50) {
-            return Toast.show({type: 'error', text1: 'Name', text2: 'Event name cannot exceed 50 characters'});
-        }
-        if (!values.description.trim()) {
-            return Toast.show({type: 'error', text1: 'Description', text2: 'Event description is required'});
-        }
-        if (values.description.length > 500) {
-            return Toast.show({
-                type: 'error',
-                text1: 'Description',
-                text2: 'Event description cannot exceed 500 characters'
-            });
-        }
-        if (!values.location.trim()) {
-            return Toast.show({type: 'error', text1: 'Location', text2: 'Event location is required'});
-        }
-        if (values.location.length > 100) {
-            return Toast.show({type: 'error', text1: 'Location', text2: 'Event location cannot exceed 100 characters'});
-        }
-        if (!values.date) {
-            return Toast.show({type: 'error', text1: 'Date', text2: 'Please select a date'});
-        }
-        if (dayjs(values.date).isBefore(dayjs().startOf('day').add(1, 'day'))) {
-            return Toast.show({type: 'error', text1: 'Date', text2: 'Event date must be in the future'});
-        }
-        if (values.endDate && dayjs(values.endDate).isBefore(dayjs(values.date))) {
-            return Toast.show({type: 'error', text1: 'End Date', text2: 'End date must be after the start date'});
-        }
         submitEvent(values);
     }
 
+    const onInvalid = (errors: FieldErrors<EventValues>) => {
+        const order: { field: keyof EventValues; label: string }[] = [
+            {field: 'name', label: 'Name'},
+            {field: 'description', label: 'Description'},
+            {field: 'location', label: 'Location'},
+            {field: 'date', label: 'Date'},
+            {field: 'endDate', label: 'End Date'},
+            {field: 'groupId', label: 'Group'},
+        ];
+
+        const firstError = order.find(({field}) => errors[field]);
+        if (firstError) {
+            Toast.show({
+                type: 'error',
+                text1: firstError.label,
+                text2: errors[firstError.field]?.message as string
+            });
+        }
+    }
+
     const repetitionOptions = getRepetitionOptions();
-    const selectedGroup = myGroups.find(g => g.id === selectedGroupId);
 
     return (
         <SafeAreaView style={{flex: 1}} edges={['top']}>
@@ -273,6 +262,13 @@ const EventForm = () => {
                             <Controller
                                 control={control}
                                 name="name"
+                                rules={{
+                                    validate: (value) => {
+                                        if (!value?.trim()) return 'Event name is required';
+                                        if (value.length > 50) return 'Event name cannot exceed 50 characters';
+                                        return true;
+                                    }
+                                }}
                                 render={({field: {onChange, value}}) => (
                                     <View style={styles.fieldContainer}>
                                         <Text style={styles.label}>Event Name<Text
@@ -292,6 +288,13 @@ const EventForm = () => {
                             <Controller
                                 control={control}
                                 name="description"
+                                rules={{
+                                    validate: (value) => {
+                                        if (!value?.trim()) return 'Event description is required';
+                                        if (value.length > 500) return 'Event description cannot exceed 500 characters';
+                                        return true;
+                                    }
+                                }}
                                 render={({field: {onChange, value}}) => (
                                     <View style={styles.fieldContainer}>
                                         <Text style={styles.label}>Description<Text
@@ -311,7 +314,63 @@ const EventForm = () => {
                             />
                             <Controller
                                 control={control}
+                                name="groupId"
+                                rules={{
+                                    validate: (value) => !!value || 'Please select a group'
+                                }}
+                                render={({field: {onChange, value}}) => {
+                                    const selectedGroup = myGroups.find(g => g.id === value);
+                                    return (
+                                        <View style={styles.fieldContainer}>
+                                            <Text style={styles.label}>Group<Text
+                                                style={styles.required}> *</Text></Text>
+                                            <TouchableOpacity
+                                                style={[styles.input, styles.selectButton, groupDisabled && styles.disabled]}
+                                                disabled={groupDisabled}
+                                                onPress={() => setShowGroupPicker(true)}
+                                            >
+                                                <Text style={{color: groupDisabled ? '#999' : selectedGroup ? '#333' : '#999'}}>
+                                                    {isLoading ? 'Loading...' : selectedGroup?.name ?? 'Select a group'}
+                                                </Text>
+                                            </TouchableOpacity>
+                                            <Modal visible={showGroupPicker} transparent animationType="slide">
+                                                <TouchableWithoutFeedback onPress={() => setShowGroupPicker(false)}>
+                                                    <View style={styles.modalOverlay}>
+                                                        <View style={styles.modalContent}>
+                                                            <Text style={styles.modalTitle}>Select Group</Text>
+                                                            {myGroups.map((g) => (
+                                                                <TouchableOpacity
+                                                                    key={g.id}
+                                                                    style={styles.modalOption}
+                                                                    onPress={() => {
+                                                                        onChange(g.id as number);
+                                                                        setShowGroupPicker(false);
+                                                                    }}
+                                                                >
+                                                                    <Text style={styles.modalOptionText}>{g.name}</Text>
+                                                                </TouchableOpacity>
+                                                            ))}
+                                                            <TouchableOpacity onPress={() => setShowGroupPicker(false)}>
+                                                                <Text style={styles.modalCancel}>Close</Text>
+                                                            </TouchableOpacity>
+                                                        </View>
+                                                    </View>
+                                                </TouchableWithoutFeedback>
+                                            </Modal>
+                                        </View>
+                                    );
+                                }}
+                            />
+                            <Controller
+                                control={control}
                                 name="location"
+                                rules={{
+                                    validate: (value) => {
+                                        if (!value?.trim()) return 'Event location is required';
+                                        if (value.length > 100) return 'Event location cannot exceed 100 characters';
+                                        return true;
+                                    }
+                                }}
                                 render={({field: {onChange, value}}) => (
                                     <View style={styles.fieldContainer}>
                                         <Text style={styles.label}>Location<Text
@@ -328,151 +387,164 @@ const EventForm = () => {
                             />
                             <Controller
                                 control={control}
-                                name="cost"
+                                name="date"
+                                rules={{
+                                    validate: (value) => {
+                                        if (!value) return 'Please select a date';
+                                        if (dayjs(value).isBefore(dayjs().startOf('day').add(1, 'day'))) {
+                                            return 'Event date must be in the future';
+                                        }
+                                        return true;
+                                    }
+                                }}
                                 render={({field: {onChange, value}}) => (
                                     <View style={styles.fieldContainer}>
-                                        <Text style={styles.label}>Cost ($)</Text>
-                                        <TextInput
-                                            style={styles.input}
-                                            placeholder="0"
-                                            keyboardType="decimal-pad"
-                                            value={value}
-                                            onChangeText={(text) => onChange(text.replace(/^0+(?=\d)/, ''))}
-                                        />
+                                        <Text style={styles.label}>Date<Text style={styles.required}> *</Text></Text>
+                                        <TouchableOpacity
+                                            style={[styles.input, styles.selectButton, dateDisabled && styles.disabled]}
+                                            disabled={dateDisabled}
+                                            onPress={() => setShowDatePicker(true)}
+                                        >
+                                            <Text style={{color: dateDisabled ? '#999' : value ? '#333' : '#999'}}>
+                                                {value ? dayjs(value).format('MMM D, YYYY h:mm A') : 'Select date'}
+                                            </Text>
+                                        </TouchableOpacity>
+                                        {showDatePicker && Platform.OS === 'ios' && (
+                                            <Modal visible={showDatePicker} transparent animationType="slide">
+                                                <TouchableWithoutFeedback onPress={() => setShowDatePicker(false)}>
+                                                    <View style={styles.modalOverlay}>
+                                                        <TouchableWithoutFeedback>
+                                                            <View style={styles.modalContent}>
+                                                                <DateTimePicker
+                                                                    value={value ?? today}
+                                                                    mode="datetime"
+                                                                    display="spinner"
+                                                                    minimumDate={today}
+                                                                    onChange={(_, date) => {
+                                                                        if (date) onChange(date);
+                                                                    }}
+                                                                />
+                                                                <TouchableOpacity
+                                                                    style={styles.secondaryButton}
+                                                                    onPress={() => setShowDatePicker(false)}
+                                                                >
+                                                                    <Text style={styles.secondaryButtonText}>Done</Text>
+                                                                </TouchableOpacity>
+                                                            </View>
+                                                        </TouchableWithoutFeedback>
+                                                    </View>
+                                                </TouchableWithoutFeedback>
+                                            </Modal>
+                                        )}
+                                        {showDatePicker && Platform.OS !== 'ios' && (
+                                            <DateTimePicker
+                                                value={value ?? today}
+                                                mode="datetime"
+                                                display="default"
+                                                minimumDate={today}
+                                                onChange={(_, date) => {
+                                                    setShowDatePicker(false);
+                                                    if (date) onChange(date);
+                                                }}
+                                            />
+                                        )}
+                                        <TouchableOpacity
+                                            style={[styles.secondaryButton, !selectedGroupId && styles.disabled]}
+                                            disabled={!selectedGroupId}
+                                            onPress={() => setShowAvailabilityModal(true)}
+                                        >
+                                            <Text style={styles.secondaryButtonText}>
+                                                {selectedGroupId ? 'Check Group Availability' : 'Select a group to check availability'}
+                                            </Text>
+                                        </TouchableOpacity>
                                     </View>
                                 )}
                             />
-                            <View style={styles.fieldContainer}>
-                                <Text style={styles.label}>Date<Text style={styles.required}> *</Text></Text>
-                                <TouchableOpacity
-                                    style={[styles.input, styles.selectButton, dateDisabled && styles.disabled]}
-                                    disabled={dateDisabled}
-                                    onPress={() => setShowDatePicker(true)}
-                                >
-                                    <Text style={{color: dateDisabled ? '#999' : selectedDate ? '#333' : '#999'}}>
-                                        {selectedDate ? dayjs(selectedDate).format('MMM D, YYYY h:mm A') : 'Select date'}
-                                    </Text>
-                                </TouchableOpacity>
-                                {showDatePicker && Platform.OS === 'ios' && (
-                                    <Modal visible={showDatePicker} transparent animationType="slide">
-                                        <TouchableWithoutFeedback onPress={() => setShowDatePicker(false)}>
-                                            <View style={styles.modalOverlay}>
-                                                <TouchableWithoutFeedback>
-                                                    <View style={styles.modalContent}>
-                                                        <DateTimePicker
-                                                            value={selectedDate ?? today}
-                                                            mode="datetime"
-                                                            display="spinner"
-                                                            minimumDate={today}
-                                                            onChange={(_, date) => {
-                                                                if (date) setValue('date', date);
-                                                            }}
-                                                        />
-                                                        <TouchableOpacity
-                                                            style={styles.secondaryButton}
-                                                            onPress={() => setShowDatePicker(false)}
-                                                        >
-                                                            <Text style={styles.secondaryButtonText}>Done</Text>
-                                                        </TouchableOpacity>
+                            <Controller
+                                control={control}
+                                name="endDate"
+                                rules={{
+                                    validate: (value, formValues) => {
+                                        if (value && dayjs(value).isBefore(dayjs(formValues.date))) {
+                                            return 'End date must be after the start date';
+                                        }
+                                        return true;
+                                    }
+                                }}
+                                render={({field: {onChange, value}}) => (
+                                    <View style={styles.fieldContainer}>
+                                        <View style={styles.endDateHeader}>
+                                            <Text style={styles.label}>End Date</Text>
+                                            {value && !dateDisabled && (
+                                                <TouchableOpacity onPress={() => onChange(null)}>
+                                                    <Text style={styles.clearText}>Remove</Text>
+                                                </TouchableOpacity>
+                                            )}
+                                        </View>
+                                        {value ? (
+                                            <TouchableOpacity
+                                                style={[styles.input, styles.selectButton, dateDisabled && styles.disabled]}
+                                                disabled={dateDisabled}
+                                                onPress={() => setShowEndDatePicker(true)}
+                                            >
+                                                <Text style={{color: dateDisabled ? '#999' : '#333'}}>
+                                                    {dayjs(value).format('MMM D, YYYY h:mm A')}
+                                                </Text>
+                                            </TouchableOpacity>
+                                        ) : (
+                                            <TouchableOpacity
+                                                style={[styles.secondaryButton, dateDisabled && styles.disabled]}
+                                                disabled={dateDisabled}
+                                                onPress={() => {
+                                                    onChange(selectedDate ?? today);
+                                                    setShowEndDatePicker(true);
+                                                }}
+                                            >
+                                                <Text style={styles.secondaryButtonText}>+ Add end date</Text>
+                                            </TouchableOpacity>
+                                        )}
+                                        {showEndDatePicker && Platform.OS === 'ios' && (
+                                            <Modal visible={showEndDatePicker} transparent animationType="slide">
+                                                <TouchableWithoutFeedback onPress={() => setShowEndDatePicker(false)}>
+                                                    <View style={styles.modalOverlay}>
+                                                        <TouchableWithoutFeedback>
+                                                            <View style={styles.modalContent}>
+                                                                <DateTimePicker
+                                                                    value={value ?? selectedDate ?? today}
+                                                                    mode="datetime"
+                                                                    display="spinner"
+                                                                    minimumDate={selectedDate ?? today}
+                                                                    onChange={(_, date) => {
+                                                                        if (date) onChange(date);
+                                                                    }}
+                                                                />
+                                                                <TouchableOpacity
+                                                                    style={styles.secondaryButton}
+                                                                    onPress={() => setShowEndDatePicker(false)}
+                                                                >
+                                                                    <Text style={styles.secondaryButtonText}>Done</Text>
+                                                                </TouchableOpacity>
+                                                            </View>
+                                                        </TouchableWithoutFeedback>
                                                     </View>
                                                 </TouchableWithoutFeedback>
-                                            </View>
-                                        </TouchableWithoutFeedback>
-                                    </Modal>
+                                            </Modal>
+                                        )}
+                                        {showEndDatePicker && Platform.OS !== 'ios' && (
+                                            <DateTimePicker
+                                                value={value ?? selectedDate ?? today}
+                                                mode="datetime"
+                                                display="default"
+                                                minimumDate={selectedDate ?? today}
+                                                onChange={(_, date) => {
+                                                    setShowEndDatePicker(false);
+                                                    if (date) onChange(date);
+                                                }}
+                                            />
+                                        )}
+                                    </View>
                                 )}
-                                {showDatePicker && Platform.OS !== 'ios' && (
-                                    <DateTimePicker
-                                        value={selectedDate ?? today}
-                                        mode="datetime"
-                                        display="default"
-                                        minimumDate={today}
-                                        onChange={(_, date) => {
-                                            setShowDatePicker(false);
-                                            if (date) setValue('date', date);
-                                        }}
-                                    />
-                                )}
-                                <TouchableOpacity
-                                    style={[styles.secondaryButton, !selectedGroupId && styles.disabled]}
-                                    disabled={!selectedGroupId}
-                                    onPress={() => setShowAvailabilityModal(true)}
-                                >
-                                    <Text style={styles.secondaryButtonText}>
-                                        {selectedGroupId ? 'Check Group Availability' : 'Select a group to check availability'}
-                                    </Text>
-                                </TouchableOpacity>
-                            </View>
-                            <View style={styles.fieldContainer}>
-                                <View style={styles.endDateHeader}>
-                                    <Text style={styles.label}>End Date</Text>
-                                    {selectedEndDate && !dateDisabled && (
-                                        <TouchableOpacity onPress={() => setValue('endDate', null)}>
-                                            <Text style={styles.clearText}>Remove</Text>
-                                        </TouchableOpacity>
-                                    )}
-                                </View>
-                                {selectedEndDate ? (
-                                    <TouchableOpacity
-                                        style={[styles.input, styles.selectButton, dateDisabled && styles.disabled]}
-                                        disabled={dateDisabled}
-                                        onPress={() => setShowEndDatePicker(true)}
-                                    >
-                                        <Text style={{color: dateDisabled ? '#999' : '#333'}}>
-                                            {dayjs(selectedEndDate).format('MMM D, YYYY h:mm A')}
-                                        </Text>
-                                    </TouchableOpacity>
-                                ) : (
-                                    <TouchableOpacity
-                                        style={[styles.secondaryButton, dateDisabled && styles.disabled]}
-                                        disabled={dateDisabled}
-                                        onPress={() => {
-                                            setValue('endDate', selectedDate ?? today);
-                                            setShowEndDatePicker(true);
-                                        }}
-                                    >
-                                        <Text style={styles.secondaryButtonText}>+ Add end date</Text>
-                                    </TouchableOpacity>
-                                )}
-                                {showEndDatePicker && Platform.OS === 'ios' && (
-                                    <Modal visible={showEndDatePicker} transparent animationType="slide">
-                                        <TouchableWithoutFeedback onPress={() => setShowEndDatePicker(false)}>
-                                            <View style={styles.modalOverlay}>
-                                                <TouchableWithoutFeedback>
-                                                    <View style={styles.modalContent}>
-                                                        <DateTimePicker
-                                                            value={selectedEndDate ?? selectedDate ?? today}
-                                                            mode="datetime"
-                                                            display="spinner"
-                                                            minimumDate={selectedDate ?? today}
-                                                            onChange={(_, date) => {
-                                                                if (date) setValue('endDate', date);
-                                                            }}
-                                                        />
-                                                        <TouchableOpacity
-                                                            style={styles.secondaryButton}
-                                                            onPress={() => setShowEndDatePicker(false)}
-                                                        >
-                                                            <Text style={styles.secondaryButtonText}>Done</Text>
-                                                        </TouchableOpacity>
-                                                    </View>
-                                                </TouchableWithoutFeedback>
-                                            </View>
-                                        </TouchableWithoutFeedback>
-                                    </Modal>
-                                )}
-                                {showEndDatePicker && Platform.OS !== 'ios' && (
-                                    <DateTimePicker
-                                        value={selectedEndDate ?? selectedDate ?? today}
-                                        mode="datetime"
-                                        display="default"
-                                        minimumDate={selectedDate ?? today}
-                                        onChange={(_, date) => {
-                                            setShowEndDatePicker(false);
-                                            if (date) setValue('endDate', date);
-                                        }}
-                                    />
-                                )}
-                            </View>
+                            />
                             <View style={styles.fieldContainer}>
                                 <Text style={styles.label}>Repetition</Text>
                                 <TouchableOpacity
@@ -511,59 +583,42 @@ const EventForm = () => {
                                     </TouchableWithoutFeedback>
                                 </Modal>
                             </View>
-                            <View style={styles.fieldContainer}>
-                                <Text style={styles.label}>Group<Text style={styles.required}> *</Text></Text>
-                                <TouchableOpacity
-                                    style={[styles.input, styles.selectButton, groupDisabled && styles.disabled]}
-                                    disabled={groupDisabled}
-                                    onPress={() => setShowGroupPicker(true)}
-                                >
-                                    <Text style={{color: groupDisabled ? '#999' : selectedGroup ? '#333' : '#999'}}>
-                                        {isLoading ? 'Loading...' : selectedGroup?.name ?? 'Select a group'}
-                                    </Text>
-                                </TouchableOpacity>
-                                <Modal visible={showGroupPicker} transparent animationType="slide">
-                                    <TouchableWithoutFeedback onPress={() => setShowGroupPicker(false)}>
-                                        <View style={styles.modalOverlay}>
-                                            <View style={styles.modalContent}>
-                                                <Text style={styles.modalTitle}>Select Group</Text>
-                                                {myGroups.map((g) => (
-                                                    <TouchableOpacity
-                                                        key={g.id}
-                                                        style={styles.modalOption}
-                                                        onPress={() => {
-                                                            setValue('groupId', g.id as number);
-                                                            setShowGroupPicker(false);
-                                                        }}
-                                                    >
-                                                        <Text style={styles.modalOptionText}>{g.name}</Text>
-                                                    </TouchableOpacity>
-                                                ))}
-                                                <TouchableOpacity onPress={() => setShowGroupPicker(false)}>
-                                                    <Text style={styles.modalCancel}>Close</Text>
-                                                </TouchableOpacity>
-                                            </View>
-                                        </View>
-                                    </TouchableWithoutFeedback>
-                                </Modal>
-                            </View>
-                            <View style={styles.buttonRow}>
-                                <TouchableOpacity style={styles.cancelButton} onPress={() => router.back()}>
-                                    <Text style={styles.cancelText}>Cancel</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.submitButton} onPress={handleSubmit(onSubmit)}
-                                                  disabled={isPending}>
-                                    {isPending
-                                        ? <ActivityIndicator color="#fff"/>
-                                        : <Text style={styles.submitText}>{isEditing ? 'Save' : 'Submit'}</Text>
-                                    }
-                                </TouchableOpacity>
-                            </View>
+                            <Controller
+                                control={control}
+                                name="cost"
+                                render={({field: {onChange, value}}) => (
+                                    <View style={styles.fieldContainer}>
+                                        <Text style={styles.label}>Cost ($)</Text>
+                                        <TextInput
+                                            style={styles.input}
+                                            placeholder="0"
+                                            keyboardType="decimal-pad"
+                                            value={value}
+                                            onChangeText={(text) => onChange(text.replace(/^0+(?=\d)/, ''))}
+                                        />
+                                    </View>
+                                )}
+                            />
                             <Toast/>
                         </ScrollView>
                     </View>
                 </TouchableWithoutFeedback>
             </KeyboardAvoidingView>
+            <View style={[styles.footer, {paddingBottom: insets.bottom + 16}]}>
+                <TouchableOpacity style={styles.cancelButton} onPress={() => router.back()}>
+                    <Text style={styles.cancelText}>Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={[styles.submitButton, (isPending || !isValid) && styles.submitButtonDisabled]}
+                    onPress={handleSubmit(onSubmit, onInvalid)}
+                    disabled={isPending || !isValid}
+                >
+                    {isPending
+                        ? <ActivityIndicator color="#fff"/>
+                        : <Text style={styles.submitText}>{isEditing ? 'Save' : 'Submit'}</Text>
+                    }
+                </TouchableOpacity>
+            </View>
             <AvailabilityModal
                 visible={showAvailabilityModal}
                 onClose={() => setShowAvailabilityModal(false)}
