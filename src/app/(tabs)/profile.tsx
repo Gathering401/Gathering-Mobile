@@ -25,7 +25,7 @@ const Profile = () => {
     }
 
     const censoredPhone = `***-***-${user.phone.slice(-4)}`;
-    const formattedBirthdate = dayjs(user.birthdate).format('MMMM DD, YYYY');
+    const formattedBirthdate = dayjs(user.birthdate).add(1, 'day').format('MMMM DD, YYYY');
 
     return (
         <View style={styles.container}>

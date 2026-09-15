@@ -287,12 +287,10 @@ const SignUp = () => {
                             </View>
                         )}
                     />
-
                     <View style={styles.row}>
                         <View style={styles.halfField}>{renderField('phone')}</View>
                         <View style={styles.halfField}>{renderField('zipCode')}</View>
                     </View>
-
                     {!isEdit && (
                         <>
                             <Controller

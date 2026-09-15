@@ -25,4 +25,6 @@ export const styles = StyleSheet.create({
     modalOption: { paddingVertical: 14, borderBottomWidth: 1, borderBottomColor: '#eee' },
     modalOptionText: { fontSize: 16 },
     modalCancel: { textAlign: 'center', color: colors.terracotta.primary, marginTop: 16, fontSize: 16 },
+    endDateHeader: {flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4},
+    clearText: {fontSize: 13, color: colors.terracotta.primary},
 });
